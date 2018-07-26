@@ -1,5 +1,7 @@
 import re
 
+import console
+
 def appendListInMap(map, key, item):
 	key = key.capitalize()
 	if (key not in map):
@@ -166,9 +168,7 @@ def listTokens(deckCards):
 		if (not foundToken):
 			match = re.search("(token)", oracleText)
 			if (match):
-				CRED = '\033[91m'
-				CEND = '\033[0m'
-				print (deckCardName + ":", CRED + oracleText + CEND)
+				print (deckCardName + ":", console.CRED + oracleText + console.CEND)
 
 #	print(tokens)
 
