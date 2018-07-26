@@ -3,6 +3,16 @@ import os
 
 import mtgCardInCollectionObject
 
+def currencyToGlyph(currency):
+	if (currency == 'eur'):
+		return u'\u20ac'
+	elif (currency == 'usd'):
+		return '$'
+	elif (currency == 'tix'):
+		return 'tix'
+	else:
+		return ''
+
 def readCardFile(cardFile, cards):
 	with open(cardFile, 'r') as f:
 		lineCounter = 0

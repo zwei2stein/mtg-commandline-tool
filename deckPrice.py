@@ -1,5 +1,7 @@
 from decimal import *
 
+import util
+
 def deckPrice(deckCards, currency):
 
 	totalPrice = Decimal(0)
@@ -8,15 +10,4 @@ def deckPrice(deckCards, currency):
 		deckCard = deckCards[deckCardName]
 		totalPrice += Decimal(deckCard.jsonData.get(currency, "0.0"))
 
-	print ('Total price:', str(totalPrice), currencyToGlyph(currency))
-
-
-def currencyToGlyph(currency):
-	if (currency == 'eur'):
-		return u'\u20ac'
-	elif (currency == 'usd'):
-		return '$'
-	elif (currency == 'tix'):
-		return 'tix'
-	else:
-		return ''
+	print ('Total price:', str(totalPrice), util.currencyToGlyph(currency))
