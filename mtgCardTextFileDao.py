@@ -3,25 +3,21 @@ import os
 
 import mtgCardInCollectionObject
 
-def currencyToGlyph(currency):
-	if (currency == 'eur'):
-		return u'\u20ac'
-	elif (currency == 'usd'):
-		return '$'
-	elif (currency == 'tix'):
-		return 'tix'
-	else:
-		return ''
+import util
 
-def readCardFile(cardFile, cards):
+def readCardFile(cardFile, cards, asDeck=False):
+
+	isSideboard = False
+
 	with open(cardFile, 'r') as f:
 		lineCounter = 0
 		for line in f:
 			lineCounter += 1
 			line = line.strip()
 			if (line.lower().startswith("sideboard")):
-				print ("Sideboard seaparator?")
-				# has sideboard separator - it is likely a deck.
+				if (asDeck):
+					print ("Sideboard found")
+					isSideboard = True
 			elif (line != ""):
 #				print ("'"+line+"'")
 				splitLine = line.split(" ", 1)
@@ -37,11 +33,10 @@ def readCardFile(cardFile, cards):
 					name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 					name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
 					name = name.strip()
-					if (name in cards):
+					if (name in cards and cards[name].sideboard == isSideboard):
 						cards[name].add(count, cardFile)
-#						print ("Duplicate card ", name, " merged" , count)
 					else:
-						cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile)
+						cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard)
 	return cards
 
 def saveCardFile(cardFile, cards):
@@ -61,7 +56,7 @@ def saveCardFile(cardFile, cards):
 		if (mtgCardInCollectionObject.CardInCollection.args.printPrice):
 			file.write(" ")
 			file.write(cards[card].jsonData.get(mtgCardInCollectionObject.CardInCollection.args.currency, "0.0"))
-			file.write(currencyToGlyph(mtgCardInCollectionObject.CardInCollection.args.currency))
+			file.write(util.currencyToGlyph(mtgCardInCollectionObject.CardInCollection.args.currency))
 		if (mtgCardInCollectionObject.CardInCollection.args.printColor):
 			file.write(" ")
 			file.write(mtgColors.colorIdentity2String(cards[card].jsonData['color_identity']))

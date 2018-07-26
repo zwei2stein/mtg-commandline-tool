@@ -52,7 +52,7 @@ def main():
 
 	deck = {}
 	if (args.deckPrice or args.verifyDeck or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana):
-		deck = mtgCardTextFileDao.readCardFile(args.deck, {})
+		deck = mtgCardTextFileDao.readCardFile(args.deck, {}, True)
 
 	if (args.verifyDeck):
 		print('Verifying deck cards in collection:')

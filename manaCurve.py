@@ -8,8 +8,8 @@ def manaCurve(deckCards):
 		deckCard = deckCards[deckCardName]
 		cmc = deckCard.jsonData.get('cmc', 0.0)
 		typeLine = deckCard.jsonData.get('type_line','')
-		match = re.search('(\\b[lL]and\\b)', typeLine)
-		if (not match):
+		matchLand = re.search('(\\b[lL]and\\b)', typeLine)
+		if (not matchLand and not deckCard.sideboard):
 			if (cmc not in curve):
 				curve[cmc] = deckCard.count
 			else:

@@ -4,9 +4,10 @@ class CardInCollection:
 
 	args = None
 
-	def __init__(self, name, count, sourceFile, jsonData = None):
+	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = False):
 		self.name = name
 		self.count = count
+		self.sideboard = sideboard
 		self.sourceFile = []
 		self.sourceFile.append(sourceFile)
 		self._jsonData = jsonData

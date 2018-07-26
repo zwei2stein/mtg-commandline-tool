@@ -18,8 +18,8 @@ def landMana(deckCards):
 			oracleText = oracleText + '\n' + face.get('oracle_text', '')
 			typeLine = typeLine + '\n' + face.get('type_line', '')
 
-		match = re.search('(\\b[lL]and\\b)', typeLine)
-		if (match):
+		matchLand = re.search('(\\b[lL]and\\b)', typeLine)
+		if (matchLand and not deckCard.sideboard):
 			for symbol in mtgColors.colorCosts:
 				match = re.search('[aA]dd {'+symbol+'}', oracleText)
 				if (match):

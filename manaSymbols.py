@@ -10,7 +10,8 @@ def manaSymbols(deckCards):
 
 	for deckCardName in deckCards:
 		deckCard = deckCards[deckCardName]
-		manaCost = manaCost + deckCard.jsonData.get('mana_cost', '')
+		if (not deckCard.sideboard):
+			manaCost = manaCost + deckCard.jsonData.get('mana_cost', '')
 
 	# make {U/G} or {2/W} or {HW} symbols parsable.
 	manaCost = manaCost.replace('/', '}{').replace('{H', '{')
