@@ -8,6 +8,12 @@ def appendListInMap(map, key, item):
 		map[key] = set([])
 	map[key].add(item)
 
+def addCounter(counterType, keyWords, list, oracleText, deckCardName):
+		for keyWord in keyWords:
+			match = re.search('('+keyWord+')', oracleText)			
+			if (match):
+				appendListInMap(list, counterType, deckCardName)
+
 def listTokens(deckCards):
 	tokens = {}
 
@@ -100,12 +106,12 @@ def listTokens(deckCards):
 #			print (deckCardName + ":", "Energy counter")
 			appendListInMap(tokens, "Energy counter", deckCardName)
 
-		match = re.search('([Ee]xert)', oracleText)
+		match = re.search('(Exert)', oracleText)
 		if (match):
 #			print (deckCardName + ":", "Exert marker")
 			appendListInMap(tokens, "Exert marker", deckCardName)
 
-		match = re.search('([Ee]mbalm)', oracleText)
+		match = re.search('(Embalm)', oracleText)
 		if (match):
 			appendListInMap(tokens, "Embalm marker", deckCardName)
 
@@ -119,21 +125,9 @@ def listTokens(deckCards):
 		if (match):
 			appendListInMap(tokens, "Age counter", deckCardName)
 
-		match = re.search('(Vanishing)', oracleText)
-		if (match):
-			appendListInMap(tokens, "Time counter", deckCardName)
+		addCounter("Time counter", {'Vanishing', 'Suspend'}, tokens, oracleText, deckCardName):	
 
-		match = re.search('(Suspend)', oracleText)
-		if (match):
-			appendListInMap(tokens, "Time counter", deckCardName)
-
-		match = re.search('(Poisonous)', oracleText)
-		if (match):
-			appendListInMap(tokens, "Poison counter", deckCardName)
-
-		match = re.search('(Infect)', oracleText)
-		if (match):
-			appendListInMap(tokens, "Poison counter", deckCardName)
+		addCounter("Poison counter", {'Poisonous', 'Infect'}, tokens, oracleText, deckCardName):	
 
 		minusCounterKeywords = { 'Infect', 'Wither', 'Persist'}
 		for keyWord in minusCounterKeywords:
