@@ -125,9 +125,9 @@ def listTokens(deckCards):
 		if (match):
 			appendListInMap(tokens, "Age counter", deckCardName)
 
-		addCounter("Time counter", {'Vanishing', 'Suspend'}, tokens, oracleText, deckCardName):	
+		addCounter("Time counter", {'Vanishing', 'Suspend'}, tokens, oracleText, deckCardName)
 
-		addCounter("Poison counter", {'Poisonous', 'Infect'}, tokens, oracleText, deckCardName):	
+		addCounter("Poison counter", {'Poisonous', 'Infect'}, tokens, oracleText, deckCardName)
 
 		minusCounterKeywords = { 'Infect', 'Wither', 'Persist'}
 		for keyWord in minusCounterKeywords:
