@@ -29,6 +29,10 @@ def readCardFile(cardFile, cards, asDeck=False):
 						print ("Bad line format in file '" + cardFile + "', line " + str(lineCounter) + ", ignoring '" + line + "'")
 						continue
 					name = splitLine[1]
+					if ('#' in name):
+						commentedName = name.split('#')
+						name = commentedName[0]
+						print ("comment", commentedName[0:])
 					name = re.sub(" \[[A-Z0-9][A-Z0-9][A-Z0-9]\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
 					name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 					name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
