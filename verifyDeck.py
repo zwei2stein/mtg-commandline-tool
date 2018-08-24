@@ -2,7 +2,7 @@ import console
 
 def verifyDeck(deckCards, libraryCards):
 
-	for deckCardName in deckCards:
+	for deckCardName in sorted(deckCards, key=deckCards.__getitem__):
 		deckCard = deckCards[deckCardName]
 		if (deckCardName in libraryCards):
 			libraryCard = libraryCards[deckCard.name]
