@@ -44,4 +44,8 @@ class CardInCollection:
 				if (self.jsonData['color_identity'] != cardInCollection.jsonData['color_identity']):
 					return mtgColors.compareColors(self.jsonData['color_identity'], cardInCollection.jsonData['color_identity'])
 		#default
+
+		if (self.sideboard != cardInCollection.sideboard):
+			return self.sideboard > cardInCollection.sideboard
+
 		return self.name > cardInCollection.name
