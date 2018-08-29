@@ -11,7 +11,14 @@ def verifyDeck(deckCards, libraryCards):
 			elif (libraryCard.count == 0):
 				print ("x ", str(deckCard.count), " ",  console.CRED + deckCard.name + console.CEND)
 			elif (libraryCard.count < deckCard.count):
-				print ("v ", str(libraryCard.count), " ", deckCard.name)
-				print ("x ", str(deckCard.count - libraryCard.count), " ", console.CRED + deckCard.name + console.CEND)
+				if	(libraryCard.count < (deckCard.count - deckCard.sideboard))
+					print ("v ", str(libraryCard.count), " ", deckCard.name)
+					print ("x ", str(deckCard.count - libraryCard.count), " ", console.CRED + deckCard.name + console.CEND)
+				elif (libraryCard.count == (deckCard.count - deckCard.sideboard))
+					print ("v ", str(libraryCard.count), " ", deckCard.name)
+					print ("x ", str(deckCard.count - libraryCard.count), " ", console.CRED + deckCard.name + console.CEND)
+				elif (libraryCard.count > (deckCard.count - deckCard.sideboard))
+					print ("v ", str(libraryCard.count), " ", deckCard.name)
+					print ("x ", str(deckCard.count - libraryCard.count), " ", console.CRED + deckCard.name + console.CEND)
 		else:
 			print ("x ", str(deckCard.count), " ", console.CRED + deckCard.name + console.CEND)

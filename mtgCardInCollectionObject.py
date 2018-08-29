@@ -7,13 +7,18 @@ class CardInCollection:
 	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = False):
 		self.name = name
 		self.count = count
-		self.sideboard = sideboard
+		if (sideboard):
+			self.sideboard = 1
+		else:
+			self.sideboard = 0
 		self.sourceFile = []
 		self.sourceFile.append(sourceFile)
 		self._jsonData = jsonData
 
-	def add(self, count, sourceFile):
+	def add(self, count, sourceFile, sideboard = False):
 		self.count += count
+		if (sideboard):
+			self.sideboard += count
 		self.sourceFile.append(sourceFile)
 
 	@property

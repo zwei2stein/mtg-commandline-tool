@@ -19,11 +19,11 @@ def landMana(deckCards):
 			typeLine = typeLine + '\n' + face.get('type_line', '')
 
 		matchLand = re.search('(\\b[lL]and\\b)', typeLine)
-		if (matchLand and not deckCard.sideboard):
+		if (matchLand):
 			for symbol in mtgColors.colorCosts:
 				match = re.search('[aA]dd {'+symbol+'}', oracleText)
 				if (match):
-					landSymbols[symbol] = landSymbols[symbol] + deckCard.count
+					landSymbols[symbol] = landSymbols[symbol] + deckCard.count - deckCard.sideboard
 
 	totalLandSymbolCount = Decimal(sum(landSymbols.values()))
 	percentLandSymbols = {}

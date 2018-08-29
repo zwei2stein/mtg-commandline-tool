@@ -37,8 +37,8 @@ def readCardFile(cardFile, cards, asDeck=False):
 					name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 					name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
 					name = name.strip()
-					if (name in cards and cards[name].sideboard == isSideboard):
-						cards[name].add(count, cardFile)
+					if (name in cards):
+						cards[name].add(count, cardFile, isSideboard)
 					else:
 						cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard)
 	return cards

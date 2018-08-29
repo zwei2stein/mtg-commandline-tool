@@ -9,9 +9,8 @@ def deckPrice(deckCards, currency):
 
 	for deckCardName in deckCards:
 		deckCard = deckCards[deckCardName]
-		totalPrice += Decimal(deckCard.jsonData.get(currency, "0.0"))
-		if (deckCard.sideboard):
-			sideboardPrice += Decimal(deckCard.jsonData.get(currency, "0.0"))
+		totalPrice += ((deckCard.count - deckCard.sideboard) * Decimal(deckCard.jsonData.get(currency, "0.0")))
+		sideboardPrice += (deckCard.sideboard * Decimal(deckCard.jsonData.get(currency, "0.0")))
 
 	print ('Deck price:', str(totalPrice - sideboardPrice), util.currencyToGlyph(currency))
 	print ('Sideboard price:', str(sideboardPrice), util.currencyToGlyph(currency))
