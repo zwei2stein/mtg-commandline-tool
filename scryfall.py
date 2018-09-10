@@ -4,6 +4,8 @@ import string
 import unicodedata
 import os
 
+import console
+
 proxies = None
 auth = None
 
@@ -32,6 +34,13 @@ def getCachedCardJson(card):
 	else:
 #		print("Loading online " + jsonFile)
 		response = requests.get("http://api.scryfall.com/cards/named",  params={'exact': card.name}, proxies=proxies, auth=auth)
+		if (response.status_code == 404):
+			print ()
+			print ( console.CRED + "Card '" +card.name + "'' Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
+			response = requests.get("http://api.scryfall.com/cards/named",  params={'fuzzy': card.name}, proxies=proxies, auth=auth)
+			if (response.status_code < 400):
+				print ("Found as " + response.json()["name"])
+		
 		if (response.status_code >= 400):
 			raise Exception('Bad response ' + str(response.status_code) + ' for ' + card.name) 
 		with open(jsonFile, 'w') as f:

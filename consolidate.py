@@ -2,6 +2,7 @@ import argparse
 
 import mtgCardTextFileDao
 import mtgCardInCollectionObject
+import deckAutocomplete
 
 import listTokens
 import verifyDeck
@@ -9,6 +10,8 @@ import deckPrice
 import manaCurve
 import manaSymbols
 import landMana
+
+import mtgCardTextFileDao
 
 def locateCard(card, libraryCards):
 	if libraryCards[card] is not None:
@@ -46,6 +49,8 @@ def main():
 
 	mtgCardInCollectionObject.CardInCollection.args = args
 
+#	deckAutocomplete.deckAutocomplete("./meta/")
+
 	cardCollection = {}
 	if (args.verifyDeck or args.locateCard is not None or args.saveList is not None):
 		mtgCardTextFileDao.readCardDirectory(args.collection, cardCollection, args.ignoreDecks)
@@ -56,7 +61,7 @@ def main():
 
 	if (args.verifyDeck):
 		print('Verifying deck cards in collection:')
-		verifyDeck.verifyDeck(deck, cardCollection)
+		verifyDeck.verifyDeck(deck, cardCollection, args.printPrice, args.currency)
 	if (args.listTokens):
 		print('Listing tokens for deck:')
 		listTokens.listTokens(deck)

@@ -1,4 +1,5 @@
 from decimal import *
+import console
 
 import util
 
@@ -12,6 +13,6 @@ def deckPrice(deckCards, currency):
 		totalPrice += ((deckCard.count - deckCard.sideboard) * Decimal(deckCard.jsonData.get(currency, "0.0")))
 		sideboardPrice += (deckCard.sideboard * Decimal(deckCard.jsonData.get(currency, "0.0")))
 
-	print ('Deck price:', str(totalPrice - sideboardPrice), util.currencyToGlyph(currency))
-	print ('Sideboard price:', str(sideboardPrice), util.currencyToGlyph(currency))
-	print ('Total price:', str(totalPrice), util.currencyToGlyph(currency))
+	print ('Deck price:', str(totalPrice - sideboardPrice) + util.currencyToGlyph(currency))
+	print ('Sideboard price:', str(sideboardPrice) + util.currencyToGlyph(currency))
+	print ( console.CRED + 'Total price:' + console.CEND, str(totalPrice) + util.currencyToGlyph(currency))
