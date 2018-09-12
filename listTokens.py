@@ -110,7 +110,7 @@ def listTokens(deckCards):
 		if (match):
 			appendListInMap(tokens, "Embalm marker", deckCardName)
 
-		plusCounterKeywords = { 'Explore', 'Monstrosity', 'Support', 'Awaken', 'Amplify', 'Bloodthirst', 'Dethrone', 'Modular', 'Devour', 'Renown', 'Scavenge', 'Sunburst', 'Undying', 'Unleash', 'Outlast', 'Reinforce'}
+		plusCounterKeywords = {'Mentor', 'Explore', 'Monstrosity', 'Support', 'Awaken', 'Amplify', 'Bloodthirst', 'Dethrone', 'Modular', 'Devour', 'Renown', 'Scavenge', 'Sunburst', 'Undying', 'Unleash', 'Outlast', 'Reinforce'}
 		addCounter("+1/+1 counter", plusCounterKeywords, tokens, oracleText, deckCardName)
 
 		match = re.search('(Cumulative upkeep)', oracleText)
