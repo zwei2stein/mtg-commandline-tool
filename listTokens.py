@@ -70,20 +70,22 @@ def listTokens(deckCards):
 		for match in re.finditer('[Cc]reate(s)? ([a-zX ]+) (([0-9X]+)/([0-9X]+) ([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?( with [A-Za-z ]+)?)', oracleText):
 			tokenString = match.string[match.start(3):match.end(3)]
 			tokenString = re.sub("tokens", "token", tokenString, 1)
-#			print (deckCardName + ":", tokenString)
 			appendListInMap(tokens, tokenString, deckCardName)
 			foundToken = True
 
 		match = re.search('[Cc]reate(s)? [a-zX]+ colorless Treasure artifact token(s)?', oracleText)
 		if (match):
-#			print (deckCardName + ":", "colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color to your mana pool.\"")
 			appendListInMap(tokens, "colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color to your mana pool.\"", deckCardName)
 			foundToken = True
 
 		match = re.search('[Cc]reate(s)? [a-zX]+ colorless artifact token(s)? named Gold', oracleText)
 		if (match):
-#			print (deckCardName + ":", "colorless Gold artifact token with \"Sacrifice this artifact: Add one mana of any color to your mana pool.\"")
 			appendListInMap(tokens, "colorless Gold artifact token with \"Sacrifice this artifact: Add one mana of any color to your mana pool.\"", deckCardName)
+			foundToken = True
+
+		match = re.search('[Cc]reate a token that\'s a copy of', oracleText)
+		if (match):
+			appendListInMap(tokens, "Copy token", deckCardName)
 			foundToken = True
 
 #non tokens and counters
@@ -116,10 +118,7 @@ def listTokens(deckCards):
 			appendListInMap(tokens, "Embalm marker", deckCardName)
 
 		plusCounterKeywords = { 'Explore', 'Monstrosity', 'Support', 'Awaken', 'Amplify', 'Bloodthirst', 'Dethrone', 'Modular', 'Devour', 'Renown', 'Scavenge', 'Sunburst', 'Undying', 'Unleash', 'Outlast', 'Reinforce'}
-		for keyWord in plusCounterKeywords:
-			match = re.search('('+keyWord+')', oracleText)			
-			if (match):
-				appendListInMap(tokens, "+1/+1 counter", deckCardName)
+		addCounter("+1/+1 counter", plusCounterKeywords, tokens, oracleText, deckCardName)
 
 		match = re.search('(Cumulative upkeep)', oracleText)
 		if (match):
@@ -130,10 +129,7 @@ def listTokens(deckCards):
 		addCounter("Poison counter", {'Poisonous', 'Infect'}, tokens, oracleText, deckCardName)
 
 		minusCounterKeywords = { 'Infect', 'Wither', 'Persist'}
-		for keyWord in minusCounterKeywords:
-			match = re.search('('+keyWord+')', oracleText)			
-			if (match):
-				appendListInMap(tokens, "-1/-1 counter", deckCardName)
+		addCounter("-1/-1 counter", minusCounterKeywords, tokens, oracleText, deckCardName)
 
 		match = re.search('(Living weapon)', oracleText)
 		if (match):
