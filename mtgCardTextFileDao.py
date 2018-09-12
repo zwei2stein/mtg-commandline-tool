@@ -6,41 +6,44 @@ import mtgCardInCollectionObject
 import util
 
 def readCardFile(cardFile, cards, asDeck=False):
+	with open(cardFile, 'r') as f:
+		return readCardFile(f, cardFile, cards, asDeck)
+
+def readCardFile(f, cardFile, cards, asDeck):
 
 	isSideboard = False
 
-	with open(cardFile, 'r') as f:
-		lineCounter = 0
-		for line in f:
-			lineCounter += 1
-			line = line.strip()
-			if (line.lower().startswith("sideboard")):
-				if (asDeck):
-					print ("Sideboard found")
-					isSideboard = True
-			elif (line != ""):
+	lineCounter = 0
+	for line in f:
+		lineCounter += 1
+		line = line.strip()
+		if (line.lower().startswith("sideboard")):
+			if (asDeck):
+				print ("Sideboard found")
+				isSideboard = True
+		elif (line != ""):
 #				print ("'"+line+"'")
-				splitLine = line.split(" ", 1)
-				if (len(splitLine) == 2):
-					count = 0
-					try:
-						count = int(re.sub("[x]\Z", "", splitLine[0], 1)) # acceptable 1 and 1x
-					except ValueError:
-						print ("Bad line format in file '" + cardFile + "', line " + str(lineCounter) + ", ignoring '" + line + "'")
-						continue
-					name = splitLine[1]
-					if ('#' in name):
-						commentedName = name.split('#')
-						name = commentedName[0]
-						print ("comment", commentedName[1:])
-					name = re.sub(" \[[A-Z0-9][A-Z0-9][A-Z0-9]\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
-					name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
-					name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
-					name = name.strip()
-					if (name in cards):
-						cards[name].add(count, cardFile, isSideboard)
-					else:
-						cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard)
+			splitLine = line.split(" ", 1)
+			if (len(splitLine) == 2):
+				count = 0
+				try:
+					count = int(re.sub("[x]\Z", "", splitLine[0], 1)) # acceptable 1 and 1x
+				except ValueError:
+					print ("Bad line format in file '" + cardFile + "', line " + str(lineCounter) + ", ignoring '" + line + "'")
+					continue
+				name = splitLine[1]
+				if ('#' in name):
+					commentedName = name.split('#')
+					name = commentedName[0]
+					print ("comment", commentedName[1:])
+				name = re.sub(" \[[A-Z0-9][A-Z0-9][A-Z0-9]\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
+				name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
+				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
+				name = name.strip()
+				if (name in cards):
+					cards[name].add(count, cardFile, isSideboard)
+				else:
+					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard)
 	return cards
 
 def saveCardFile(cardFile, cards):

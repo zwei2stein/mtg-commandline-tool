@@ -64,7 +64,7 @@ def main():
 		verifyDeck.verifyDeck(deck, cardCollection, args.printPrice, args.currency)
 	if (args.listTokens):
 		print('Listing tokens for deck:')
-		listTokens.listTokens(deck)
+		listTokens.printTokensToConsole(listTokens.listTokens(deck))
 	if (args.manaCurve):
 		print('Mana curve for deck:')
 		manaCurve.manaCurve(deck)

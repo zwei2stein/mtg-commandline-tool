@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+	<head>
+		<title>List Tokens</title>
+
+		<script src="https://deckbox.org/assets/external/tooltip.js"></script>
+
+	</head>
+	<body>
+		<h1>List Tokens</h1>
+
+		<div>
+
+			<form action="{{ model.submitUrl }}" method="post">
+
+				<div>
+
+					<label for="deckList">Deck:</label>
+
+				</div>
+
+				<div>
+
+					<textarea name="deckList" id="deckList" rows="30">{{ model.deckList }}</textarea>
+
+				</div>
+
+				<div>
+
+				<button>Submit</button>
+
+				</div>
+
+			</form>
+
+		</div>
+
+		<div>
+
+		<ul>
+		{% for token in model.tokens|sort %}
+			<li>{{ token }}
+
+				<ul>
+					{% for card in model.tokens[token]|sort %}
+						<li><a href="#">{{ card }}</a></li>
+					{% endfor %}
+				</ul>
+
+			</li>
+
+		{% endfor %}
+		</ul>
+
+		</div>
+
+	</body>
+</html>

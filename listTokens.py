@@ -164,8 +164,10 @@ def listTokens(deckCards):
 			if (match):
 				print (deckCardName + ":", console.CRED + oracleText + console.CEND)
 
-#	print(tokens)
+	return tokens
 
+
+def printTokensToConsole(tokens):
 	for token in sorted(tokens):
 		print(token)
 		for card in sorted(tokens[token]):
