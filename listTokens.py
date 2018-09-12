@@ -16,6 +16,7 @@ def addCounter(counterType, keyWords, list, oracleText, deckCardName):
 
 def listTokens(deckCards):
 	tokens = {}
+	tokenCandidates = {}
 
 	for deckCardName in deckCards:
 		deckCard = deckCards[deckCardName]
@@ -23,7 +24,6 @@ def listTokens(deckCards):
 		typeLine = deckCard.jsonData.get('type_line','')
 
 		for face in deckCard.jsonData.get('card_faces', []):
-#			print(face) 
 			oracleText = oracleText + '\n' + face.get('oracle_text', '')
 			typeLine = typeLine + '\n' + face.get('type_line', '')
 
@@ -33,7 +33,6 @@ def listTokens(deckCards):
 
 		match = re.search("(Fabricate [0-9]+)", oracleText)
 		if (match):
-#			print (deckCardName + ":", "1/1 colorless Servo artifact creature token")
 			appendListInMap(tokens,  "1/1 colorless Servo artifact creature token", deckCardName)
 			appendListInMap(tokens,  "+1/+1 counter", deckCardName)
 			foundToken = True
@@ -41,14 +40,12 @@ def listTokens(deckCards):
 		match = re.search("(Embalm)", oracleText)
 		if (match):
 			subtype = typeLine.split("\u2014", 1)[1].strip()
-#			print (deckCardName + ":", deckCard.jsonData.get('power','?') + '/' + deckCard.jsonData.get('toughness','?')  + " white "+ deckCardName + " " + subtype + " Zombie token")
 			appendListInMap(tokens, deckCard.jsonData.get('power','?') + '/' + deckCard.jsonData.get('toughness','?')  + " white "+ deckCardName + " " + subtype + " Zombie token", deckCardName)
 			appendListInMap(tokens, "Embalm marker", deckCardName)
 			foundToken = True
 
 		match = re.search('(Eternalize)', oracleText)
 		if (match):
-#			print (deckCardName + ":", "4/4 black "+ deckCardName +" Zombie token")
 			appendListInMap(tokens, "4/4 black "+ deckCardName +" Zombie token", deckCardName)
 			appendListInMap(tokens, "Eternalize marker", deckCardName)
 			foundToken = True
@@ -63,7 +60,6 @@ def listTokens(deckCards):
 
 		match = re.search("([iI]nvestigate)", oracleText)
 		if (match):
-#			print (deckCardName + ":", "colorless Clue artifact token with \"{2}, Sacrifice this artifact: Draw a card.\"")
 			appendListInMap(tokens, "colorless Clue artifact token with \"{2}, Sacrifice this artifact: Draw a card.\"", deckCardName)
 			foundToken = True
 
@@ -100,17 +96,14 @@ def listTokens(deckCards):
 
 		match = re.search('([aA]scend)', oracleText)
 		if (match):
-#			print (deckCardName + ":", "City's Blessing marker")
 			appendListInMap(tokens, "City's Blessing marker", deckCardName)
 
 		match = re.search('({E})', oracleText)
 		if (match):
-#			print (deckCardName + ":", "Energy counter")
 			appendListInMap(tokens, "Energy counter", deckCardName)
 
 		match = re.search('(Exert)', oracleText)
 		if (match):
-#			print (deckCardName + ":", "Exert marker")
 			appendListInMap(tokens, "Exert marker", deckCardName)
 
 		match = re.search('(Embalm)', oracleText)
@@ -158,13 +151,24 @@ def listTokens(deckCards):
 		if (not foundToken):
 			match = re.search("(token)", oracleText)
 			if (match):
-				print (deckCardName + ":", console.CRED + oracleText + console.CEND)
+				tokenCandidates[deckCardName] = oracleText
 
-	return tokens
+	response = {}
+
+	response['tokens'] = tokens
+	response['tokenCandidates'] = tokenCandidates
+
+	return response
 
 
-def printTokensToConsole(tokens):
-	for token in sorted(tokens):
+def printTokensToConsole(response):
+	for token in sorted(response['tokens']):
 		print(token)
-		for card in sorted(tokens[token]):
+		for card in sorted(response['tokens'][token]):
 			print('\t', card) 
+
+	print ("Missed tokens:")
+
+	for candidate in sorted(response['tokenCandidates']):
+		print(console.CRED + candidate + console.CEND)
+		print('\tOracle text:', response['tokenCandidates'][candidate])

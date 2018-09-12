@@ -30,11 +30,12 @@ def tokensProcess():
 
 	deck = mtgCardTextFileDao.readCardFile(io.StringIO(deckList), 'web', {}, True)
 
-	tokens = listTokens.listTokens(deck)
+	response = listTokens.listTokens(deck)
 
 	model = {}
 
-	model["tokens"] = tokens
+	model["tokens"] = response['tokens']
+	model["tokenCandidates"] = response['tokenCandidates']
 
 	model["submitUrl"] = url_for('tokensProcess')
 	model["deckList"] = deckList

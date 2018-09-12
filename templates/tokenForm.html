@@ -38,18 +38,33 @@
 		<div>
 
 		<ul>
-		{% for token in model.tokens|sort %}
-			<li>{{ token }}
+			{% for token in model.tokens|sort %}
+				<li>{{ token }}
 
-				<ul>
-					{% for card in model.tokens[token]|sort %}
-						<li><a href="#">{{ card }}</a></li>
-					{% endfor %}
-				</ul>
+					<ul>
+						{% for card in model.tokens[token]|sort %}
+							<li><a href="#">{{ card }}</a></li>
+						{% endfor %}
+					</ul>
 
-			</li>
+				</li>
 
-		{% endfor %}
+			{% endfor %}
+		</ul>
+
+		<ul>
+
+			{% for candidate in model.tokenCandidates|sort %}
+				<li><a href="#">{{ candidate }}</a>
+
+					<div>
+						{{ model.tokenCandidates[candidate]}}
+					</div>
+
+				</li>
+
+			{% endfor %}
+
 		</ul>
 
 		</div>

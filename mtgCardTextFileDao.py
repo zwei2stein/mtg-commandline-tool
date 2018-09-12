@@ -5,7 +5,7 @@ import mtgCardInCollectionObject
 
 import util
 
-def readCardFile(cardFile, cards, asDeck=False):
+def readCardFileFromPath(cardFile, cards, asDeck=False):
 	with open(cardFile, 'r') as f:
 		return readCardFile(f, cardFile, cards, asDeck)
 
@@ -78,6 +78,6 @@ def readCardDirectory(path, cards, ignoreDecks):
 			cardFile = os.path.join(root, file)
 			if (cardFile.endswith(".txt") and (ignoreDecks is None or ignoreDecks not in cardFile.lower())):
 				print ("Reading file '", cardFile, "'")
-				readCardFile(cardFile, cards)
+				readCardFileFromPath(cardFile, cards)
 			else:
 				print ("Ignoring file '", cardFile, "'")
