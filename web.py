@@ -32,10 +32,7 @@ def tokensProcess():
 
 	response = listTokens.listTokens(deck)
 
-	model = {}
-
-	model["tokens"] = response['tokens']
-	model["tokenCandidates"] = response['tokenCandidates']
+	model = response
 
 	model["submitUrl"] = url_for('tokensProcess')
 	model["deckList"] = deckList

@@ -16,6 +16,8 @@ def addCounter(counterType, keyWords, list, oracleText, deckCardName):
 
 def listTokens(deckCards):
 	tokens = {}
+	counters = {}
+	misc = {}
 	tokenCandidates = {}
 
 	for deckCardName in deckCards:
@@ -34,20 +36,20 @@ def listTokens(deckCards):
 		match = re.search("(Fabricate [0-9]+)", oracleText)
 		if (match):
 			appendListInMap(tokens,  "1/1 colorless Servo artifact creature token", deckCardName)
-			appendListInMap(tokens,  "+1/+1 counter", deckCardName)
+			appendListInMap(counters,  "+1/+1 counter", deckCardName)
 			foundToken = True
 
 		match = re.search("(Embalm)", oracleText)
 		if (match):
 			subtype = typeLine.split("\u2014", 1)[1].strip()
 			appendListInMap(tokens, deckCard.jsonData.get('power','?') + '/' + deckCard.jsonData.get('toughness','?')  + " white "+ deckCardName + " " + subtype + " Zombie token", deckCardName)
-			appendListInMap(tokens, "Embalm marker", deckCardName)
+			appendListInMap(misc, "Embalm marker", deckCardName)
 			foundToken = True
 
 		match = re.search('(Eternalize)', oracleText)
 		if (match):
 			appendListInMap(tokens, "4/4 black "+ deckCardName +" Zombie token", deckCardName)
-			appendListInMap(tokens, "Eternalize marker", deckCardName)
+			appendListInMap(misc, "Eternalize marker", deckCardName)
 			foundToken = True
 
 		match = re.search('([Mm]orph)', oracleText)
@@ -88,41 +90,41 @@ def listTokens(deckCards):
 
 		match = re.search('([sS]oulbond)', oracleText)
 		if (match):
-			appendListInMap(tokens, "Soulbond marker", deckCardName)
+			appendListInMap(misc, "Soulbond marker", deckCardName)
 
 		match = re.search('([Pp]rowess)', oracleText)
 		if (match):
-			appendListInMap(tokens, "Prowess marker", deckCardName)
+			appendListInMap(misc, "Prowess marker", deckCardName)
 
 		match = re.search('([aA]scend)', oracleText)
 		if (match):
-			appendListInMap(tokens, "City's Blessing marker", deckCardName)
+			appendListInMap(misc, "City's Blessing marker", deckCardName)
 
 		match = re.search('({E})', oracleText)
 		if (match):
-			appendListInMap(tokens, "Energy counter", deckCardName)
+			appendListInMap(counters, "Energy counter", deckCardName)
 
 		match = re.search('(Exert)', oracleText)
 		if (match):
-			appendListInMap(tokens, "Exert marker", deckCardName)
+			appendListInMap(misc, "Exert marker", deckCardName)
 
 		match = re.search('(Embalm)', oracleText)
 		if (match):
-			appendListInMap(tokens, "Embalm marker", deckCardName)
+			appendListInMap(misc, "Embalm marker", deckCardName)
 
 		plusCounterKeywords = {'Mentor', 'Explore', 'Monstrosity', 'Support', 'Awaken', 'Amplify', 'Bloodthirst', 'Dethrone', 'Modular', 'Devour', 'Renown', 'Scavenge', 'Sunburst', 'Undying', 'Unleash', 'Outlast', 'Reinforce'}
-		addCounter("+1/+1 counter", plusCounterKeywords, tokens, oracleText, deckCardName)
+		addCounter("+1/+1 counter", plusCounterKeywords, counters, oracleText, deckCardName)
 
 		match = re.search('(Cumulative upkeep)', oracleText)
 		if (match):
 			appendListInMap(tokens, "Age counter", deckCardName)
 
-		addCounter("Time counter", {'Vanishing', 'Suspend'}, tokens, oracleText, deckCardName)
+		addCounter("Time counter", {'Vanishing', 'Suspend'}, counters, oracleText, deckCardName)
 
-		addCounter("Poison counter", {'Poisonous', 'Infect'}, tokens, oracleText, deckCardName)
+		addCounter("Poison counter", {'Poisonous', 'Infect'}, counters, oracleText, deckCardName)
 
 		minusCounterKeywords = { 'Infect', 'Wither', 'Persist'}
-		addCounter("-1/-1 counter", minusCounterKeywords, tokens, oracleText, deckCardName)
+		addCounter("-1/-1 counter", minusCounterKeywords, counters, oracleText, deckCardName)
 
 		match = re.search('(Living weapon)', oracleText)
 		if (match):
@@ -130,23 +132,23 @@ def listTokens(deckCards):
 
 		match = re.search('(Storm)', oracleTextWithoutCardName)
 		if (match):
-			appendListInMap(tokens, "Storm counter", deckCardName)
+			appendListInMap(counters, "Storm counter", deckCardName)
 
 		for match in re.finditer('([\+\-]1/[\+\-]1 [Cc]ounter)', oracleText):
-			appendListInMap(tokens, match.string[match.start(1):match.end(1)], deckCardName)
+			appendListInMap(counters, match.string[match.start(1):match.end(1)], deckCardName)
 
 		badMatches = {'and counter', 'another counter', 'be counter', 'get counter', 'have counter', 'is counter', 'more counter', 'no counter', 'of counter', 'the counter', 'those counter', 'with counter'}
 		for match in re.finditer('([A-Za-z][a-z]+ [Cc]ounter)', oracleText):
 			counter = match.string[match.start(1):match.end(1)]
 			if (counter.lower() not in badMatches):
-				appendListInMap(tokens, counter, deckCardName)
+				appendListInMap(counters, counter, deckCardName)
 
 		match = re.search('(Legendary Planeswalker)', typeLine)
 		if (match):
-			appendListInMap(tokens, "Loyalty counter", deckCardName)
+			appendListInMap(counters, "Loyalty counter", deckCardName)
 
 		for match in re.finditer('(You get an emblem with .+)', oracleText):
-			appendListInMap(tokens, match.string[match.start(1):match.end(1)], deckCardName)
+			appendListInMap(misc, match.string[match.start(1):match.end(1)], deckCardName)
 
 		if (not foundToken):
 			match = re.search("(token)", oracleText)
@@ -156,18 +158,37 @@ def listTokens(deckCards):
 	response = {}
 
 	response['tokens'] = tokens
+	response['counters'] = counters
+	response['misc'] = misc
 	response['tokenCandidates'] = tokenCandidates
 
 	return response
 
 
 def printTokensToConsole(response):
+
+	print (console.CGREEN + "Tokens:" + console.CEND)
+
 	for token in sorted(response['tokens']):
 		print(token)
 		for card in sorted(response['tokens'][token]):
 			print('\t', card) 
 
-	print ("Missed tokens:")
+	print (console.CGREEN + "Counters:" + console.CEND)
+
+	for token in sorted(response['counters']):
+		print(token)
+		for card in sorted(response['counters'][token]):
+			print('\t', card) 
+
+	print (console.CGREEN + "Other:" + console.CEND)
+
+	for token in sorted(response['misc']):
+		print(token)
+		for card in sorted(response['misc'][token]):
+			print('\t', card) 
+
+	print (console.CGREEN + "Missed tokens:" + console.CEND)
 
 	for candidate in sorted(response['tokenCandidates']):
 		print(console.CRED + candidate + console.CEND)
