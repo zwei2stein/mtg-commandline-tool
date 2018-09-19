@@ -3,6 +3,7 @@ import json
 import string
 import unicodedata
 import os
+import sys
 
 import console
 
@@ -23,7 +24,7 @@ def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):
 	return ''.join(c for c in cleaned_filename if c in whitelist)
 
 def getCachedCardJson(card):
-	baseDir = ".scryfall"
+	baseDir = os.path.dirname(sys.argv[0]) + "/.scryfallCache"
 	jsonFile = baseDir + "/" + cleanFilename(card.name) + ".json"
 	if (not os.path.exists(baseDir)):
 		os.makedirs(baseDir)

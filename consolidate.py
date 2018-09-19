@@ -1,4 +1,6 @@
 import argparse
+import json
+import os, sys
 
 import mtgCardTextFileDao
 import mtgCardInCollectionObject
@@ -21,9 +23,13 @@ def locateCard(card, libraryCards):
 
 def main():
 
+	confoguration = {}
+	with open(os.path.dirname(sys.argv[0]) + '/config.json') as json_data_file:
+		configuration = json.load(json_data_file)
+
 	parser = argparse.ArgumentParser(description='Process MTG card lists (decks and collection)')
 	parser.add_argument('-id', '--ignoreDecks', action='store_const', const='deck', default=None, help='Ignore files with \'deck\' in path')
-	parser.add_argument('-c', '--currency', choices=['eur', 'usd', 'tix'], default='eur', help='Currency used for sorting by price and for output of price. Default \'eur\'')
+	parser.add_argument('-c', '--currency', choices=['eur', 'usd', 'tix'], default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
 
 	parser.add_argument('-pp', '--printPrice', action='store_true', help='Add price to output')
 	parser.add_argument('-pc', '--printColor', action='store_true', help='Add color identity to output')
@@ -41,9 +47,9 @@ def main():
 	parser.add_argument('-lm', '--landMana', action='store_true', help='Prints land mana count of given deck file')
 
 	parser.add_argument('-lc', '--locateCard', help='Prints file(s) in which card is located', type=str, required=False)
-	parser.add_argument('-sl', '--saveList', help='Save consolidates list', type=str, required=False)
+	parser.add_argument('-sl', '--saveList', help='Save consolidated list', type=str, required=False)
 
-	parser.add_argument('-collection', '--collection', help='Sets root directory to scan for card collection. Default is current directory.', type=str, default='.', required=False)
+	parser.add_argument('-cd', '--collectionDirectory', help='Sets root directory to scan for card collection. Default is \'' + configuration["collectionDirectory"] + '\' directory.', type=str, default=configuration["collectionDirectory"] , required=False)
 
 	args = parser.parse_args()
 
@@ -53,7 +59,7 @@ def main():
 
 	cardCollection = {}
 	if (args.verifyDeck or args.locateCard is not None or args.saveList is not None):
-		mtgCardTextFileDao.readCardDirectory(args.collection, cardCollection, args.ignoreDecks)
+		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks)
 
 	deck = {}
 	if (args.deckPrice or args.verifyDeck or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana):
