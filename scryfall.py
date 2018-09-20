@@ -30,12 +30,7 @@ def getCachedCardJson(card):
 	if (not os.path.exists(baseDir)):
 		os.makedirs(baseDir)
 	if (os.path.exists(jsonFile)):
-
 		fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
-
-		print (fileAge.days)
-		
-
 #		print("Loading cached " + jsonFile)
 		with open(jsonFile, encoding='utf-8') as json_data:
 			return json.load(json_data)

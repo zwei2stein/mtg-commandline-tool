@@ -7,11 +7,11 @@
 
 	</head>
 	<body>
-		<h1>List Tokens</h1>
+		<h1>Deck Tools</h1>
 
 		<div>
 
-			<form action="{{ model.submitUrl }}" method="post">
+			<form method="post">
 
 				<div>
 
@@ -27,7 +27,8 @@
 
 				<div>
 
-				<button>Submit</button>
+				<button formaction="{{ model.listTokensUrl }}">List Tokens</button>
+				<button formaction="{{ model.deckPriceUrl }}">Deck Price</button>
 
 				</div>
 
@@ -35,61 +36,100 @@
 
 		</div>
 
+
 		<div>
 
-		<h2>Tokens:</h2>
+			{% if model.deckPrice %}
 
-		<ul>
-			{% for token in model.tokens|sort %}
-				<li>{{ token }}
-					<ul>
-						{% for card in model.tokens[token]|sort %}
-							<li><a href="#">{{ card }}</a></li>
-						{% endfor %}
-					</ul>
-				</li>
-			{% endfor %}
-		</ul>
+				<h2>Prices:</h2>
 
-		<h2>Counters:</h2>
+				<table>
+					<tr>
+						<td>Deck price:</td><td>{{ model.deckPrice }}</td><td>{{ model.currency }}</td>
+					</tr>
+					<tr>
+						<td>Sideboard price:</td><td>{{ model.sideboardPrice }}</td><td>{{ model.currency }}</td>
+					</tr>
+					<tr>
+						<td>Total price:</td><td>{{ model.totalPrice }}</td><td>{{ model.currency }}</td>
+					</tr>
+				</table>
 
-		<ul>
-			{% for counter in model.counters|sort %}
-				<li>{{ counter }}
-					<ul>
-						{% for card in model.counters[counter]|sort %}
-							<li><a href="#">{{ card }}</a></li>
-						{% endfor %}
-					</ul>
-				</li>
-			{% endfor %}
-		</ul>
+			{% endif %}
 
-		<h2>Other:</h2>
+		</div>
 
-		<ul>
-			{% for other in model.misc|sort %}
-				<li>{{ other }}
-					<ul>
-						{% for card in model.misc[other]|sort %}
-							<li><a href="#">{{ card }}</a></li>
-						{% endfor %}
-					</ul>
-				</li>
-			{% endfor %}
-		</ul>
+		<div>
 
-		<h2>???:</h2>
+		{% if model.tokens %}
 
-		<ul>
-			{% for candidate in model.tokenCandidates|sort %}
-				<li><a href="#">{{ candidate }}</a>
-					<div>
-						{{ model.tokenCandidates[candidate]}}
-					</div>
-				</li>
-			{% endfor %}
-		</ul>
+			<h2>Tokens:</h2>
+
+			<ul>
+				{% for token in model.tokens|sort %}
+					<li>{{ token }}
+						<ul>
+							{% for card in model.tokens[token]|sort %}
+								<li><a href="#">{{ card }}</a></li>
+							{% endfor %}
+						</ul>
+					</li>
+				{% endfor %}
+			</ul>
+
+		{% endif %}
+
+		{% if model.counters %}
+
+			<h2>Counters:</h2>
+
+			<ul>
+				{% for counter in model.counters|sort %}
+					<li>{{ counter }}
+						<ul>
+							{% for card in model.counters[counter]|sort %}
+								<li><a href="#">{{ card }}</a></li>
+							{% endfor %}
+						</ul>
+					</li>
+				{% endfor %}
+			</ul>
+
+		{% endif %}
+
+		{% if model.misc %}
+
+			<h2>Other:</h2>
+
+			<ul>
+				{% for other in model.misc|sort %}
+					<li>{{ other }}
+						<ul>
+							{% for card in model.misc[other]|sort %}
+								<li><a href="#">{{ card }}</a></li>
+							{% endfor %}
+						</ul>
+					</li>
+				{% endfor %}
+			</ul>
+
+		{% endif %}
+
+		{% if model.tokenCandidates %}
+
+			<h2>Cards that do something with tokens:</h2>
+
+			<ul>
+				{% for candidate in model.tokenCandidates|sort %}
+					<li><a href="#">{{ candidate }}</a>
+						<div>
+							{{ model.tokenCandidates[candidate]}}
+						</div>
+					</li>
+				{% endfor %}
+			</ul>
+
+		{% endif %}
 
 		</div>
 

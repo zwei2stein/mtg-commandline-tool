@@ -13,6 +13,18 @@ def deckPrice(deckCards, currency):
 		totalPrice += ((deckCard.count - deckCard.sideboard) * Decimal(deckCard.jsonData.get(currency, "0.0")))
 		sideboardPrice += (deckCard.sideboard * Decimal(deckCard.jsonData.get(currency, "0.0")))
 
-	print ('Deck price:', str(totalPrice - sideboardPrice) + util.currencyToGlyph(currency))
-	print ('Sideboard price:', str(sideboardPrice) + util.currencyToGlyph(currency))
-	print ( console.CRED + 'Total price:' + console.CEND, str(totalPrice) + util.currencyToGlyph(currency))
+	response = {}
+
+	response["currency"] = currency
+
+	response["deckPrice"] = totalPrice - sideboardPrice
+	response["sideboardPrice"] = sideboardPrice;
+	response["totalPrice"] = totalPrice;
+
+	return response
+
+def printPricesToConsole(response):
+
+	print ('Deck price:', str(response["deckPrice"]), util.currencyToGlyph(response["currency"]) )
+	print ('Sideboard price:', str(response["sideboardPrice"]), util.currencyToGlyph(response["currency"]))
+	print ( console.CRED + 'Total price:' + console.CEND, str(response["totalPrice"]), util.currencyToGlyph(response["currency"]))

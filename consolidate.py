@@ -76,7 +76,7 @@ def main():
 		landMana.landMana(deck)
 	if (args.deckPrice):
 		print('Price of deck:')
-		deckPrice.deckPrice(deck, args.currency)
+		deckPrice.printPricesToConsole(deckPrice.deckPrice(deck, args.currency))
 	if (args.saveList is not None):
 		mtgCardTextFileDao.saveCardFile(args.saveList, cardCollection)
 
