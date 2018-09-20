@@ -4,6 +4,7 @@ import string
 import unicodedata
 import os
 import sys
+import datetime
 
 import console
 
@@ -24,11 +25,17 @@ def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):
 	return ''.join(c for c in cleaned_filename if c in whitelist)
 
 def getCachedCardJson(card):
-	baseDir = os.path.dirname(sys.argv[0]) + "/.scryfallCache"
-	jsonFile = baseDir + "/" + cleanFilename(card.name) + ".json"
+	baseDir = os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
+	jsonFile = os.path.join(baseDir, cleanFilename(card.name) + ".json")
 	if (not os.path.exists(baseDir)):
 		os.makedirs(baseDir)
 	if (os.path.exists(jsonFile)):
+
+		fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
+
+		print (fileAge.days)
+		
+
 #		print("Loading cached " + jsonFile)
 		with open(jsonFile, encoding='utf-8') as json_data:
 			return json.load(json_data)

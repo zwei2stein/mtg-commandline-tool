@@ -1,6 +1,7 @@
 import argparse
 import json
-import os, sys
+import os
+import sys
 
 import mtgCardTextFileDao
 import mtgCardInCollectionObject
@@ -14,12 +15,6 @@ import manaSymbols
 import landMana
 
 import mtgCardTextFileDao
-
-def locateCard(card, libraryCards):
-	if libraryCards[card] is not None:
-		print(libraryCards[card].name)	
-		for file in libraryCards[card].sourceFile:
-			print(file)		
 
 def main():
 
@@ -46,7 +41,6 @@ def main():
 	parser.add_argument('-ms', '--manaSymbols', action='store_true', help='Prints mana symbols count of given deck file')
 	parser.add_argument('-lm', '--landMana', action='store_true', help='Prints land mana count of given deck file')
 
-	parser.add_argument('-lc', '--locateCard', help='Prints file(s) in which card is located', type=str, required=False)
 	parser.add_argument('-sl', '--saveList', help='Save consolidated list', type=str, required=False)
 
 	parser.add_argument('-cd', '--collectionDirectory', help='Sets root directory to scan for card collection. Default is \'' + configuration["collectionDirectory"] + '\' directory.', type=str, default=configuration["collectionDirectory"] , required=False)
@@ -58,7 +52,7 @@ def main():
 #	deckAutocomplete.deckAutocomplete("./meta/")
 
 	cardCollection = {}
-	if (args.verifyDeck or args.locateCard is not None or args.saveList is not None):
+	if (args.verifyDeck or args.saveList is not None):
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks)
 
 	deck = {}
@@ -83,8 +77,6 @@ def main():
 	if (args.deckPrice):
 		print('Price of deck:')
 		deckPrice.deckPrice(deck, args.currency)
-	if (args.locateCard is not None):
-		locateCard(args.locateCard, cardCollection)
 	if (args.saveList is not None):
 		mtgCardTextFileDao.saveCardFile(args.saveList, cardCollection)
 
