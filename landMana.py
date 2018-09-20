@@ -23,10 +23,12 @@ def landMana(deckCards):
 			for symbol in mtgColors.colorCosts:
 				match = re.search('[aA]dd {'+symbol+'}', oracleText)
 				if (match):
-					landSymbols[symbol] = landSymbols[symbol] + deckCard.count - deckCard.sideboard
+					landSymbols[symbol] = landSymbols[symbol] + (deckCard.count - deckCard.sideboard)
 
 	totalLandSymbolCount = Decimal(sum(landSymbols.values()))
 	percentLandSymbols = {}
+
+	getcontext().prec = 3
 
 	for symbol in mtgColors.colorCosts:
 		percentLandSymbols[symbol] = Decimal(100 * landSymbols[symbol]) / totalLandSymbolCount
