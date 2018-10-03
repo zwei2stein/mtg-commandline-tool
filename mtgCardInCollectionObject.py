@@ -8,7 +8,7 @@ class CardInCollection:
 		self.name = name
 		self.count = count
 		if (sideboard):
-			self.sideboard = 1
+			self.sideboard = count
 		else:
 			self.sideboard = 0
 		self.sourceFile = []

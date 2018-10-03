@@ -1,6 +1,17 @@
-colorOrder = ['W', 'U', 'B', 'R', 'G', 'WU', 'WB', 'WR', 'WG', 'UB', 'UR', 'UG', 'BR', 'BG', 'RG', 'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG', 'UBR', 'UBG', 'URG', 'RGB', 'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG', 'C']
+colorOrder = ['W', 'U', 'B', 'R', 'G', 'WU', 'WB', 'WR', 'WG', 'UB', 'UR', 'UG', 'BR', 'BG', 'RG', 'WUB', 'WUR', 'WUG', 'WBR', 'WBG', 'WRG', 'UBR', 'UBG', 'URG', 'BRG', 'WUBR', 'WUBG', 'WURG', 'WBRG', 'UBRG', 'WUBRG', 'C']
 
 colorCosts = ['W', 'U', 'B', 'R', 'G', 'C']
+
+def getDeckColorIdentity(deck):
+
+	colors = set()
+
+	for deckCardName in deck:
+		deckCard = deck[deckCardName]
+		colorIdentity = deckCard.jsonData.get('color_identity', 'C')
+		colors.update(colorIdentity)
+
+	return colors
 
 def compareColorsString(colorString1, colorString2):
 	index1 = -1
