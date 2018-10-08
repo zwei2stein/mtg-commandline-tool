@@ -31,15 +31,15 @@ def main():
 	parser.add_argument('-id', '--ignoreDecks', action='store_const', const='deck', default=None, help='Ignore files with \'deck\' in path')
 	parser.add_argument('-c', '--currency', choices=['eur', 'usd', 'tix'], default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
 
-	parser.add_argument('-sl', '--saveList', help='Save consolidated list', type=str, required=False)
+	group = parser.add_mutually_exclusive_group(required = True)
+	group.add_argument('-sl', '--saveList', help='Save consolidated list', type=str)
+	group.add_argument('-d', '--deck', help='Sets deck file to work on, required for deck tools', type=str)
 
 	parser.add_argument('-pp', '--printPrice', action='store_true', help='Add price to output')
 	parser.add_argument('-pc', '--printColor', action='store_true', help='Add color identity to output')
 	parser.add_argument('-s', '--sort', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color'], default=[], help='Sort list order by. Default \'name\'')
 	parser.add_argument('-fl', '--filterLegality', choices=['standard', 'future', 'frontier', 'modern', 'legacy', 'pauper', 'vintage', 'penny', 'commander', '1v1', 'duel', 'brawl'], default=None, help='Filter result list by format legality. Default is no filter.')
 	parser.add_argument('-ft', '--filterType', default=None, help='Filter results by type line of card')
-
-	parser.add_argument('-d', '--deck', help='Sets deck file to work on, required for deck tools', type=str, required=False)
 
 	parser.add_argument('-vd', '--verifyDeck', action='store_true', help='Prints cards missing from given deck file')
 	parser.add_argument('-lt', '--listTokens', action='store_true', help='Prints tokens and counters for given deck file')
