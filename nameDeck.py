@@ -1,5 +1,6 @@
 import mtgColors
 import deckFormat
+import deckCreatureTypes
 
 colorPairingNames = {
  'W': ['White', 'Monowhite', 'Mono-white'],
@@ -37,11 +38,6 @@ colorPairingNames = {
 
  #and the four-color nicknames chaos, aggression, altruism, growth, artifice are supported.
 
-def getCreatureTypes(deck):
-	for deckCardName in deck:
-		deckCard = deck[deckCardName]
-		print (deckCard.jsonData.get('type_line', '').split("\u2014"))
-
 def nameDeck(deck):
 
 	names = []
@@ -50,7 +46,7 @@ def nameDeck(deck):
 
 	deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck))
 
-	getCreatureTypes(deck)
+	deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
 
 	names.append(colorNames)
 
