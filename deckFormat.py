@@ -1,5 +1,7 @@
 import deckStatistics
 
+import console
+
 def getDeckFormat(deck):
 
 	formats = {
@@ -58,8 +60,6 @@ def getDeckFormat(deck):
 	isDeckSingleton = deckStatistics.getIsDeckSingleton(deck)
 	deckCardCount = deckStatistics.getDeckCardCount(deck)
 
-	print(formats)
-
 	for format in formats:
 		if (not isDeckSingleton and singletonFormats[format] == True):
 			formats[format] = False
@@ -69,7 +69,12 @@ def getDeckFormat(deck):
 	return formats
 
 def printDetDeckFormatToConsole(formats):
-    print("Deck valid for format:")
-    for format in sorted(formats):
-        if (formats[format]):
-            print ("*", format)
+	print("Deck valid for format:")
+	for format in sorted(formats):
+		if (formats[format]):
+			print ("\t*", console.CGREEN + format + console.CEND)
+
+	print("Deck " + console.CRED + "not" + console.CEND + " valid for format:")
+	for format in sorted(formats):
+		if (not formats[format]):
+			print ("\t*", console.CRED + format +  console.CEND)
