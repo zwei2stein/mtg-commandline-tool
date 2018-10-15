@@ -17,6 +17,7 @@ import nameDeck
 import deckStatistics
 import deckFormat
 import deckCreatureTypes
+import drawCards
 
 import mtgCardTextFileDao
 
@@ -52,6 +53,7 @@ def main():
 	parser.add_argument('-is', '--isSingleton', action='store_true', help='Checks deck if it is singeton')
 	parser.add_argument('-df', '--deckFormat', action='store_true', help='Prints formats in which is deck legal')
 	parser.add_argument('-ct', '--deckCreatureTypes', action='store_true', help='Prints list of creature types in deck with their counts (not including possible tokens)')
+	parser.add_argument('-draw', '--drawCards', default=None, help='Draw N cards from deck.', type=int)	
 	parser.add_argument('-nd', '--nameDeck', action='store_true', help='Attempts to generate name for given deck')
 
 	args = parser.parse_args()
@@ -65,7 +67,7 @@ def main():
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks)
 
 	deck = {}
-	if (args.deckPrice or args.verifyDeck or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes):
+	if (args.deckPrice or args.verifyDeck or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards):
 		deck = mtgCardTextFileDao.readCardFileFromPath(args.deck, {}, True)
 
 	if (args.verifyDeck):
@@ -99,6 +101,8 @@ def main():
 		nameDeck.printnDeckNameToConsole(nameDeck.nameDeck(deck))
 	if (args.deckCreatureTypes):
 		deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
+	if (args.drawCards):
+		drawCards.drawCards(deck, args.drawCards)
 	if (args.saveList is not None):
 		mtgCardTextFileDao.saveCardFile(args.saveList, cardCollection)
 
