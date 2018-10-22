@@ -2,6 +2,7 @@
 	"defaultCurrency": "eur",
 	"collectionDirectory": "./library",
 	"scryfall": {
-		"cacheTimeout": 365
+		"cacheTimeout": 365,
+		"clearCache": "none"
 	}
 }
