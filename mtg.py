@@ -19,6 +19,7 @@ import deckFormat
 import deckCreatureTypes
 import drawCards
 
+import scryfall
 import mtgCardTextFileDao
 
 def main():

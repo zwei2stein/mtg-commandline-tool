@@ -1,4 +1,5 @@
 import scryfall
+import mtgColors
 
 class CardInCollection:
 

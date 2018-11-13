@@ -34,7 +34,7 @@ def fetchCardJson(cardName, jsonFile):
 		print (console.CRED + "Card '" + cardName + "' Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
 		response = requests.get("http://api.scryfall.com/cards/named",  params={'fuzzy': cardName}, proxies=proxies, auth=auth)
 		if (response.status_code < 400):
-			print ("\'" + card.name + "\' found as \'" + response.json()["name"] + "\'.")
+			print ("\'" + cardName + "\' found as \'" + response.json()["name"] + "\'.")
 	if (response.status_code >= 400):
 		raise Exception('Bad response ' + str(response.status_code) + ' for ' + cardName) 
 	with open(jsonFile, 'w') as f:
@@ -57,5 +57,5 @@ def getCachedCardJson(card):
 				return json.load(json_data)
 	else:
 #		print("Loading online " + jsonFile)
-		return fetchCardJson(card.Name, jsonFile)
+		return fetchCardJson(card.name, jsonFile)
 #
