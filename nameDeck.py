@@ -14,7 +14,7 @@ colorPairingNames = {
  'WG': ['Selesnya', 'White/Green', 'White-Green', 'WG'],
  'UB': ['Dimir', 'Blue/Black', 'Blue-Black', 'UB'],
  'UR': ['Izzet', 'Blue/Red', 'Blue-Red', 'UR'],
- 'UG': ['Simic', 'Blue/Green', "UG"],
+ 'UG': ['Simic', 'Blue/Green', 'Blue-Green', "UG"],
  'BR': ['Rakdos', 'Black/Red', 'Black-Red', 'BR'],
  'BG': ['Golgari', 'Black/Green', 'Black-Green', 'BG'],
  'RG': ['Gruul', 'Red/Green', 'Red-Green', 'RG'],
