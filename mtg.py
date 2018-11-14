@@ -39,7 +39,7 @@ def main():
 			help='Determines how is caching from scrycall handled. \'always\' - always fetch fresh data. \'price\' - fetch data if price changes. \'timeout\' - fetch data if ' + str(configuration["scryfall"]["cacheTimeout"]) + ' days have passed. \'none\' - always use cached version. Default \''  +configuration["scryfall"]["clearCache"] + '\'')
 
 	group = parser.add_mutually_exclusive_group(required = True)
-	group.add_argument('-sl', '--saveList', help='Save consolidated list', type=str)
+	group.add_argument('-sl', '--saveList', help='Save consolidated list or print it to \'console\'', type=str)
 	group.add_argument('-d', '--deck', help='Sets deck file to work on, required for deck tools', type=str)
 
 	parser.add_argument('-pp', '--printPrice', action='store_true', help='Add price to output')
