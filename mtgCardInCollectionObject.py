@@ -31,25 +31,35 @@ class CardInCollection:
 	def __str__(self):
 		return str(self.count) + " " + self.name #+ " " + self.jsonData["mana_cost"]
 
+	def getProp(self, propName):
+		if (propName == 'cmc'):
+			return self.jsonData["cmc"]
+		if (propName == 'price'):
+			return float(self.jsonData.get(CardInCollection.args.currency, "0.0"))
+		if (propName == 'count'):
+			return self.count
+		if (propName == 'name'):
+			return self.name
+		if (propName == 'color'):
+			return mtgColors.colorIdentity2String(self.jsonData['color_identity'])
+		if (propName == 'set'):
+			return self.jsonData["set"]
+		if (propName == 'sideboard'):
+			return self.sideboard
+		if (propName == 'type'):
+			return self.jsonData.get('type_line','').split("\u2014", 1)[0].strip()
+
 	def __gt__(self, cardInCollection):
 
 		for sort in CardInCollection.args.sort:
-			if (sort == 'cmc'):
-				if (self.jsonData["cmc"] != cardInCollection.jsonData["cmc"]):
-					return self.jsonData["cmc"] > cardInCollection.jsonData["cmc"]
-			if (sort == 'price'):
-				if (float(self.jsonData.get(CardInCollection.args.currency, "0.0")) != float(cardInCollection.jsonData.get(CardInCollection.args.currency, "0.0"))):
-					return float(self.jsonData.get(CardInCollection.args.currency, "0.0")) > float(cardInCollection.jsonData.get(CardInCollection.args.currency, "0.0"))
-			if (sort == 'count'):
-				if (self.count != cardInCollection.count):
-					return self.count > cardInCollection.count
-			if (sort == 'name'):
-				if (self.name != cardInCollection.name):
-					return self.name > cardInCollection.name
+			if (sort != 'color'):
+				if (self.getProp(sort) != cardInCollection.getProp(sort)):
+					return self.getProp(sort) > cardInCollection.getProp(sort)
 			if (sort == 'color'):
 				if (self.jsonData['color_identity'] != cardInCollection.jsonData['color_identity']):
 					return mtgColors.compareColors(self.jsonData['color_identity'], cardInCollection.jsonData['color_identity'])
-		#default
+		
+		#default:
 
 		if (self.sideboard != cardInCollection.sideboard):
 			return self.sideboard > cardInCollection.sideboard

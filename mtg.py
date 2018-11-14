@@ -24,7 +24,7 @@ import mtgCardTextFileDao
 
 def main():
 
-	confoguration = {}
+	configuration = {}
 	with open(os.path.dirname(sys.argv[0]) + '/config.json') as json_data_file:
 		configuration = json.load(json_data_file)
 
@@ -44,7 +44,8 @@ def main():
 
 	parser.add_argument('-pp', '--printPrice', action='store_true', help='Add price to output')
 	parser.add_argument('-pc', '--printColor', action='store_true', help='Add color identity to output')
-	parser.add_argument('-s', '--sort', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color'], default=[], help='Sort list order by. Default \'name\'')
+	parser.add_argument('-s', '--sort', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color', 'set', 'sideboard', 'type'], default=[], help='Sort list order by. Default \'name sideboard\'')
+	parser.add_argument('-g', '--group', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color', 'set', 'sideboard', 'type'], default=[], help='Group saved list by')
 	parser.add_argument('-fl', '--filterLegality', choices=['standard', 'future', 'frontier', 'modern', 'legacy', 'pauper', 'vintage', 'penny', 'commander', '1v1', 'duel', 'brawl'], default=None, help='Filter result list by format legality. Default is no filter.')
 	parser.add_argument('-ft', '--filterType', default=None, help='Filter results by type line of card')
 
@@ -112,6 +113,11 @@ def main():
 	if (args.drawCards):
 		drawCards.drawCards(deck, args.drawCards)
 	if (args.saveList is not None):
-		mtgCardTextFileDao.saveCardFile(args.saveList, cardCollection)
+		if (args.saveList == 'console'):
+			mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group)		
+		else:
+			print ("Saving", cardFile)
+			mtgCardTextFileDao.saveCardFile(open(args.saveList, 'w'), cardCollection, args.group)
+			print ('Saved file ' + sys.stdout)
 
 main()

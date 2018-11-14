@@ -1,7 +1,9 @@
 import re
 import os
+import sys
 
 import mtgCardInCollectionObject
+import mtgColors
 
 import util
 
@@ -46,10 +48,25 @@ def readCardFile(f, cardFile, cards, asDeck):
 					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard)
 	return cards
 
-def saveCardFile(cardFile, cards):
-	print("Saving", cardFile) 
-	file = open(cardFile, 'w') 
+def saveCardFile(file, cards, sorts):
+
+	lastGroup = {}
+	
+	for sort in sorts:
+		lastGroup[sort] = None
+
 	for card in sorted(cards, key=cards.__getitem__):
+
+		for sort in sorts:
+			if (lastGroup[sort] == None or lastGroup[sort] != cards[card].getProp(sort)):
+				file.write('\n')
+				file.write("# ")
+				file.write(sort)
+				file.write(": ")
+				file.write(str(cards[card].getProp(sort)))
+				file.write('\n')
+
+				lastGroup[sort] = cards[card].getProp(sort)
 
 		if (mtgCardInCollectionObject.CardInCollection.args.filterLegality is not None):
 			if (cards[card].jsonData['legalities'][args.filterLegality] != 'legal'):
@@ -68,8 +85,8 @@ def saveCardFile(cardFile, cards):
 			file.write(" ")
 			file.write(mtgColors.colorIdentity2String(cards[card].jsonData['color_identity']))
 		file.write('\n')
-	file.close()
-	print ('Saved file ' + cardFile)
+	if (sys.stdout != file):
+		file.close()
 
 def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):
 	print ("Reading directory ", path)
