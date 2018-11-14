@@ -27,16 +27,16 @@ def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):
 	# keep only whitelisted chars
 	return ''.join(c for c in cleaned_filename if c in whitelist)
 
-def fetchCardJson(cardName, jsonFile):
-	response = requests.get("http://api.scryfall.com/cards/named",  params={'exact': cardName}, proxies=proxies, auth=auth)
+def fetchCardJson(card, jsonFile):
+	response = requests.get("http://api.scryfall.com/cards/named",  params={'exact': card.name}, proxies=proxies, auth=auth)
 	if (response.status_code == 404):
 		print ()
-		print (console.CRED + "Card '" + cardName + "' Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
-		response = requests.get("http://api.scryfall.com/cards/named",  params={'fuzzy': cardName}, proxies=proxies, auth=auth)
+		print (console.CRED + "Card '" + card.name + "' (" + card.sourceFile + ") Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
+		response = requests.get("http://api.scryfall.com/cards/named",  params={'fuzzy': card.name}, proxies=proxies, auth=auth)
 		if (response.status_code < 400):
-			print ("\'" + cardName + "\' found as \'" + response.json()["name"] + "\'.")
+			print ("\'" + card.name + "\' found as \'" + response.json()["name"] + "\'.")
 	if (response.status_code >= 400):
-		raise Exception('Bad response ' + str(response.status_code) + ' for ' + cardName) 
+		raise Exception('Bad response ' + str(response.status_code) + ' for ' + card.name) 
 	with open(jsonFile, 'w') as f:
 		json.dump(response.json(), f)
 	return response.json()
@@ -50,12 +50,12 @@ def getCachedCardJson(card):
 		fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
 
 		if (clearCache == 'always' or (clearCache == 'timeout' and fileAge > cacheTimeout) or (clearCache == 'price' and fileAge > 1)):
-			return fetchCardJson(card.Name, jsonFile)
+			return fetchCardJson(card, jsonFile)
 		else:
 #		print("Loading cached " + jsonFile)
 			with open(jsonFile, encoding='utf-8') as json_data:
 				return json.load(json_data)
 	else:
 #		print("Loading online " + jsonFile)
-		return fetchCardJson(card.name, jsonFile)
+		return fetchCardJson(card, jsonFile)
 #

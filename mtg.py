@@ -32,6 +32,7 @@ def main():
 
 	parser.add_argument('-cd', '--collectionDirectory', help='Sets root directory to scan for card collection. Default is \'' + configuration["collectionDirectory"] + '\' directory.', type=str, default=configuration["collectionDirectory"] , required=False)
 	parser.add_argument('-id', '--ignoreDecks', action='store_const', const='deck', default=None, help='Ignore files with \'deck\' in path')
+	parser.add_argument('-fp', '--filePattern', type=str, default=configuration["filePattern"], help='Regular expression pattern for scanned files. Default is \'' + configuration["filePattern"] + '\'')
 	parser.add_argument('-c', '--currency', choices=['eur', 'usd', 'tix'], default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
 
 	parser.add_argument('-clearCache', '--clearCache', choices=['awlays', 'price', 'timeout', 'none'], default=configuration["scryfall"]["clearCache"],
@@ -71,7 +72,7 @@ def main():
 
 	cardCollection = {}
 	if (args.verifyDeck or args.saveList is not None):
-		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks)
+		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
 
 	deck = {}
 	if (args.deckPrice or args.verifyDeck or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards):

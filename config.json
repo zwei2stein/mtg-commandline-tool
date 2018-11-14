@@ -1,6 +1,7 @@
 {
 	"defaultCurrency": "eur",
 	"collectionDirectory": "./library",
+	"filePattern": ".*\\.txt",
 	"scryfall": {
 		"cacheTimeout": 365,
 		"clearCache": "none"

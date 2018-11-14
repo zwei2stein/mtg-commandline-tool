@@ -36,7 +36,7 @@ def readCardFile(f, cardFile, cards, asDeck):
 					commentedName = name.split('#')
 					name = commentedName[0]
 					print ("comment", commentedName[1:])
-				name = re.sub(" \[[A-Z0-9][A-Z0-9][A-Z0-9]\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
+				name = re.sub(" \[[A-Z0-9]{3,4}\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
 				name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
 				name = name.strip()
@@ -71,12 +71,13 @@ def saveCardFile(cardFile, cards):
 	file.close()
 	print ('Saved file ' + cardFile)
 
-def readCardDirectory(path, cards, ignoreDecks):
+def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):
 	print ("Reading directory ", path)
 	for root, dirs, files in os.walk(path):
 		for file in files:
 			cardFile = os.path.join(root, file)
-			if (cardFile.endswith(".txt") and (ignoreDecks is None or ignoreDecks not in cardFile.lower())):
+			match = re.search(cardListfilePattern, cardFile)
+			if (match and (ignoreDecks is None or ignoreDecks not in cardFile.lower())):
 				print ("Reading file '", cardFile, "'")
 				readCardFileFromPath(cardFile, cards)
 			else:
