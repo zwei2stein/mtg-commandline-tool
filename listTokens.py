@@ -167,29 +167,29 @@ def listTokens(deckCards):
 
 def printTokensToConsole(response):
 
-	print (console.CGREEN + "Tokens:" + console.CEND)
+	if (len(response['tokens']) > 0):
+		print (console.CGREEN + "Tokens:" + console.CEND)
+		for token in sorted(response['tokens']):
+			print(token)
+			for card in sorted(response['tokens'][token]):
+				print('\t', card) 
 
-	for token in sorted(response['tokens']):
-		print(token)
-		for card in sorted(response['tokens'][token]):
-			print('\t', card) 
+	if (len(response['counters']) > 0):
+		print (console.CGREEN + "Counters:" + console.CEND)
+		for token in sorted(response['counters']):
+			print(token)
+			for card in sorted(response['counters'][token]):
+				print('\t', card) 
 
-	print (console.CGREEN + "Counters:" + console.CEND)
+	if (len(response['misc']) > 0):
+		print (console.CGREEN + "Other:" + console.CEND)
+		for token in sorted(response['misc']):
+			print(token)
+			for card in sorted(response['misc'][token]):
+				print('\t', card) 
 
-	for token in sorted(response['counters']):
-		print(token)
-		for card in sorted(response['counters'][token]):
-			print('\t', card) 
-
-	print (console.CGREEN + "Other:" + console.CEND)
-
-	for token in sorted(response['misc']):
-		print(token)
-		for card in sorted(response['misc'][token]):
-			print('\t', card) 
-
-	print (console.CGREEN + "Missed tokens:" + console.CEND)
-
-	for candidate in sorted(response['tokenCandidates']):
-		print(console.CRED + candidate + console.CEND)
-		print('\tOracle text:', response['tokenCandidates'][candidate])
+	if (len(response['tokenCandidates']) > 0):
+		print (console.CGREEN + "Missed token cards:" + console.CEND)
+		for candidate in sorted(response['tokenCandidates']):
+			print(console.CRED + candidate + console.CEND)
+			print('\tOracle text:', response['tokenCandidates'][candidate])
