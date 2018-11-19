@@ -1,6 +1,7 @@
 import re
 import os
 import sys
+import functools
 
 import mtgCardInCollectionObject
 import mtgColors
@@ -23,7 +24,7 @@ def readCardFile(f, cardFile, cards, asDeck):
 			if (asDeck):
 				print ("Sideboard found")
 				isSideboard = True
-		elif (line != ""):
+		elif (line != "" and not line.lower().startswith("#")):
 #				print ("'"+line+"'")
 			splitLine = line.split(" ", 1)
 			if (len(splitLine) == 2):
@@ -50,6 +51,19 @@ def readCardFile(f, cardFile, cards, asDeck):
 
 def saveCardFile(file, cards, sorts):
 
+	hasSideboard = functools.reduce((lambda x, v: x or v.getProp('sideboard')), cards.values(), False)
+
+	if (hasSideboard):
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('mainboard')}, sorts, sideboard = False)
+		file.write('\n')
+		file.write('Sideboard:')
+		file.write('\n')
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('sideboard')}, sorts, sideboard = True)
+	else:
+		saveCardFileSlice(file, cards, sorts)
+
+def saveCardFileSlice(file, cards, sorts, sideboard = False):
+
 	lastGroup = {}
 	
 	for sort in sorts:
@@ -57,16 +71,23 @@ def saveCardFile(file, cards, sorts):
 
 	for card in sorted(cards, key=cards.__getitem__):
 
+		groupReset = False
+
 		for sort in sorts:
+			if (groupReset):
+				lastGroup[sort] = None
+
 			if (lastGroup[sort] == None or lastGroup[sort] != cards[card].getProp(sort)):
 				file.write('\n')
 				file.write("# ")
-				file.write(sort)
-				file.write(": ")
+				if (len(sorts) > 1):
+					file.write(sort.capitalize())
+					file.write(" - ")
 				file.write(str(cards[card].getProp(sort)))
-				file.write('\n')
+				file.write(':\n')
 
 				lastGroup[sort] = cards[card].getProp(sort)
+				groupReset = True
 
 		if (mtgCardInCollectionObject.CardInCollection.args.filterLegality is not None):
 			if (cards[card].jsonData['legalities'][args.filterLegality] != 'legal'):
@@ -76,26 +97,37 @@ def saveCardFile(file, cards, sorts):
 			if (not (mtgCardInCollectionObject.CardInCollection.args.filterType in cards[card].jsonData['type_line'])):
 				continue
 
+		if (sideboard):
+			file.write(str(cards[card].sideboard))
+		else:
+			file.write(str(cards[card].count - cards[card].sideboard))
+		file.write(" ")
 		file.write(str(cards[card]))
 		if (mtgCardInCollectionObject.CardInCollection.args.printPrice):
-			file.write(" ")
+			file.write("# ")
 			file.write(cards[card].jsonData.get(mtgCardInCollectionObject.CardInCollection.args.currency, "0.0"))
 			file.write(util.currencyToGlyph(mtgCardInCollectionObject.CardInCollection.args.currency))
 		if (mtgCardInCollectionObject.CardInCollection.args.printColor):
-			file.write(" ")
+			file.write("# ")
 			file.write(mtgColors.colorIdentity2String(cards[card].jsonData['color_identity']))
 		file.write('\n')
 	if (sys.stdout != file):
 		file.close()
 
 def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):
-	print ("Reading directory ", path)
-	for root, dirs, files in os.walk(path):
-		for file in files:
-			cardFile = os.path.join(root, file)
-			match = re.search(cardListfilePattern, cardFile)
-			if (match and (ignoreDecks is None or ignoreDecks not in cardFile.lower())):
-				print ("Reading file '", cardFile, "'")
-				readCardFileFromPath(cardFile, cards)
-			else:
-				print ("Ignoring file '", cardFile, "'")
+	if (os.path.isfile(path)):
+		print ("Reading signle file '", path, "'")
+		readCardFileFromPath(path, cards, asDeck=True)
+	elif (os.path.isdir(path)):
+		print ("Reading directory ", path)
+		for root, dirs, files in os.walk(path):
+			for file in files:
+				cardFile = os.path.join(root, file)
+				match = re.search(cardListfilePattern, cardFile)
+				if (match and (ignoreDecks is None or ignoreDecks not in cardFile.lower())):
+					print ("Reading file '", cardFile, "'")
+					readCardFileFromPath(cardFile, cards)
+				else:
+					print ("Ignoring file '", cardFile, "'")
+	else:
+		print ("'" + path + "' is not a file or directory.")

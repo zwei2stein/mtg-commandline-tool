@@ -29,7 +29,7 @@ class CardInCollection:
 		return self._jsonData 
 
 	def __str__(self):
-		return str(self.count) + " " + self.name #+ " " + self.jsonData["mana_cost"]
+		return self.name
 
 	def getProp(self, propName):
 		if (propName == 'cmc'):
@@ -45,7 +45,9 @@ class CardInCollection:
 		if (propName == 'set'):
 			return self.jsonData["set"]
 		if (propName == 'sideboard'):
-			return self.sideboard
+			return self.sideboard > 0
+		if (propName == 'mainboard'):
+			return (self.count - self.sideboard) > 0
 		if (propName == 'type'):
 			return self.jsonData.get('type_line','').split("\u2014", 1)[0].strip()
 
@@ -59,9 +61,6 @@ class CardInCollection:
 				if (self.jsonData['color_identity'] != cardInCollection.jsonData['color_identity']):
 					return mtgColors.compareColors(self.jsonData['color_identity'], cardInCollection.jsonData['color_identity'])
 		
-		#default:
-
-		if (self.sideboard != cardInCollection.sideboard):
-			return self.sideboard > cardInCollection.sideboard
+		# Default sort by name:
 
 		return self.name > cardInCollection.name
