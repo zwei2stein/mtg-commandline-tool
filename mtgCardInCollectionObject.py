@@ -1,6 +1,17 @@
 import scryfall
 import mtgColors
 
+rarityOrder = {
+	'common' : 0,
+	'uncommon' : 1,
+	'rare' : 2,
+	'mythic' : 3
+}
+
+def getRarityOrder(rarity):
+	return rarityOrder[rarity]
+
+
 class CardInCollection:
 
 	args = None
@@ -50,16 +61,25 @@ class CardInCollection:
 			return (self.count - self.sideboard) > 0
 		if (propName == 'type'):
 			return self.jsonData.get('type_line','').split("\u2014", 1)[0].strip()
+		if (propName == 'rarity'):
+			return self.jsonData["rarity"]
 
 	def __gt__(self, cardInCollection):
 
 		for sort in CardInCollection.args.sort:
-			if (sort != 'color'):
-				if (self.getProp(sort) != cardInCollection.getProp(sort)):
-					return self.getProp(sort) > cardInCollection.getProp(sort)
 			if (sort == 'color'):
 				if (self.jsonData['color_identity'] != cardInCollection.jsonData['color_identity']):
 					return mtgColors.compareColors(self.jsonData['color_identity'], cardInCollection.jsonData['color_identity'])
+
+			if (sort == 'rarity'):
+				if (self.jsonData["rarity"] != cardInCollection.jsonData["rarity"]):
+					return getRarityOrder(self.jsonData["rarity"]) > getRarityOrder(cardInCollection.jsonData["rarity"])
+
+
+			
+			if (self.getProp(sort) != cardInCollection.getProp(sort)):
+				return self.getProp(sort) > cardInCollection.getProp(sort)
+			
 		
 		# Default sort by name:
 

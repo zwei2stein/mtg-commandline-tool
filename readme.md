@@ -97,8 +97,6 @@ Sideboard
 
  * command to force cache everything
 
- * group by rarity
-
- * alternate order / group by
-
  * smart set choice for group by / order
+
+ * Refactor console output

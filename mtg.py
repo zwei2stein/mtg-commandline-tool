@@ -44,8 +44,8 @@ def main():
 
 	parser.add_argument('-pp', '--printPrice', action='store_true', help='Add price to output')
 	parser.add_argument('-pc', '--printColor', action='store_true', help='Add color identity to output')
-	parser.add_argument('-s', '--sort', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color', 'set', 'type'], default=[], help='Sort list order by. Default \'name\'.')
-	parser.add_argument('-g', '--group', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color', 'set', 'type'], default=[], help='Group saved list by given parameter. Always groups sideboards together.')
+	parser.add_argument('-s', '--sort', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color', 'set', 'type', 'rarity'], default=[], help='Sort list order by. Default \'name\'.')
+	parser.add_argument('-g', '--group', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color', 'set', 'type', 'rarity'], default=[], help='Group saved list by given parameter. Always groups sideboards together.')
 	parser.add_argument('-fl', '--filterLegality', choices=['standard', 'future', 'frontier', 'modern', 'legacy', 'pauper', 'vintage', 'penny', 'commander', '1v1', 'duel', 'brawl'], default=None, help='Filter result list by format legality. Default is no filter.')
 	parser.add_argument('-ft', '--filterType', default=None, help='Filter results by type line of card')
 
