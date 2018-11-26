@@ -23,14 +23,14 @@ def verifyDeck(deckCards, libraryCards, printPrice, currency):
 			if (libraryCard.count >= deckCard.count):
 				print ("v ", str(deckCard.count), " ", console.CGREEN + deckCard.name + console.CEND)
 			elif (libraryCard.count == 0):
-				print ("x ", str(deckCard.count), " ",  console.CRED + deckCard.name + console.CEND)
+#				print ("x ", str(deckCard.count), " ",  console.CRED + deckCard.name + console.CEND)
 				shoppingList[deckCard] = deckCard.count
 			elif (libraryCard.count < deckCard.count):
 				print ("v ", str(libraryCard.count), " ", deckCard.name)
-				print ("x ", str(deckCard.count - libraryCard.count), " ", console.CRED + deckCard.name + console.CEND)
+#				print ("x ", str(deckCard.count - libraryCard.count), " ", console.CRED + deckCard.name + console.CEND)
 				shoppingList[deckCard] = deckCard.count - libraryCard.count
 		else:
-			print ("x ", str(deckCard.count), " ", console.CRED + deckCard.name + console.CEND)
+#			print ("x ", str(deckCard.count), " ", console.CRED + deckCard.name + console.CEND)
 			shoppingList[deckCard] = deckCard.count
 
 	if (len(shoppingList) == 0):
