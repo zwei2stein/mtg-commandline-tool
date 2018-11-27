@@ -31,7 +31,7 @@ def fetchCardJson(card, jsonFile):
 	response = requests.get("http://api.scryfall.com/cards/named",  params={'exact': card.name}, proxies=proxies, auth=auth)
 	if (response.status_code == 404):
 		print ()
-		print (console.CRED + "Card '" + card.name + "' (" + card.sourceFile + ") Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
+		print (console.CRED + "Card '" + card.name + "' (" + str(card.sourceFile) + ") Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
 		response = requests.get("http://api.scryfall.com/cards/named",  params={'fuzzy': card.name}, proxies=proxies, auth=auth)
 		if (response.status_code < 400):
 			print ("\'" + card.name + "\' found as \'" + response.json()["name"] + "\'.")
