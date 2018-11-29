@@ -8,8 +8,21 @@ rarityOrder = {
 	'mythic' : 3
 }
 
+shortTypeOrder = {
+	'Creature' : 1,
+	'Planeswalker' : 2,
+	'Instant' : 3,
+	'Sorcery' : 4,
+	'Enchantment' : 5,
+	'Artifact' : 6,
+	'Land' : 7
+}
+
 def getRarityOrder(rarity):
 	return rarityOrder[rarity]
+
+def getShortTypeOrder(shortType):
+	return shortTypeOrder[shortType]
 
 
 class CardInCollection:
@@ -61,6 +74,8 @@ class CardInCollection:
 			return (self.count - self.sideboard) > 0
 		if (propName == 'type'):
 			return self.jsonData.get('type_line','').split("\u2014", 1)[0].strip()
+		if (propName == 'shortType'):
+			return self.jsonData.get('type_line','').split("\u2014", 1)[0].strip().split(" ")[-1]
 		if (propName == 'rarity'):
 			return self.jsonData["rarity"]
 
@@ -75,8 +90,11 @@ class CardInCollection:
 				if (self.jsonData["rarity"] != cardInCollection.jsonData["rarity"]):
 					return getRarityOrder(self.jsonData["rarity"]) > getRarityOrder(cardInCollection.jsonData["rarity"])
 
+			if (sort == 'shortType'):
+				if (self.getProp('shortType') != cardInCollection.getProp('shortType')):
+					return getShortTypeOrder(self.getProp('shortType')) > getShortTypeOrder(cardInCollection.getProp('shortType'))
 
-			
+
 			if (self.getProp(sort) != cardInCollection.getProp(sort)):
 				return self.getProp(sort) > cardInCollection.getProp(sort)
 			
