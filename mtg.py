@@ -66,6 +66,13 @@ def main():
 
 	args = parser.parse_args()
 
+	if (args.group):
+		if (args.sort):
+			args.sort = args.group + args.sort
+		else:
+			args.sort = args.group
+
+
 	mtgCardInCollectionObject.CardInCollection.args = args
 
 	scryfall.clearCache = args.clearCache
