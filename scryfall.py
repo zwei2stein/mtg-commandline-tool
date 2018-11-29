@@ -5,6 +5,7 @@ import unicodedata
 import os
 import sys
 import datetime
+import shutil
 
 import console
 
@@ -16,6 +17,23 @@ valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 clearCache = 'none'
 cacheTimeout = 365
 
+def getChacgeDir():
+	return os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
+
+def flushCache():
+	try:
+		shutil.rmtree(getChacgeDir())
+	except OSError as e:
+		print ("Error: %s - %s." % (e.filename, e.strerror))
+
+def initCache(collection):
+	print()
+	for card in collection:
+		sys.stdout.write('\r' + 'Fetching: ' + card)
+		sys.stdout.flush()
+		collection[card].jsonData['name']
+	sys.stdout.write('\r' + 'Done. ' + '\n')
+		
 def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):
 	# replace spaces
 	for r in replace:
@@ -42,7 +60,7 @@ def fetchCardJson(card, jsonFile):
 	return response.json()
 
 def getCachedCardJson(card):
-	baseDir = os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
+	baseDir = getChacgeDir()
 	jsonFile = os.path.join(baseDir, cleanFilename(card.name) + ".json")
 	if (not os.path.exists(baseDir)):
 		os.makedirs(baseDir)

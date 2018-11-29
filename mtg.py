@@ -35,7 +35,9 @@ def main():
 	parser.add_argument('-fp', '--filePattern', type=str, default=configuration["filePattern"], help='Regular expression pattern for scanned files. Default is \'' + configuration["filePattern"] + '\'')
 	parser.add_argument('-c', '--currency', choices=['eur', 'usd', 'tix'], default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
 
-	parser.add_argument('-clearCache', '--clearCache', choices=['awlays', 'price', 'timeout', 'none'], default=configuration["scryfall"]["clearCache"],
+	parser.add_argument('-cache', '--cache', choices=['init', 'flush'], default=[], help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory')
+
+	parser.add_argument('-clearCache', '--clearCache', choices=['awlays', '4price', 'timeout', 'none'], default=configuration["scryfall"]["clearCache"],
 			help='Determines how is caching from scrycall handled. \'always\' - always fetch fresh data. \'price\' - fetch data if price changes. \'timeout\' - fetch data if ' + str(configuration["scryfall"]["cacheTimeout"]) + ' days have passed. \'none\' - always use cached version. Default \''  +configuration["scryfall"]["clearCache"] + '\'')
 
 	group = parser.add_mutually_exclusive_group(required = True)
@@ -79,6 +81,11 @@ def main():
 	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards):
 		deck = mtgCardTextFileDao.readCardFileFromPath(args.deck, {}, True)
 
+	if (args.cache):
+		if (args.cache == 'flush'):
+			scryfall.flushCache()
+		if (args.cache == 'init'):
+			scryfall.initCache(cardCollection)
 	if (args.missingCards):
 		print('Missing cards in collection:')
 		verifyDeck.verifyDeck(deck, cardCollection, args.printPrice, args.currency)
