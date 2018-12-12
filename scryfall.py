@@ -28,8 +28,21 @@ def flushCache():
 
 def initCache(collection):
 	print()
+
+	lastLength = 0
+
 	for card in collection:
-		sys.stdout.write('\r' + 'Fetching: ' + card)
+
+		statusLine = 'Fetching: ' + card + "..."
+
+		currentLength = len(statusLine)
+
+		if (currentLength < lastLength):
+			statusLine = statusLine + (lastLength - currentLength) * ' '
+
+		lastLength = currentLength
+
+		sys.stdout.write('\r' + statusLine)
 		sys.stdout.flush()
 		collection[card].jsonData['name']
 	sys.stdout.write('\r' + 'Done. ' + '\n')
