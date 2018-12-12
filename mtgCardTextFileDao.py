@@ -49,20 +49,20 @@ def readCardFile(f, cardFile, cards, asDeck):
 					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard)
 	return cards
 
-def saveCardFile(file, cards, sorts):
+def saveCardFile(file, cards, sorts, diffFormat=False):
 
 	hasSideboard = functools.reduce((lambda x, v: x or v.getProp('sideboard')), cards.values(), False)
 
 	if (hasSideboard):
-		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('mainboard')}, sorts, sideboard = False)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('mainboard')}, sorts, diffFormat, sideboard = False)
 		file.write('\n')
 		file.write('Sideboard:')
 		file.write('\n')
-		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('sideboard')}, sorts, sideboard = True)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('sideboard')}, sorts, diffFormat, sideboard = True)
 	else:
-		saveCardFileSlice(file, cards, sorts)
+		saveCardFileSlice(file, cards, sorts, diffFormat)
 
-def saveCardFileSlice(file, cards, sorts, sideboard = False):
+def saveCardFileSlice(file, cards, sorts, diffFormat, sideboard = False):
 
 	lastGroup = {}
 	
@@ -97,22 +97,36 @@ def saveCardFileSlice(file, cards, sorts, sideboard = False):
 			if (not (mtgCardInCollectionObject.CardInCollection.args.filterType in cards[card].jsonData['type_line'])):
 				continue
 
-		if (sideboard):
-			file.write(str(cards[card].sideboard))
-		else:
-			file.write(str(cards[card].count - cards[card].sideboard))
-		file.write(" ")
-		file.write(str(cards[card]))
-		if (mtgCardInCollectionObject.CardInCollection.args.printPrice):
-			file.write("# ")
-			file.write(cards[card].jsonData.get(mtgCardInCollectionObject.CardInCollection.args.currency, "0.0"))
-			file.write(util.currencyToGlyph(mtgCardInCollectionObject.CardInCollection.args.currency))
-		if (mtgCardInCollectionObject.CardInCollection.args.printColor):
-			file.write("# ")
-			file.write(mtgColors.colorIdentity2String(cards[card].jsonData['color_identity']))
-		file.write('\n')
-	if (sys.stdout != file):
-		file.close()
+		printCard(file, cards[card], sideboard, diffFormat)
+
+
+
+def printCard(file, card, sideboard, diffFormat):
+
+	count = 0
+	if (sideboard):
+		count = card.sideboard
+	else:
+		count = card.count - card.sideboard
+
+	if (diffFormat):
+		for x in range(count):
+			printCardLine(file, 1, card)	
+	else:
+		printCardLine(file, count, card)
+
+def printCardLine(file, count, card):
+	file.write(str(count))
+	file.write(" ")
+	file.write(str(card))
+	if (mtgCardInCollectionObject.CardInCollection.args.printPrice):
+		file.write("# ")
+		file.write(card.jsonData.get(mtgCardInCollectionObject.CardInCollection.args.currency, "0.0"))
+		file.write(util.currencyToGlyph(mtgCardInCollectionObject.CardInCollection.args.currency))
+	if (mtgCardInCollectionObject.CardInCollection.args.printColor):
+		file.write("# ")
+		file.write(mtgColors.colorIdentity2String(card.jsonData['color_identity']))
+	file.write('\n')
 
 def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):
 	if (os.path.isfile(path)):

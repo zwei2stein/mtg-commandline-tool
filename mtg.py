@@ -18,9 +18,9 @@ import deckStatistics
 import deckFormat
 import deckCreatureTypes
 import drawCards
+import deckDiff
 
 import scryfall
-import mtgCardTextFileDao
 
 def main():
 
@@ -64,6 +64,8 @@ def main():
 	parser.add_argument('-draw', '--drawCards', default=None, help='Draw N cards from deck.', type=int)	
 	parser.add_argument('-nd', '--nameDeck', action='store_true', help='Attempts to generate name for given deck')
 
+	parser.add_argument('-diff', '--diff', help='Diffe decks.', type=str)
+
 	args = parser.parse_args()
 
 	if (args.group):
@@ -85,7 +87,7 @@ def main():
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
 
 	deck = {}
-	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards):
+	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards or args.diff):
 		deck = mtgCardTextFileDao.readCardFileFromPath(args.deck, {}, True)
 
 	if (args.cache):
@@ -131,7 +133,13 @@ def main():
 			mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group)		
 		else:
 			print ("Saving", cardFile)
-			mtgCardTextFileDao.saveCardFile(open(args.saveList, 'w'), cardCollection, args.group)
+			file = open(args.saveList, 'w')
+			mtgCardTextFileDao.saveCardFile(file, cardCollection, args.group)
+			file.close()
 			print ('Saved file ' + sys.stdout)
+	if (args.diff):
+		deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True)
+		deckDiff.diff(deck, deck2)
+
 
 main()

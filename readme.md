@@ -91,12 +91,12 @@ Sideboard
 
  * Diff decks
 
- * reforma verifyDeck
+ * reformat verifyDeck code
 
  * fix print price for deck
-
- * command to force cache everything
 
  * smart set choice for group by / order
 
  * Refactor console output
+
+ * missing cards - better handle minus counts for cards.
