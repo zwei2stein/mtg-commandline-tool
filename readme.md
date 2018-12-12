@@ -100,3 +100,5 @@ Sideboard
  * Refactor console output
 
  * missing cards - better handle minus counts for cards.
+
+ * commander marker support

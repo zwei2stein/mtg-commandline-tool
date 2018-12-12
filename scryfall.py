@@ -31,21 +31,30 @@ def initCache(collection):
 
 	lastLength = 0
 
+	count = 1;
+
 	for card in collection:
 
-		statusLine = 'Fetching: ' + card + "..."
+		statusLine = 'Fetching card info (' + str(count) + '/' + str(len(collection)) + '): ' + card + " ..."
+
+		count += 1
 
 		currentLength = len(statusLine)
 
 		if (currentLength < lastLength):
 			statusLine = statusLine + (lastLength - currentLength) * ' '
 
+		# newline before doing "status"
+		if (lastLength == 0):
+			sys.stdout.write('\n')
+
 		lastLength = currentLength
 
 		sys.stdout.write('\r' + statusLine)
 		sys.stdout.flush()
 		collection[card].jsonData['name']
-	sys.stdout.write('\r' + 'Done. ' + '\n')
+	sys.stdout.write('\n' + 'Done. ' + '\n')
+	sys.stdout.flush()
 		
 def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):
 	# replace spaces

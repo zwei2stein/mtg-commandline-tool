@@ -64,7 +64,7 @@ def main():
 	parser.add_argument('-draw', '--drawCards', default=None, help='Draw N cards from deck.', type=int)	
 	parser.add_argument('-nd', '--nameDeck', action='store_true', help='Attempts to generate name for given deck')
 
-	parser.add_argument('-diff', '--diff', help='Diffe decks.', type=str)
+	parser.add_argument('-diff', '--diff', help='Diffe deck with another deck.', type=str)
 
 	args = parser.parse_args()
 
@@ -89,6 +89,7 @@ def main():
 	deck = {}
 	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards or args.diff):
 		deck = mtgCardTextFileDao.readCardFileFromPath(args.deck, {}, True)
+		scryfall.initCache(deck)
 
 	if (args.cache):
 		if (args.cache == 'flush'):
