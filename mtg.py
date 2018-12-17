@@ -31,11 +31,11 @@ def main():
 	parser = argparse.ArgumentParser(description='Process MTG card plain text lists (decks and collection)', epilog='version: 0.1')
 
 	parser.add_argument('-cd', '--collectionDirectory', help='Sets root directory to scan for card collection. Default is \'' + configuration["collectionDirectory"] + '\' directory. Single file representing collection can be specified instead of directory.', type=str, default=configuration["collectionDirectory"] , required=False)
-	parser.add_argument('-id', '--ignoreDecks', action='store_const', const='deck', default=None, help='Ignore files with \'deck\' in path')
-	parser.add_argument('-fp', '--filePattern', type=str, default=configuration["filePattern"], help='Regular expression pattern for scanned files. Default is \'' + configuration["filePattern"] + '\'')
+	parser.add_argument('-id', '--ignoreDecks', action='store_const', const='deck', default=None, help='Ignore files with \'deck\' in path. Usefull when you store decks along with your collection.')
+	parser.add_argument('-fp', '--filePattern', type=str, default=configuration["filePattern"], help='Regular expression pattern for files that are considered part of collection. Default is \'' + configuration["filePattern"] + '\'')
 	parser.add_argument('-c', '--currency', choices=['eur', 'usd', 'tix'], default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
 
-	parser.add_argument('-cache', '--cache', choices=['init', 'flush'], default=[], help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory')
+	parser.add_argument('-cache', '--cache', choices=['init', 'flush'], default=[], help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory.')
 
 	parser.add_argument('-clearCache', '--clearCache', choices=['awlays', '4price', 'timeout', 'none'], default=configuration["scryfall"]["clearCache"],
 			help='Determines how is caching from scrycall handled. \'always\' - always fetch fresh data. \'price\' - fetch data if price changes. \'timeout\' - fetch data if ' + str(configuration["scryfall"]["cacheTimeout"]) + ' days have passed. \'none\' - always use cached version. Default \''  +configuration["scryfall"]["clearCache"] + '\'')
@@ -83,7 +83,7 @@ def main():
 #	deckAutocomplete.deckAutocomplete("./meta/")
 
 	cardCollection = {}
-	if (args.missingCards or args.saveList is not None):
+	if ((args.missingCards or args.saveList is not None) or args.cache == 'init'):
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
 
 	deck = {}

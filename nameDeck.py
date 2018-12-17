@@ -36,7 +36,23 @@ colorPairingNames = {
  'WUBRG': ['Prismatic', '5-Color', 'Multicolor', 'Rainbow', 'Domain'],
  'C': ['Colorless', 'Eldrazi', 'Monobrown', 'Diamond']}
 
- #and the four-color nicknames chaos, aggression, altruism, growth, artifice are supported.
+keywords = []
+
+def getKeywords(deck):
+
+	keywords = {}
+
+	for deckCardName in deck:
+		deckCard = deck[deckCardName]
+
+		oracleText = deckCard.jsonData.get('oracle_text', '')
+
+		for face in deckCard.jsonData.get('card_faces', []):
+			oracleText = oracleText + '\n' + face.get('oracle_text', '')
+
+		
+
+	return creatureTypeCounts
 
 def nameDeck(deck):
 

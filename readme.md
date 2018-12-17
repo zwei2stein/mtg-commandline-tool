@@ -16,19 +16,23 @@ This is tool for handling decklists and card collection.
 
 ### List tokens and counters that given deck interacts with:
 
-$ python ./tool/mtg.py -lt -d decklists/Pauper\ Elves.lst
+`$ python ./tool/mtg.py -lt -d ./decklists/PauperElves.lst`
 
 ### Create shopping list with prices for deck you want to build:
 
-$ python ./tool/mtg.py -mc -d decklists/Pauper\ Elves.lst -pp
+`$ python ./tool/mtg.py -mc -d ./decklists/PauperElves.lst -pp`
 
 ### Reformat deck file to be pretty (group by card types) and include card prices in tix
 
-$ python ./tool/mtg.py -cd ./decklists/Pauper\ Elves.lst -sl console -s type name -g type -pp -c tix
+`$ python ./tool/mtg.py -cd ./decklists/PauperElves.lst -sl console -s name -g type -pp -c tix`
 
 ### Draw sample hand from deck
 
-$ python ./tool/mtg.py -d ./decklists/Pauper\ Elves.lst -draw 7
+`$ python ./tool/mtg.py -d ./decklists/PauperElves.lst -draw 7`
+
+### Show Differences between two decks (- is from first deck, + is from seccond deck)
+
+`$ python ./tool/mtg.py -d ./decklists/PauperMonoWhiteHeroic_Instant.txt -diff ./decklists/PauperMonoWhiteHeroic_Aura.txt`
 
 ## Setup:
 ---------
@@ -62,15 +66,18 @@ Lines starting with # are comments.
 
 Other formats (x after card count), (Collectro number) after card name and [set] after card name are loosely supported.
 
-### Example:
+### Example of card file:
 
+```
 4 Timberwatch Elf
 4 Lys Alana Huntmaster
-4 Priest of Titania
+4 Priest of Titania # replace, too weak
 3 Nettle Sentinel
+```
 
 ### Another example:
 
+```
 4x Birchlore Rangers
 4x Quirion Ranger
 4x Wellwisher
@@ -78,18 +85,17 @@ Other formats (x after card count), (Collectro number) after card name and [set]
 4 Lead the Stampede
 13 Forest
 
-Sideboard
+Sideboard:
 
 2 Electrickery
 2 Scattershot Archer
+```
 
 ## TODO:
 
  * sort by set (by set)
 
  * normalize deck file.
-
- * Diff decks
 
  * reformat verifyDeck code
 
@@ -102,3 +108,17 @@ Sideboard
  * missing cards - better handle minus counts for cards.
 
  * commander marker support
+
+ ---
+
+3) Most expensive 4x card - $.
+
+4) Most expensive 4x card - mana.
+
+5) Most common keyword
+
+6) Most common edition
+
+7) Total deck price (penny, budget)
+
+8) Card complexity (% keywords / abilities on cards), (beginner, simple)
