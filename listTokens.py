@@ -39,6 +39,11 @@ def listTokens(deckCards):
 			appendListInMap(counters,  "+1/+1 counter", deckCardName)
 			foundToken = True
 
+		match = re.search("(Afterlife [0-9]+)", oracleText)
+		if (match):
+			appendListInMap(tokens,  "1/1 white and black Spirit creature token with flying", deckCardName)
+			foundToken = True
+
 		match = re.search("(Embalm)", oracleText)
 		if (match):
 			subtype = typeLine.split("\u2014", 1)[1].strip()
@@ -112,7 +117,7 @@ def listTokens(deckCards):
 		if (match):
 			appendListInMap(misc, "Embalm marker", deckCardName)
 
-		plusCounterKeywords = {'Mentor', 'Explore', 'Monstrosity', 'Support', 'Awaken', 'Amplify', 'Bloodthirst', 'Dethrone', 'Modular', 'Devour', 'Renown', 'Scavenge', 'Sunburst', 'Undying', 'Unleash', 'Outlast', 'Reinforce'}
+		plusCounterKeywords = {'Riot', 'Adapt', 'Mentor', 'Explore', 'Monstrosity', 'Support', 'Awaken', 'Amplify', 'Bloodthirst', 'Dethrone', 'Modular', 'Devour', 'Renown', 'Scavenge', 'Sunburst', 'Undying', 'Unleash', 'Outlast', 'Reinforce'}
 		addCounter("+1/+1 counter", plusCounterKeywords, counters, oracleText, deckCardName)
 
 		match = re.search('(Cumulative upkeep)', oracleText)
