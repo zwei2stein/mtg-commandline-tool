@@ -85,6 +85,7 @@ def main():
 	cardCollection = {}
 	if ((args.missingCards or args.saveList is not None) or args.cache == 'init'):
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
+		scryfall.initCache(cardCollection)
 
 	deck = {}
 	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards or args.diff):
