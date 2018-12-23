@@ -34,6 +34,10 @@ This is tool for handling decklists and card collection.
 
 `$ python ./tool/mtg.py -d ./decklists/PauperMonoWhiteHeroic_Instant.txt -diff ./decklists/PauperMonoWhiteHeroic_Aura.txt`
 
+### Print price of each deck in speificed directory
+
+`$ python ./tool/mtg.py -d ./decklists/comanders_quaters/ -dp --currency eur`
+
 ## Setup:
 ---------
 

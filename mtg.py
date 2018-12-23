@@ -42,7 +42,7 @@ def main():
 
 	group = parser.add_mutually_exclusive_group(required = True)
 	group.add_argument('-sl', '--saveList', help='Save consolidated list or print it to \'console\'', type=str)
-	group.add_argument('-d', '--deck', help='Sets deck file to work on, required for deck tools', type=str)
+	group.add_argument('-d', '--deck', help='Chooses deck file to work on, required for deck tools. If directory is specified, tool will work on each deck file found in directory', type=str)
 
 	parser.add_argument('-pp', '--printPrice', action='store_true', help='Add price to output')
 	parser.add_argument('-pc', '--printColor', action='store_true', help='Add color identity to output')
@@ -87,48 +87,58 @@ def main():
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
 		scryfall.initCache(cardCollection)
 
-	deck = {}
+	decks = {}
 	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards or args.diff):
-		deck = mtgCardTextFileDao.readCardFileFromPath(args.deck, {}, True)
-		scryfall.initCache(deck)
+		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern)
+		for file in decks:
+			scryfall.initCache(decks[file])
 
 	if (args.cache):
 		if (args.cache == 'flush'):
 			scryfall.flushCache()
 		if (args.cache == 'init'):
 			scryfall.initCache(cardCollection)
-	if (args.missingCards):
-		verifyDeck.verifyDeck(deck, cardCollection, args.printPrice, args.currency)
-	if (args.listTokens):
-		print('Listing tokens for deck:')
-		listTokens.printTokensToConsole(listTokens.listTokens(deck))
-	if (args.manaCurve):
-		print('Mana curve for deck:')
-		manaCurve.manaCurve(deck)
-	if (args.manaSymbols):
-		print('Mana symbols for deck:')
-		manaSymbols.manaSymbols(deck)
-	if (args.landMana):
-		print('Mana from lands for deck:')
-		landMana.landMana(deck)
-	if (args.deckPrice):
-		print('Price of deck:')
-		deckPrice.printPricesToConsole(deckPrice.deckPrice(deck, args.currency))
-	if (args.isSingleton):
-		print('Singleton status:')
-		deckStatistics.printgetIsDeckSingletonToConsole(deckStatistics.getIsDeckSingleton(deck))
-	if (args.cardCount):
-		print('Card count:')
-		deckStatistics.printGetDeckCardCountToConsole(deckStatistics.getDeckCardCount(deck))
-	if (args.deckFormat):
-		print('Possible deck formats:')
-		deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck))
-	if (args.nameDeck):
-		nameDeck.printnDeckNameToConsole(nameDeck.nameDeck(deck))
-	if (args.deckCreatureTypes):
-		deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
-	if (args.drawCards):
-		drawCards.drawCards(deck, args.drawCards)
+
+	for file in decks:
+		print (file + ":")
+		deck = decks[file]
+
+		if (args.missingCards):
+			verifyDeck.verifyDeck(deck, cardCollection, args.printPrice, args.currency)
+		if (args.listTokens):
+			print('Listing tokens for deck:')
+			listTokens.printTokensToConsole(listTokens.listTokens(deck))
+		if (args.manaCurve):
+			print('Mana curve for deck:')
+			manaCurve.manaCurve(deck)
+		if (args.manaSymbols):
+			print('Mana symbols for deck:')
+			manaSymbols.manaSymbols(deck)
+		if (args.landMana):
+			print('Mana from lands for deck:')
+			landMana.landMana(deck)
+		if (args.deckPrice):
+			print('Price of deck:')
+			deckPrice.printPricesToConsole(deckPrice.deckPrice(deck, args.currency))
+		if (args.isSingleton):
+			print('Singleton status:')
+			deckStatistics.printgetIsDeckSingletonToConsole(deckStatistics.getIsDeckSingleton(deck))
+		if (args.cardCount):
+			print('Card count:')
+			deckStatistics.printGetDeckCardCountToConsole(deckStatistics.getDeckCardCount(deck))
+		if (args.deckFormat):
+			print('Possible deck formats:')
+			deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck))
+		if (args.nameDeck):
+			nameDeck.printnDeckNameToConsole(nameDeck.nameDeck(deck))
+		if (args.deckCreatureTypes):
+			deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
+		if (args.drawCards):
+			drawCards.drawCards(deck, args.drawCards)
+		if (args.diff):
+			deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True)
+			deckDiff.diff(deck, deck2)
+
 	if (args.saveList is not None):
 		if (args.saveList == 'console'):
 			mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group)		
@@ -138,9 +148,5 @@ def main():
 			mtgCardTextFileDao.saveCardFile(file, cardCollection, args.group)
 			file.close()
 			print ('Saved file ' + sys.stdout)
-	if (args.diff):
-		deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True)
-		deckDiff.diff(deck, deck2)
-
 
 main()

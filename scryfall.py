@@ -35,7 +35,7 @@ def initCache(collection):
 
 	for card in collection:
 
-		statusLine = 'Fetching card info (' + str(count) + '/' + str(len(collection)) + '): ' + card + " ..."
+		statusLine = 'Fetching card info (' + str(count) + '/' + str(len(collection)) + ', ...' + str(collection[card].sourceFile)[-50:-2]  + '): ' + card + " ..."
 
 		count += 1
 

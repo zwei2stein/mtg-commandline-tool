@@ -145,3 +145,25 @@ def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):
 					print ("Ignoring file '", cardFile, "'")
 	else:
 		print ("'" + path + "' is not a file or directory.")
+
+	return cards
+
+def readDeckDirectory(path, decks, cardListfilePattern):
+	if (os.path.isfile(path)):
+		print ("Reading signle file '", path, "'")
+		decks[path] = readCardFileFromPath(path, {}, asDeck=True)
+	elif (os.path.isdir(path)):
+		print ("Reading directory ", path)
+		for root, dirs, files in os.walk(path):
+			for file in files:
+				cardFile = os.path.join(root, file)
+				match = re.search(cardListfilePattern, cardFile)
+				if (match):
+					print ("Reading file '", cardFile, "'")
+					decks[cardFile] = readCardFileFromPath(cardFile, {}, asDeck=True)
+				else:
+					print ("Ignoring file '", cardFile, "'")
+	else:
+		print ("'" + path + "' is not a file or directory.")
+
+	return decks
