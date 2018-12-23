@@ -16,8 +16,11 @@ def verifyDeck(deckCards, libraryCards, printPrice, currency):
 
 	shoppingList = {}
 
+	totalDeckCards = 0
+
 	for deckCardName in sorted(deckCards, key=deckCards.__getitem__):
 		deckCard = deckCards[deckCardName]
+		totalDeckCards += deckCard.count
 		if (deckCardName in libraryCards):
 			libraryCard = libraryCards[deckCard.name]
 			if (libraryCard.count >= deckCard.count):
@@ -32,6 +35,15 @@ def verifyDeck(deckCards, libraryCards, printPrice, currency):
 		else:
 #			print ("x ", str(deckCard.count), " ", console.CRED + deckCard.name + console.CEND)
 			shoppingList[deckCard] = deckCard.count
+
+	totalCount = 0
+
+	for deckCard in shoppingList:
+		totalCount += shoppingList[deckCard]
+
+	print ()
+
+	print ("Have: " + "{:3.2f}".format(100 * (totalDeckCards - totalCount) / totalDeckCards) + "%")
 
 	if (len(shoppingList) == 0):
 
@@ -74,3 +86,4 @@ def verifyDeck(deckCards, libraryCards, printPrice, currency):
 		if (printPrice):
 			print ()
 			print ( console.CRED + 'Total shopping list price:' + console.CEND, str(totalPrice) + util.currencyToGlyph(currency))
+

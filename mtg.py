@@ -97,7 +97,6 @@ def main():
 		if (args.cache == 'init'):
 			scryfall.initCache(cardCollection)
 	if (args.missingCards):
-		print('Missing cards in collection:')
 		verifyDeck.verifyDeck(deck, cardCollection, args.printPrice, args.currency)
 	if (args.listTokens):
 		print('Listing tokens for deck:')
