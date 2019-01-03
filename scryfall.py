@@ -30,30 +30,26 @@ def initCache(collection):
 	print()
 
 	lastLength = 0
-
-	count = 1;
+	count = 1
 
 	for card in collection:
 
 		statusLine = 'Fetching card info (' + str(count) + '/' + str(len(collection)) + ', ...' + str(collection[card].sourceFile)[-50:-2]  + '): ' + card + " ..."
 
 		count += 1
-
 		currentLength = len(statusLine)
-
 		if (currentLength < lastLength):
 			statusLine = statusLine + (lastLength - currentLength) * ' '
-
 		# newline before doing "status"
 		if (lastLength == 0):
 			sys.stdout.write('\n')
-
 		lastLength = currentLength
 
 		sys.stdout.write('\r' + statusLine)
 		sys.stdout.flush()
 		collection[card].jsonData['name']
-	sys.stdout.write('\n' + 'Done. ' + '\n')
+	doneMessage = 'Done fetching data from scryfall.'
+	sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\n')
 	sys.stdout.flush()
 		
 def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):

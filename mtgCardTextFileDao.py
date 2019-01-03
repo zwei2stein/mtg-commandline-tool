@@ -17,6 +17,8 @@ def readCardFile(f, cardFile, cards, asDeck):
 
 	isSideboard = False
 
+	errorCount = 0
+
 	lineCounter = 0
 	for line in f:
 		lineCounter += 1
@@ -33,7 +35,10 @@ def readCardFile(f, cardFile, cards, asDeck):
 				try:
 					count = int(re.sub("[x]\Z", "", splitLine[0], 1)) # acceptable 1 and 1x
 				except ValueError:
-					print ("Bad line format in file '" + cardFile + "', line " + str(lineCounter) + ", ignoring '" + line + "'")
+					if (errorCount == 0):
+						print ()
+					errorCount += 1
+					print ("Line format error " + str(errorCount) + " in file '" + cardFile + "', line " + str(lineCounter) + ", ignoring '" + line + "'")
 					continue
 				name = splitLine[1]
 				if ('#' in name):
@@ -138,15 +143,31 @@ def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):
 		readCardFileFromPath(path, cards, asDeck=True)
 	elif (os.path.isdir(path)):
 		print ("Reading directory ", path)
+
+		lastLength = 0
+		count = 1
+
 		for root, dirs, files in os.walk(path):
 			for file in files:
 				cardFile = os.path.join(root, file)
 				match = re.search(cardListfilePattern, cardFile)
 				if (match and (ignoreDecks is None or ignoreDecks not in cardFile.lower())):
-					print ("Reading file '", cardFile, "'")
+					statusLine = "Reading file #" + str(count) + " '" + cardFile + "'..."
+
+					count += 1
+					currentLength = len(statusLine)
+					if (currentLength < lastLength):
+						statusLine = statusLine + (lastLength - currentLength) * ' '
+					lastLength = currentLength
+
+					sys.stdout.write('\r' + statusLine)
+					sys.stdout.flush()
 					readCardFileFromPath(cardFile, cards)
 				else:
 					print ("Ignoring file '", cardFile, "'")
+		doneMessage = "Done reading '" + path + "'"
+		sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\n')
+		sys.stdout.flush()
 	else:
 		print ("'" + path + "' is not a file or directory.")
 
