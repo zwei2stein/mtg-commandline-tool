@@ -5,6 +5,7 @@ import functools
 
 import mtgCardInCollectionObject
 import mtgColors
+import sets
 
 import util
 
@@ -83,7 +84,10 @@ def saveCardFileSlice(file, cards, sorts, diffFormat, sideboard = False):
 				if (len(sorts) > 1):
 					file.write(sort.capitalize())
 					file.write(" - ")
-				file.write(str(cards[card].getProp(sort)))
+				if (sort == 'set'):
+					file.write(sets.getSetName(cards[card].getProp(sort)))
+				else:
+					file.write(str(cards[card].getProp(sort)))
 				file.write(':\n')
 
 				lastGroup[sort] = cards[card].getProp(sort)

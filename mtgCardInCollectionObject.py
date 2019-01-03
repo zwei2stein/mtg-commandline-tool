@@ -1,5 +1,6 @@
 import scryfall
 import mtgColors
+import sets
 
 rarityOrder = {
 	'common' : 0,
@@ -94,6 +95,9 @@ class CardInCollection:
 				if (self.getProp('shortType') != cardInCollection.getProp('shortType')):
 					return getShortTypeOrder(self.getProp('shortType')) > getShortTypeOrder(cardInCollection.getProp('shortType'))
 
+			if (sort == 'set'):
+				if (self.jsonData["set"] != cardInCollection.jsonData["set"]):
+					return sets.getSetOrder(self.jsonData["set"]) > sets.getSetOrder(cardInCollection.jsonData["set"])
 
 			if (self.getProp(sort) != cardInCollection.getProp(sort)):
 				return self.getProp(sort) > cardInCollection.getProp(sort)
