@@ -143,10 +143,10 @@ def main():
 		if (args.saveList == 'console'):
 			mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group)		
 		else:
-			print ("Saving", cardFile)
+			print ("Saving", args.saveList)
 			file = open(args.saveList, 'w')
 			mtgCardTextFileDao.saveCardFile(file, cardCollection, args.group)
 			file.close()
-			print ('Saved file ' + sys.stdout)
+			print ('Saved file ' + args.saveList)
 
 main()
