@@ -1,6 +1,7 @@
 import scryfall
 import mtgColors
 import sets
+import util
 
 rarityOrder = {
 	'common' : 0,
@@ -24,7 +25,6 @@ def getRarityOrder(rarity):
 
 def getShortTypeOrder(shortType):
 	return shortTypeOrder[shortType]
-
 
 class CardInCollection:
 
@@ -53,8 +53,19 @@ class CardInCollection:
 			self._jsonData = scryfall.getCachedCardJson(self)
 		return self._jsonData 
 
+	def getDisplaySuffix(self):
+		if (CardInCollection.args.print):
+			suffix = " #"
+			for prop in CardInCollection.args.print:
+				suffix = suffix + " " + prop + ": " + str(self.getProp(prop))
+				if (prop == "price"):
+					suffix = suffix + util.currencyToGlyph(CardInCollection.args.currency)
+			return suffix
+		else:
+			return ""
+
 	def __str__(self):
-		return self.name
+		return self.name + self.getDisplaySuffix()
 
 	def getProp(self, propName):
 		if (propName == 'cmc'):

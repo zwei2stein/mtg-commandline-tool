@@ -7,8 +7,6 @@ import mtgCardInCollectionObject
 import mtgColors
 import sets
 
-import util
-
 def readCardFileFromPath(cardFile, cards, asDeck=False):
 	with open(cardFile, 'r') as f:
 		return readCardFile(f, cardFile, cards, asDeck)
@@ -128,13 +126,6 @@ def printCardLine(file, count, card):
 	file.write(str(count))
 	file.write(" ")
 	file.write(str(card))
-	if (mtgCardInCollectionObject.CardInCollection.args.printPrice):
-		file.write("# ")
-		file.write(card.jsonData.get(mtgCardInCollectionObject.CardInCollection.args.currency, "0.0"))
-		file.write(util.currencyToGlyph(mtgCardInCollectionObject.CardInCollection.args.currency))
-	if (mtgCardInCollectionObject.CardInCollection.args.printColor):
-		file.write("# ")
-		file.write(mtgColors.colorIdentity2String(card.jsonData['color_identity']))
 	file.write('\n')
 
 def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):

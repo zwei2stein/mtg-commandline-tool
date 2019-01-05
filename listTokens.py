@@ -8,11 +8,11 @@ def appendListInMap(map, key, item):
 		map[key] = set([])
 	map[key].add(item)
 
-def addCounter(counterType, keyWords, list, oracleText, deckCardName):
+def addCounter(counterType, keyWords, list, oracleText, deckCard):
 		for keyWord in keyWords:
 			match = re.search('('+keyWord+')', oracleText)			
 			if (match):
-				appendListInMap(list, counterType, deckCardName)
+				appendListInMap(list, counterType, deckCard)
 
 def listTokens(deckCards):
 	tokens = {}
@@ -35,125 +35,125 @@ def listTokens(deckCards):
 
 		match = re.search("(Fabricate [0-9]+)", oracleText)
 		if (match):
-			appendListInMap(tokens,  "1/1 colorless Servo artifact creature token", deckCardName)
-			appendListInMap(counters,  "+1/+1 counter", deckCardName)
+			appendListInMap(tokens,  "1/1 colorless Servo artifact creature token", deckCard)
+			appendListInMap(counters,  "+1/+1 counter", deckCard)
 			foundToken = True
 
 		match = re.search("(Afterlife [0-9]+)", oracleText)
 		if (match):
-			appendListInMap(tokens,  "1/1 white and black Spirit creature token with flying", deckCardName)
+			appendListInMap(tokens,  "1/1 white and black Spirit creature token with flying", deckCard)
 			foundToken = True
 
 		match = re.search("(Embalm)", oracleText)
 		if (match):
 			subtype = typeLine.split("\u2014", 1)[1].strip()
-			appendListInMap(tokens, deckCard.jsonData.get('power','?') + '/' + deckCard.jsonData.get('toughness','?')  + " white "+ deckCardName + " " + subtype + " Zombie token", deckCardName)
-			appendListInMap(misc, "Embalm marker", deckCardName)
+			appendListInMap(tokens, deckCard.jsonData.get('power','?') + '/' + deckCard.jsonData.get('toughness','?')  + " white "+ deckCardName + " " + subtype + " Zombie token", deckCard)
+			appendListInMap(misc, "Embalm marker", deckCard)
 			foundToken = True
 
 		match = re.search('(Eternalize)', oracleText)
 		if (match):
-			appendListInMap(tokens, "4/4 black "+ deckCardName +" Zombie token", deckCardName)
-			appendListInMap(misc, "Eternalize marker", deckCardName)
+			appendListInMap(tokens, "4/4 black "+ deckCardName +" Zombie token", deckCard)
+			appendListInMap(misc, "Eternalize marker", deckCard)
 			foundToken = True
 
 		match = re.search('([Mm]orph)', oracleText)
 		if (match):
-			appendListInMap(tokens, "2/2 colorless creature", deckCardName)
+			appendListInMap(tokens, "2/2 colorless creature (morph)", deckCard)
 
 		match = re.search('([Mm]anifest)', oracleText)
 		if (match):
-			appendListInMap(tokens, "2/2 colorless creature", deckCardName)
+			appendListInMap(tokens, "2/2 colorless creature (manifest)", deckCard)
 
 		match = re.search("([iI]nvestigate)", oracleText)
 		if (match):
-			appendListInMap(tokens, "colorless Clue artifact token with \"{2}, Sacrifice this artifact: Draw a card.\"", deckCardName)
+			appendListInMap(tokens, "colorless Clue artifact token with \"{2}, Sacrifice this artifact: Draw a card.\"", deckCard)
 			foundToken = True
 
 		for match in re.finditer('[Cc]reate(s)? ([a-zX ]+) (([0-9X]+)/([0-9X]+) ([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?( with [A-Za-z ]+)?)', oracleText):
 			tokenString = match.string[match.start(3):match.end(3)]
 			tokenString = re.sub("tokens", "token", tokenString, 1)
-			appendListInMap(tokens, tokenString, deckCardName)
+			appendListInMap(tokens, tokenString, deckCard)
 			foundToken = True
 
 		match = re.search('[Cc]reate(s)? [a-zX]+ colorless Treasure artifact token(s)?', oracleText)
 		if (match):
-			appendListInMap(tokens, "colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color to your mana pool.\"", deckCardName)
+			appendListInMap(tokens, "colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color to your mana pool.\"", deckCard)
 			foundToken = True
 
 		match = re.search('[Cc]reate(s)? [a-zX]+ colorless artifact token(s)? named Gold', oracleText)
 		if (match):
-			appendListInMap(tokens, "colorless Gold artifact token with \"Sacrifice this artifact: Add one mana of any color to your mana pool.\"", deckCardName)
+			appendListInMap(tokens, "colorless Gold artifact token with \"Sacrifice this artifact: Add one mana of any color to your mana pool.\"", deckCard)
 			foundToken = True
 
 		match = re.search('[Cc]reate a token that\'s a copy of', oracleText)
 		if (match):
-			appendListInMap(tokens, "Copy token", deckCardName)
+			appendListInMap(tokens, "Copy token", deckCard)
 			foundToken = True
 
 #non tokens and counters
 
 		match = re.search('([sS]oulbond)', oracleText)
 		if (match):
-			appendListInMap(misc, "Soulbond marker", deckCardName)
+			appendListInMap(misc, "Soulbond marker", deckCard)
 
 		match = re.search('([Pp]rowess)', oracleText)
 		if (match):
-			appendListInMap(misc, "Prowess marker", deckCardName)
+			appendListInMap(misc, "Prowess marker", deckCard)
 
 		match = re.search('([aA]scend)', oracleText)
 		if (match):
-			appendListInMap(misc, "City's Blessing marker", deckCardName)
+			appendListInMap(misc, "City's Blessing marker", deckCard)
 
 		match = re.search('({E})', oracleText)
 		if (match):
-			appendListInMap(counters, "Energy counter", deckCardName)
+			appendListInMap(counters, "Energy counter", deckCard)
 
 		match = re.search('(Exert)', oracleText)
 		if (match):
-			appendListInMap(misc, "Exert marker", deckCardName)
+			appendListInMap(misc, "Exert marker", deckCard)
 
 		match = re.search('(Embalm)', oracleText)
 		if (match):
-			appendListInMap(misc, "Embalm marker", deckCardName)
+			appendListInMap(misc, "Embalm marker", deckCard)
 
 		plusCounterKeywords = {'Riot', 'Adapt', 'Mentor', 'Explore', 'Monstrosity', 'Support', 'Awaken', 'Amplify', 'Bloodthirst', 'Dethrone', 'Modular', 'Devour', 'Renown', 'Scavenge', 'Sunburst', 'Undying', 'Unleash', 'Outlast', 'Reinforce'}
-		addCounter("+1/+1 counter", plusCounterKeywords, counters, oracleText, deckCardName)
+		addCounter("+1/+1 counter", plusCounterKeywords, counters, oracleText, deckCard)
 
 		match = re.search('(Cumulative upkeep)', oracleText)
 		if (match):
-			appendListInMap(tokens, "Age counter", deckCardName)
+			appendListInMap(tokens, "Age counter", deckCard)
 
-		addCounter("Time counter", {'Vanishing', 'Suspend'}, counters, oracleText, deckCardName)
+		addCounter("Time counter", {'Vanishing', 'Suspend'}, counters, oracleText, deckCard)
 
-		addCounter("Poison counter", {'Poisonous', 'Infect'}, counters, oracleText, deckCardName)
+		addCounter("Poison counter", {'Poisonous', 'Infect'}, counters, oracleText, deckCard)
 
 		minusCounterKeywords = { 'Infect', 'Wither', 'Persist'}
-		addCounter("-1/-1 counter", minusCounterKeywords, counters, oracleText, deckCardName)
+		addCounter("-1/-1 counter", minusCounterKeywords, counters, oracleText, deckCard)
 
 		match = re.search('(Living weapon)', oracleText)
 		if (match):
-			appendListInMap(tokens, "0/0 black Germ creature token", deckCardName)
+			appendListInMap(tokens, "0/0 black Germ creature token", deckCard)
 
 		match = re.search('(Storm)', oracleTextWithoutCardName)
 		if (match):
-			appendListInMap(counters, "Storm counter", deckCardName)
+			appendListInMap(counters, "Storm counter", deckCard)
 
 		for match in re.finditer('([\+\-]1/[\+\-]1 [Cc]ounter)', oracleText):
-			appendListInMap(counters, match.string[match.start(1):match.end(1)], deckCardName)
+			appendListInMap(counters, match.string[match.start(1):match.end(1)], deckCard)
 
 		badMatches = {'and counter', 'another counter', 'be counter', 'get counter', 'have counter', 'is counter', 'more counter', 'no counter', 'of counter', 'the counter', 'those counter', 'with counter'}
 		for match in re.finditer('([A-Za-z][a-z]+ [Cc]ounter)', oracleText):
 			counter = match.string[match.start(1):match.end(1)]
 			if (counter.lower() not in badMatches):
-				appendListInMap(counters, counter, deckCardName)
+				appendListInMap(counters, counter, deckCard)
 
 		match = re.search('(Legendary Planeswalker)', typeLine)
 		if (match):
-			appendListInMap(counters, "Loyalty counter", deckCardName)
+			appendListInMap(counters, "Loyalty counter", deckCard)
 
 		for match in re.finditer('(You get an emblem with .+)', oracleText):
-			appendListInMap(misc, match.string[match.start(1):match.end(1)], deckCardName)
+			appendListInMap(misc, match.string[match.start(1):match.end(1)], deckCard)
 
 		if (not foundToken):
 			match = re.search("(token)", oracleText)

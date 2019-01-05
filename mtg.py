@@ -41,13 +41,14 @@ def main():
 			help='Determines how is caching from scrycall handled. \'always\' - always fetch fresh data. \'price\' - fetch data if price changes. \'timeout\' - fetch data if ' + str(configuration["scryfall"]["cacheTimeout"]) + ' days have passed. \'none\' - always use cached version. Default \''  +configuration["scryfall"]["clearCache"] + '\'')
 
 	group = parser.add_mutually_exclusive_group(required = True)
-	group.add_argument('-sl', '--saveList', help='Save consolidated list or print it to \'console\'', type=str)
+	group.add_argument('-sl', '--saveList', help='Save consolidated collection or print it to \'console\'', type=str)
 	group.add_argument('-d', '--deck', help='Chooses deck file to work on, required for deck tools. If directory is specified, tool will work on each deck file found in directory', type=str)
 
-	parser.add_argument('-pp', '--printPrice', action='store_true', help='Add price to output')
-	parser.add_argument('-pc', '--printColor', action='store_true', help='Add color identity to output')
-	parser.add_argument('-s', '--sort', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType', 'rarity'], default=[], help='Sort list order by. Default \'name\'.')
-	parser.add_argument('-g', '--group', nargs='*', choices=['price', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType', 'rarity'], default=[], help='Group saved list by given parameter. Always groups sideboards together.')
+	cardProps = ['price', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType', 'rarity']
+
+	parser.add_argument('-p', '--print', nargs='*',choices=cardProps, default=[], help='Add given atributes to card printout')
+	parser.add_argument('-s', '--sort', nargs='*', choices=cardProps, default=[], help='Sort list order by. Default \'name\'.')
+	parser.add_argument('-g', '--group', nargs='*', choices=cardProps, default=[], help='Group saved list by given parameter. Always groups sideboards together.')
 	parser.add_argument('-fl', '--filterLegality', choices=['standard', 'future', 'frontier', 'modern', 'legacy', 'pauper', 'vintage', 'penny', 'commander', '1v1', 'duel', 'brawl'], default=None, help='Filter result list by format legality. Default is no filter.')
 	parser.add_argument('-ft', '--filterType', default=None, help='Filter results by type line of card')
 
@@ -104,7 +105,7 @@ def main():
 		deck = decks[file]
 
 		if (args.missingCards):
-			verifyDeck.verifyDeck(deck, cardCollection, args.printPrice, args.currency)
+			verifyDeck.missingCards(deck, cardCollection, args.currency)
 		if (args.listTokens):
 			print('Listing tokens for deck:')
 			listTokens.printTokensToConsole(listTokens.listTokens(deck))

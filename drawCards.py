@@ -8,7 +8,7 @@ def drawCards(deck, count, scry=False):
 	for card in deck:
 	   	cardInDeck = deck[card]
 	   	for x in range(0, cardInDeck.count):
-	   	  	shuffledDeck.append(cardInDeck.name)
+	   	  	shuffledDeck.append(cardInDeck)
 
 	shuffle(shuffledDeck)
 
