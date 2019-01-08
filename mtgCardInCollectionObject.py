@@ -30,21 +30,24 @@ class CardInCollection:
 
 	args = None
 
-	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = False):
+	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = False, commander = False):
 		self.name = name
 		self.count = count
 		if (sideboard):
 			self.sideboard = count
 		else:
 			self.sideboard = 0
+		self.commander = commander
 		self.sourceFile = []
 		self.sourceFile.append(sourceFile)
 		self._jsonData = jsonData
 
-	def add(self, count, sourceFile, sideboard = False):
+	def add(self, count, sourceFile, sideboard = False, commander = False):
 		self.count += count
 		if (sideboard):
 			self.sideboard += count
+		if (commander):
+			self.commander = commander
 		self.sourceFile.append(sourceFile)
 
 	@property
@@ -90,6 +93,8 @@ class CardInCollection:
 			return self.jsonData.get('type_line','').split("\u2014", 1)[0].strip().split(" ")[-1]
 		if (propName == 'rarity'):
 			return self.jsonData["rarity"]
+		if (propName == 'commander'):
+			return self.commander
 
 	def __gt__(self, cardInCollection):
 

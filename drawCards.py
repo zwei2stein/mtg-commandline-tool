@@ -1,14 +1,14 @@
 from collections import deque
 from random import shuffle
 
-
 def drawCards(deck, count, scry=False):
 	shuffledDeck = deque()
 
 	for card in deck:
 	   	cardInDeck = deck[card]
-	   	for x in range(0, cardInDeck.count):
-	   	  	shuffledDeck.append(cardInDeck)
+	   	if (not cardInDeck.commander):
+	   		for x in range(0, cardInDeck.count - cardInDeck.sideboard):
+	   	  		shuffledDeck.append(cardInDeck)
 
 	shuffle(shuffledDeck)
 

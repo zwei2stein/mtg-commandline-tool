@@ -12,19 +12,21 @@ def readCardFileFromPath(cardFile, cards, asDeck=False):
 		return readCardFile(f, cardFile, cards, asDeck)
 
 def readCardFile(f, cardFile, cards, asDeck):
-
 	isSideboard = False
-
 	errorCount = 0
-
 	lineCounter = 0
+	isCommander = False
 	for line in f:
 		lineCounter += 1
 		line = line.strip()
 		if (line.lower().startswith("sideboard")):
 			if (asDeck):
-				print ("Sideboard found")
+#				print ("Sideboard found")
 				isSideboard = True
+		if (line.lower().startswith("commander")):
+			if (asDeck):
+#				print ("Commander found")
+				isCommander = True
 		elif (line != "" and not line.lower().startswith("#")):
 #				print ("'"+line+"'")
 			splitLine = line.split(" ", 1)
@@ -48,23 +50,31 @@ def readCardFile(f, cardFile, cards, asDeck):
 				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
 				name = name.strip()
 				if (name in cards):
-					cards[name].add(count, cardFile, isSideboard)
+					cards[name].add(count, cardFile, isSideboard, isCommander)
 				else:
-					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard)
+					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard, isCommander)
+				isCommander = False
 	return cards
 
 def saveCardFile(file, cards, sorts, diffFormat=False):
 
 	hasSideboard = functools.reduce((lambda x, v: x or v.getProp('sideboard')), cards.values(), False)
 
+	hasCommander = functools.reduce((lambda x, v: x or v.getProp('commander')), cards.values(), False)
+
+	if (hasCommander):
+		file.write('\n')
+		file.write('Commander:')
+		file.write('\n')
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('commander')}, [], diffFormat)
 	if (hasSideboard):
-		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('mainboard')}, sorts, diffFormat, sideboard = False)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if (v.getProp('mainboard') and not v.getProp('commander'))}, sorts, diffFormat, sideboard = False)
 		file.write('\n')
 		file.write('Sideboard:')
 		file.write('\n')
-		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('sideboard')}, sorts, diffFormat, sideboard = True)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if (v.getProp('sideboard') and not v.getProp('commander'))}, sorts, diffFormat, sideboard = True)
 	else:
-		saveCardFileSlice(file, cards, sorts, diffFormat)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if not v.getProp('commander')}, sorts, diffFormat)
 
 def saveCardFileSlice(file, cards, sorts, diffFormat, sideboard = False):
 
@@ -123,6 +133,7 @@ def printCard(file, card, sideboard, diffFormat):
 		printCardLine(file, count, card)
 
 def printCardLine(file, count, card):
+
 	file.write(str(count))
 	file.write(" ")
 	file.write(str(card))

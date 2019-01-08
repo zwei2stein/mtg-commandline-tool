@@ -18,14 +18,15 @@ def diff (deck1, deck2):
 	deck2Pretty = io.StringIO()
 	mtgCardTextFileDao.saveCardFile(deck2Pretty, deck2, groups, diffFormat=True)
 
-
 	previousLine = None
 	sameCount = 1
 	result = []
 
-	for line in difflib.unified_diff(deck1Pretty.getvalue().split('\n'), deck2Pretty.getvalue().split('\n'), n=100):
+	for line in difflib.unified_diff(deck1Pretty.getvalue().split('\n'), deck2Pretty.getvalue().split('\n'), n=1000):
 		if (line.startswith('+++') or line.startswith('---') or line.startswith('@@')):
 			continue
+		if (len(line.strip()) == 0):
+			result.append('')
 		elif (previousLine != line):
 			result.append(line)
 			sameCount = 1
