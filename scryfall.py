@@ -17,18 +17,16 @@ valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 clearCache = 'none'
 cacheTimeout = 365
 
-def getChacgeDir():
+def getCacheDir():
 	return os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
 
 def flushCache():
 	try:
-		shutil.rmtree(getChacgeDir())
+		shutil.rmtree(getCacheDir())
 	except OSError as e:
 		print ("Error: %s - %s." % (e.filename, e.strerror))
 
 def initCache(collection):
-	print()
-
 	lastLength = 0
 	count = 1
 
@@ -48,8 +46,8 @@ def initCache(collection):
 		sys.stdout.write('\r' + statusLine)
 		sys.stdout.flush()
 		collection[card].jsonData['name']
-	doneMessage = 'Done fetching data from scryfall.'
-	sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\n')
+	doneMessage = ''
+	sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\r')
 	sys.stdout.flush()
 		
 def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):
@@ -78,7 +76,7 @@ def fetchCardJson(card, jsonFile):
 	return response.json()
 
 def getCachedCardJson(card):
-	baseDir = getChacgeDir()
+	baseDir = getCacheDir()
 	jsonFile = os.path.join(baseDir, cleanFilename(card.name) + ".json")
 	if (not os.path.exists(baseDir)):
 		os.makedirs(baseDir)

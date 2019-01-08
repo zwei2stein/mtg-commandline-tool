@@ -35,7 +35,7 @@ def main():
 	parser.add_argument('-fp', '--filePattern', type=str, default=configuration["filePattern"], help='Regular expression pattern for files that are considered part of collection. Default is \'' + configuration["filePattern"] + '\'')
 	parser.add_argument('-c', '--currency', choices=['eur', 'usd', 'tix'], default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
 
-	parser.add_argument('-cache', '--cache', choices=['init', 'flush'], default=[], help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory.')
+	parser.add_argument('-cache', '--cache', choices=['init', 'flush', 'auto'], default='init', help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory, \'auto\' does nothing.')
 
 	parser.add_argument('-clearCache', '--clearCache', choices=['awlays', '4price', 'timeout', 'none'], default=configuration["scryfall"]["clearCache"],
 			help='Determines how is caching from scrycall handled. \'always\' - always fetch fresh data. \'price\' - fetch data if price changes. \'timeout\' - fetch data if ' + str(configuration["scryfall"]["cacheTimeout"]) + ' days have passed. \'none\' - always use cached version. Default \''  +configuration["scryfall"]["clearCache"] + '\'')
@@ -65,7 +65,7 @@ def main():
 	parser.add_argument('-draw', '--drawCards', default=None, help='Draw N cards from deck.', type=int)	
 	parser.add_argument('-nd', '--nameDeck', action='store_true', help='Attempts to generate name for given deck')
 
-	parser.add_argument('-diff', '--diff', help='Diffe deck with another deck.', type=str)
+	parser.add_argument('-diff', '--diff', help='Difference of deck with another deck.', type=str)
 
 	args = parser.parse_args()
 
@@ -86,19 +86,20 @@ def main():
 	cardCollection = {}
 	if ((args.missingCards or args.saveList is not None) or args.cache == 'init'):
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
-		scryfall.initCache(cardCollection)
 
 	decks = {}
 	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards or args.diff):
 		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern)
-		for file in decks:
-			scryfall.initCache(decks[file])
 
 	if (args.cache):
 		if (args.cache == 'flush'):
 			scryfall.flushCache()
 		if (args.cache == 'init'):
-			scryfall.initCache(cardCollection)
+			cardsToInitCache = {}
+			cardsToInitCache.update(cardCollection)
+			for file in decks:
+				cardsToInitCache.update(decks[file])
+			scryfall.initCache(cardsToInitCache)
 
 	for file in decks:
 		print (file + ":")
