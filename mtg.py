@@ -105,7 +105,7 @@ def main():
 		deck = decks[file]
 
 		if (args.missingCards):
-			verifyDeck.missingCards(deck, cardCollection, args.currency)
+			verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency))
 		if (args.listTokens):
 			print('Listing tokens for deck:')
 			listTokens.printTokensToConsole(listTokens.listTokens(deck))

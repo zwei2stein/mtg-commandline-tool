@@ -9,7 +9,11 @@ def getPrice(deckCard, count, currency):
 
 def missingCards(deckCards, libraryCards, currency):
 
+	response = {}
+
 	shoppingList = {}
+
+	haveList = {}
 
 	totalDeckCards = 0
 
@@ -19,28 +23,57 @@ def missingCards(deckCards, libraryCards, currency):
 		if (deckCardName in libraryCards):
 			libraryCard = libraryCards[deckCard.name]
 			if (libraryCard.count >= deckCard.count):
-				print ("v ", str(deckCard.count), " ", console.CGREEN + str(deckCard) + console.CEND)
+				haveList[deckCard] = deckCard.count
 			elif (libraryCard.count <= 0):
-#				print ("x ", str(deckCard.count), " ",  console.CRED + deckCard.name + console.CEND)
 				shoppingList[deckCard] = deckCard.count
 			elif (libraryCard.count < deckCard.count):
-				print ("v ", str(libraryCard.count), " ", str(deckCard))
-#				print ("x ", str(deckCard.count - libraryCard.count), " ", console.CRED + deckCard.name + console.CEND)
+				haveList[deckCard] = libraryCard.count
 				shoppingList[deckCard] = deckCard.count - libraryCard.count
 		else:
-#			print ("x ", str(deckCard.count), " ", console.CRED + deckCard.name + console.CEND)
 			shoppingList[deckCard] = deckCard.count
 
 	totalCount = 0
+	totalPrice = Decimal(0)
 
 	for deckCard in shoppingList:
 		totalCount += shoppingList[deckCard]
+		totalPrice += getPrice(deckCard, shoppingList[deckCard], currency)				
+
+	response['totalCount'] = totalCount
+	response['totalPrice'] = totalPrice
+	response['totalDeckCards'] = totalDeckCards
+	response['shoppingList'] = shoppingList
+	response['currency'] = currency
+	response['haveList'] = haveList
+
+	return response
+
+def printMissingCardsToConsole(response):
+
+	shoppingList = response['shoppingList']
+	haveList = response['haveList']
 
 	print ()
 
-	print ("Have: " + "{:3.2f}".format(100 * (totalDeckCards - totalCount) / totalDeckCards) + "%")
+	print ("Have: " + "{:3.2f}".format(100 * (response['totalDeckCards'] - response['totalCount']) / response['totalDeckCards']) + "%")
 
-	if (len(shoppingList) == 0):
+	for deckCard in sorted(haveList):
+		if (deckCard.sideboard == 0):
+			print (haveList[deckCard], console.CGREEN + str(deckCard) + console.CEND)
+
+	print (console.CGREEN + "Main deck + sideboard:" + console.CEND)
+
+	for deckCard in sorted(haveList):
+		if (deckCard.count != deckCard.sideboard and haveList[deckCard] > deckCard.count - deckCard.sideboard):
+			print (haveList[deckCard], console.CGREEN + str(deckCard) + console.CEND, str(deckCard.count - deckCard.sideboard) + "+" + str(deckCard.sideboard))
+
+	print (console.CGREEN + "Sideboard:" + console.CEND)
+
+	for deckCard in sorted(haveList):
+		if (deckCard.count == deckCard.sideboard):
+			print (haveList[deckCard], console.CGREEN + str(deckCard) + console.CEND)
+
+	if (len(response['shoppingList']) == 0):
 
 		print ()
 
@@ -61,23 +94,20 @@ def missingCards(deckCards, libraryCards, currency):
 		for deckCard in sorted(shoppingList):
 			if (deckCard.sideboard == 0):
 				print (shoppingList[deckCard], deckCard)
-				totalPrice += getPrice (deckCard, shoppingList[deckCard], currency)
 
 		print (console.CGREEN + "Main deck + sideboard:" + console.CEND)
 
 		for deckCard in sorted(shoppingList):
 			if (deckCard.count != deckCard.sideboard and shoppingList[deckCard] > deckCard.count - deckCard.sideboard):
 				print (shoppingList[deckCard], deckCard, str(deckCard.count - deckCard.sideboard) + "+" + str(deckCard.sideboard))
-				totalPrice += getPrice (deckCard, shoppingList[deckCard], currency)
 
 		print ( console.CGREEN + "Sideboard:" + console.CEND)
 
 		for deckCard in sorted(shoppingList):
 			if (deckCard.count == deckCard.sideboard):
 				print (shoppingList[deckCard], deckCard)
-				totalPrice += getPrice (deckCard, shoppingList[deckCard], currency)
 
 
 		if ("price" in mtgCardInCollectionObject.CardInCollection.args.print):
 			print ()
-			print ( console.CRED + 'Total shopping list price:' + console.CEND, str(totalPrice) + util.currencyToGlyph(currency))
+			print ( console.CRED + 'Total shopping list price:' + console.CEND, str(response['totalPrice']) + util.currencyToGlyph(response['currency'] ))
