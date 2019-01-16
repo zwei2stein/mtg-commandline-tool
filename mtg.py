@@ -108,25 +108,18 @@ def main():
 		if (args.missingCards):
 			verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency))
 		if (args.listTokens):
-			print('Listing tokens for deck:')
 			listTokens.printTokensToConsole(listTokens.listTokens(deck))
 		if (args.manaCurve):
-			print('Mana curve for deck:')
-			manaCurve.manaCurve(deck)
+			manaCurve.printManaCurveToConsole(manaCurve.manaCurve(deck))
 		if (args.manaSymbols):
-			print('Mana symbols for deck:')
-			manaSymbols.manaSymbols(deck)
+			manaSymbols.printManaSymbolsToConsole(manaSymbols.manaSymbols(deck))
 		if (args.landMana):
-			print('Mana from lands for deck:')
-			landMana.landMana(deck)
+			landMana.printLandManaToConsole(landMana.landMana(deck))
 		if (args.deckPrice):
-			print('Price of deck:')
 			deckPrice.printPricesToConsole(deckPrice.deckPrice(deck, args.currency))
 		if (args.isSingleton):
-			print('Singleton status:')
 			deckStatistics.printgetIsDeckSingletonToConsole(deckStatistics.getIsDeckSingleton(deck))
 		if (args.cardCount):
-			print('Card count:')
 			deckStatistics.printGetDeckCardCountToConsole(deckStatistics.getDeckCardCount(deck))
 		if (args.deckFormat):
 			print('Possible deck formats:')

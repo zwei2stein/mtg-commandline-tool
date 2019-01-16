@@ -33,5 +33,16 @@ def landMana(deckCards):
 	for symbol in mtgColors.colorCosts:
 		percentLandSymbols[symbol] = Decimal(100 * landSymbols[symbol]) / totalLandSymbolCount
 
+	response = { "landSymbols": landSymbols, "percentLandSymbols": percentLandSymbols }
+
+	return response
+
+def printLandManaToConsole(response):
+
+	print('Mana from lands for deck:')
+
+	landSymbols = response["landSymbols"]
+	percentLandSymbols = response["percentLandSymbols"]
+
 	for symbol in mtgColors.colorCosts:
-		print (symbol, '|' + '=' * landSymbols[symbol], landSymbols[symbol], str(percentLandSymbols[symbol]) + '%')
+		print (symbol + ' |' + '=' * landSymbols[symbol] + " " + str(landSymbols[symbol]) + " " + str(percentLandSymbols[symbol]) + '%')

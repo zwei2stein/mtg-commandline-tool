@@ -27,5 +27,16 @@ def manaSymbols(deckCards):
 	for symbol in mtgColors.colorCosts:
 		percentSymbols[symbol] = Decimal(100 * symbols[symbol]) / totalSymbolCount
 
+	response = { "symbols": symbols, "percentSymbols": percentSymbols }
+
+	return response
+
+def printManaSymbolsToConsole(response):
+
+	print('Mana symbols for deck:')
+
+	symbols = response["symbols"]
+	percentSymbols = response["percentSymbols"]
+
 	for symbol in mtgColors.colorCosts:
-		print (symbol, '|' + '=' * symbols[symbol], symbols[symbol], str(percentSymbols[symbol]) + '%')
+		print (symbol + ' |' + '=' * symbols[symbol] + " " + str(symbols[symbol]) + " " + str(percentSymbols[symbol]) + '%')

@@ -172,6 +172,8 @@ def listTokens(deckCards):
 
 def printTokensToConsole(response):
 
+	print('Listing tokens for deck:')
+
 	if (len(response['tokens']) > 0):
 		print (console.CGREEN + "Tokens:" + console.CEND)
 		for token in sorted(response['tokens']):

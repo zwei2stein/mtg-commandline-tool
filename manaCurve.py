@@ -15,5 +15,15 @@ def manaCurve(deckCards):
 			else:
 				curve[cmc] = curve[cmc] + deckCard.count - deckCard.sideboard
 
+	response = { "curve": curve }
+
+	return response
+
+def printManaCurveToConsole(response):
+
+	curve = response["curve"]
+
+	print('Mana curve for deck:')
+
 	for cmc in sorted(curve.keys()):
-		print (cmc, '=' * curve[cmc], curve[cmc])
+		print (str(cmc) + '=' * curve[cmc], curve[cmc])
