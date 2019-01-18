@@ -31,7 +31,7 @@ def getDeckCardCount(deck):
 	return response
 
 def printGetDeckCardCountToConsole(response):
-	print( 'Card count:')
+	print ('Card count:')
 	print ("Commander:", response["commander"])
 	print ("Maindeck:", response["count"])
 	print ("Sideboard:", response["sideboardCount"])

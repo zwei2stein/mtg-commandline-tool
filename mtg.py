@@ -122,7 +122,6 @@ def main():
 		if (args.cardCount):
 			deckStatistics.printGetDeckCardCountToConsole(deckStatistics.getDeckCardCount(deck))
 		if (args.deckFormat):
-			print('Possible deck formats:')
 			deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck))
 		if (args.nameDeck):
 			nameDeck.printnDeckNameToConsole(nameDeck.nameDeck(deck))
