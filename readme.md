@@ -190,17 +190,13 @@ optional arguments:
 
 ## TODO:
 
- * sort by set (by set) - better order.
+ * sort by set (by set) - better order - from scyfall?
 
  * set from file
 
  * normalize deck file.
 
  * smart set choice for group by / order
-
- * Refactor console output
-
- * commander marker support
 
  ---
 
