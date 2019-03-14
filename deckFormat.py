@@ -5,8 +5,6 @@ import console
 def getDeckFormat(deck):
 
 	formats = {
-        "1v1": True,
-        "brawl": True,
         "commander": True,
         "duel": True,
         "frontier": True,
@@ -16,12 +14,11 @@ def getDeckFormat(deck):
         "pauper": True,
         "penny": True,
         "standard": True,
-        "vintage": True
+        "vintage": True,
+        "oldschool": True
     }
 
 	singletonFormats = {
-        "1v1": True,
-        "brawl": True,
         "commander": True,
         "duel": True,
         "frontier": False,
@@ -31,12 +28,11 @@ def getDeckFormat(deck):
         "pauper": False,
         "penny": False,
         "standard": False,
-        "vintage": False
+        "vintage": False,
+        "oldschool": False
     }
 
 	minCardCount = {
-        "1v1": 100,
-        "brawl": 60,
         "commander": 100,
         "duel": 100,
         "frontier": 60,
@@ -46,15 +42,19 @@ def getDeckFormat(deck):
         "pauper": 60,
         "penny": 60,
         "standard": 60,
-        "vintage": 60
+        "vintage": 60,
+        "oldschool": 40
     }
 
 	for deckCardName in deck:
 		deckCard = deck[deckCardName]
 		legalities = deckCard.jsonData.get('legalities', 'C')
-		
+		print (deckCardName)
+		print (legalities)
 		for format in formats:
-			if (legalities[format] == 'not_legal'):
+			# We assume that if legality infor is not available, then it is not legal
+			legality = legalities.get(format, "not_legal")
+			if (legality in ['not_legal', 'banned']):
 				formats[format] = False
 
 	isDeckSingleton = deckStatistics.getIsDeckSingleton(deck)
