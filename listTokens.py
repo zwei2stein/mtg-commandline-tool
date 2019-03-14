@@ -57,7 +57,7 @@ def listTokens(deckCards):
 			appendListInMap(misc, "Eternalize marker", deckCard)
 			foundToken = True
 
-		match = re.search('([Mm]orph)', oracleText)
+		match = re.search('([Mm]orph)', oracleTextWithoutCardName)
 		if (match):
 			appendListInMap(tokens, "2/2 colorless creature (morph)", deckCard)
 
@@ -171,8 +171,6 @@ def listTokens(deckCards):
 
 
 def printTokensToConsole(response):
-
-	print('Listing tokens for deck:')
 
 	if (len(response['tokens']) > 0):
 		print (console.CGREEN + "Tokens:" + console.CEND)
