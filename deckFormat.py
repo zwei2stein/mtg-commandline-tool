@@ -49,8 +49,6 @@ def getDeckFormat(deck):
 	for deckCardName in deck:
 		deckCard = deck[deckCardName]
 		legalities = deckCard.jsonData.get('legalities', 'C')
-		print (deckCardName)
-		print (legalities)
 		for format in formats:
 			# We assume that if legality infor is not available, then it is not legal
 			legality = legalities.get(format, "not_legal")
