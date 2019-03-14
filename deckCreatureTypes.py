@@ -1,4 +1,18 @@
 
+def getCreatureCount(deck):
+
+	creatureCount = 0
+
+	for deckCardName in deck:
+		deckCard = deck[deckCardName]
+
+		types = deckCard.jsonData.get('type_line', '')
+
+		if ("Creature" in types):
+			creatureCount = creatureCount + 1
+
+	return creatureCount
+
 def getCreatureTypes(deck):
 
 	creatureTypeCounts = {}

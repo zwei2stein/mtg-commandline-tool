@@ -54,17 +54,36 @@ def getKeywords(deck):
 
 	return creatureTypeCounts
 
+def getTribalNames(deck):
+
+	creatureTypes = deckCreatureTypes.getCreatureTypes(deck)
+
+	creatureCount = deckCreatureTypes.getCreatureCount(deck)
+
+	maxCount = 0
+	commonTypes = []
+	for creatureType in creatureTypes:
+		if creatureTypes[creatureType] > maxCount and creatureTypes[creatureType] > creatureCount * 2:
+			maxCount = creatureTypes[creatureType]
+			commonTypes = []
+		if creatureTypes[creatureType] == maxCount:
+			commonTypes.append(creatureType)
+
+
+	return commonTypes
+
 def nameDeck(deck):
 
 	names = []
 
 	colorNames = colorPairingNames[mtgColors.colorIdentity2String((mtgColors.getDeckColorIdentity(deck)))]
 
+	tribalNames = getTribalNames(deck)
+
 	deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck))
 
-	deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
-
 	names.append(colorNames)
+	names.append(tribalNames)
 
 	response = {}
 
