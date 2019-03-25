@@ -41,6 +41,8 @@ This is tool for handling decklists and card collection.
 ## Setup:
 ---------
 
+ * requires 'requests' package
+
 First, you need plain text files with your collection and decks.
 
 You can get that done in several ways:
@@ -192,19 +194,19 @@ optional arguments:
 
  * sort by set (by set) - better order - from scyfall?
 
- * set from file
+ * loading set info from file
 
  * normalize deck file.
 
  * smart set choice for group by / order
 
+ * When checking deck legality, check more than 4-of cards and more than 1-of if in restricted list.
+
+ * When checking deck legality in singleton, fix Persistent Petitioners
+
+ * Check sideboard max size when checking deck legality
+
  ---
-
-3) Most expensive 4x card - $.
-
-4) Most expensive 4x card - mana.
-
-5) Most common keyword
 
 6) Most common edition
 
