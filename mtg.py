@@ -49,7 +49,7 @@ def main():
 	parser.add_argument('-p', '--print', nargs='*',choices=cardProps, default=[], help='Add given atributes to card printout')
 	parser.add_argument('-s', '--sort', nargs='*', choices=cardProps, default=[], help='Sort list order by. Default \'name\'.')
 	parser.add_argument('-g', '--group', nargs='*', choices=cardProps, default=[], help='Group saved list by given parameter. Always groups sideboards together.')
-	parser.add_argument('-fl', '--filterLegality', choices=['standard', 'future', 'frontier', 'modern', 'legacy', 'pauper', 'vintage', 'penny', 'commander', '1v1', 'duel', 'brawl'], default=None, help='Filter result list by format legality. Default is no filter.')
+	parser.add_argument('-fl', '--filterLegality', choices=deckFormat.formatList, default=None, help='Filter result list by format legality. Default is no filter.')
 	parser.add_argument('-ft', '--filterType', default=None, help='Filter results by type line of card')
 
 	parser.add_argument('-mc', '--missingCards', action='store_true', help='Prints cards missing from given deck file')
@@ -60,7 +60,10 @@ def main():
 	parser.add_argument('-lm', '--landMana', action='store_true', help='Prints mana source count of given deck file')
 	parser.add_argument('-cc', '--cardCount', action='store_true', help='Gives total count of cards for deck')
 	parser.add_argument('-is', '--isSingleton', action='store_true', help='Checks deck if it is singeton')
+
 	parser.add_argument('-df', '--deckFormat', action='store_true', help='Prints formats in which is deck legal')
+	parser.add_argument('-dfi', '--deckFormatInspect', choices=deckFormat.formatList, default=None, help='Show detailed information about why deck does not meet format criteria.')
+	
 	parser.add_argument('-ct', '--deckCreatureTypes', action='store_true', help='Prints list of creature types in deck with their counts (not including possible tokens)')
 	parser.add_argument('-draw', '--drawCards', default=None, help='Draw N cards from deck.', type=int)	
 	parser.add_argument('-nd', '--nameDeck', action='store_true', help='Attempts to generate name for given deck')
@@ -88,7 +91,7 @@ def main():
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
 
 	decks = {}
-	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckCreatureTypes or args.drawCards or args.diff):
+	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff):
 		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern)
 
 	if (args.cache):
@@ -121,8 +124,8 @@ def main():
 			deckStatistics.printgetIsDeckSingletonToConsole(deckStatistics.getIsDeckSingleton(deck))
 		if (args.cardCount):
 			deckStatistics.printGetDeckCardCountToConsole(deckStatistics.getDeckCardCount(deck))
-		if (args.deckFormat):
-			deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck))
+		if (args.deckFormat or args.deckFormatInspect):
+			deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck, args.deckFormatInspect), onlyInspect = not args.deckFormat)
 		if (args.nameDeck):
 			nameDeck.printnDeckNameToConsole(nameDeck.nameDeck(deck))
 		if (args.deckCreatureTypes):

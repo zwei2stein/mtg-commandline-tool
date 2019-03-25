@@ -38,6 +38,10 @@ This is tool for handling decklists and card collection.
 
 `$ python ./tool/mtg.py -d ./decklists/comanders_quaters/ -dp --currency eur`
 
+### Report why deck is not walid in certain format
+
+`$ python ./tool/mtg.py -d ./decklists/comanders_quaters/100/Teysa\ Karlov.txt -dfi modern`
+
 ## Setup:
 ---------
 
