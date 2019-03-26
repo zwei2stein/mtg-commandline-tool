@@ -9,3 +9,10 @@ def currencyToGlyph(currency):
 		return 'tix'
 	else:
 		return ''
+
+def getFullOracleText(card):
+	oracleText = card.jsonData.get('oracle_text', '')
+	for face in card.jsonData.get('card_faces', []):
+		oracleText = oracleText + '\n' + face.get('oracle_text', '')
+	
+	return oracleText

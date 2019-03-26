@@ -1,17 +1,31 @@
+import util
 
 def getIsDeckSingleton(deck):
+
+	violatingCards = [] 
+
 	for deckCardName in deck:
 		deckCard = deck[deckCardName]
-		if (deckCard.count > 1 and not deckCard.jsonData.get('type_line', '').startswith('Basic Land')):
-			return False
-	return True
 
-def printgetIsDeckSingletonToConsole(isDeckSingleton):
+		oracleText = util.getFullOracleText(deckCard)
+		if ("A deck can have any number of cards named" in oracleText):
+			continue
+
+		if (deckCard.count > 1 and not deckCard.jsonData.get('type_line', '').startswith('Basic Land')):
+			violatingCards.append(deckCardName)
+
+	response = {'violatingCards': violatingCards, 'isDeckSingleton': len(violatingCards) == 0}
+
+	return response
+
+def printgetIsDeckSingletonToConsole(response):
 	print ('Singleton status:')
-	if (isDeckSingleton):
+	if (response['isDeckSingleton']):
 		print ("Deck is singleton.")
 	else:
-		print ("Deck is not singleton.")
+		print ("Deck is not singleton, violating cards are:")
+		for card in response['violatingCards']:
+			print ('\t* ' + card)
 
 def getDeckCardCount(deck):
 	count = 0

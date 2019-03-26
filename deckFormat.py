@@ -118,7 +118,7 @@ def getDeckFormat(deck, watchFormat=None):
 					invalidWatchCards[deckCardName] = legality
 				formats[format] = False
 
-	isDeckSingleton = deckStatistics.getIsDeckSingleton(deck)
+	isDeckSingleton = deckStatistics.getIsDeckSingleton(deck)['isDeckSingleton']
 	deckCardCount = deckStatistics.getDeckCardCount(deck)
 
 	for format in formats:
