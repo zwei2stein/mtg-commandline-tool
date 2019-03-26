@@ -79,7 +79,7 @@ Lines starting with # are comments.
 
 Other formats (x after card count), (Collector number) after card name and [set] after card name are loosely supported (=ignored).
 
-### Example of card file:
+### Example of plain collection/deck file:
 
 ```
 4 Timberwatch Elf
@@ -88,7 +88,7 @@ Other formats (x after card count), (Collector number) after card name and [set]
 3 Nettle Sentinel
 ```
 
-### Example with sideboard:
+### Example of nothing which cards are part of sideboard:
 
 ```
 4x Birchlore Rangers
@@ -104,7 +104,7 @@ Sideboard:
 2 Scattershot Archer
 ```
 
-### Example with commander:
+### Example of defining commander for commander deck:
 
 ```
 Commander:
@@ -206,14 +206,6 @@ optional arguments:
 
  * When checking deck legality, check more than 4-of cards and more than 1-of if in restricted list.
 
+ * Seet if commander commander can be commander
+
  * When checking deck legality in singleton, fix Persistent Petitioners
-
- * Check sideboard max size when checking deck legality
-
- ---
-
-6) Most common edition
-
-7) Total deck price (penny, budget)
-
-8) Card complexity (% keywords / abilities on cards), (beginner, simple)
