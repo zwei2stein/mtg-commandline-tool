@@ -18,6 +18,20 @@ singletonFormats = {
 	"oldschool": False
 }
 
+requiresCommander = {
+	"commander": True,
+	"duel": True,
+	"frontier": False,
+	"future": False,
+	"legacy": False,
+	"modern": False,
+	"pauper": False,
+	"penny": False,
+	"standard": False,
+	"vintage": False,
+	"oldschool": False
+}
+
 minCardCount = {
 	"commander": 100,
 	"duel": 100,
@@ -30,6 +44,20 @@ minCardCount = {
 	"standard": 60,
 	"vintage": 60,
 	"oldschool": 40
+}
+
+maxSideboardSize = {
+	"commander": 0,
+	"duel": 0,
+	"frontier": 15,
+	"future": 15,
+	"legacy": 15,
+	"modern": 15,
+	"pauper": 15,
+	"penny": 15,
+	"standard": 15,
+	"vintage": 15,
+	"oldschool": 15
 }
 
 specificityOfFormat = {
@@ -96,14 +124,20 @@ def getDeckFormat(deck, watchFormat=None):
 	for format in formats:
 		if (not isDeckSingleton and singletonFormats[format] == True):
 			if (format == watchFormat):
-				invalidWatchDeck.append("singleton")
+				invalidWatchDeck.append("not singleton")
 			formats[format] = False
 		if (deckCardCount["count"] + deckCardCount["commander"] < minCardCount[format] ):
 			if (format == watchFormat):
-				invalidWatchDeck.append("size")
+				invalidWatchDeck.append("too few main deck cards")
 			formats[format] = False
-
-
+		if (requiresCommander[format] and deckCardCount["commander"] < 1):
+			if (format == watchFormat):
+				invalidWatchDeck.append("missing commander")
+			formats[format] = False
+		if (maxSideboardSize[format] < deckCardCount["sideboardCount"]):
+			if (format == watchFormat):
+				invalidWatchDeck.append("too many sideboard cards")
+			formats[format] = False
 
 	return {'formats': formats, 'invalidWatchCards': invalidWatchCards, 'invalidWatchDeck': invalidWatchDeck, 'watchFormat': watchFormat}
 
