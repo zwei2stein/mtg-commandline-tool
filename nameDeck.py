@@ -3,6 +3,7 @@ import deckFormat
 import deckCreatureTypes
 import deckStatistics
 import deckPrice
+import util
 
 from decimal import *
 
@@ -49,10 +50,7 @@ def getKeywords(deck):
 	for deckCardName in deck:
 		deckCard = deck[deckCardName]
 
-		oracleText = deckCard.jsonData.get('oracle_text', '')
-
-		for face in deckCard.jsonData.get('card_faces', []):
-			oracleText = oracleText + '\n' + face.get('oracle_text', '')
+		oracleText = util.getFullOracleText(deckCard)
 
 		for keyword in keywordList:
 			if (keyword in oracleText):

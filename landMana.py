@@ -2,6 +2,7 @@ import re
 from decimal import *
 
 import mtgColors
+import util
 
 def landMana(deckCards):
 
@@ -11,12 +12,8 @@ def landMana(deckCards):
 
 	for deckCardName in deckCards:
 		deckCard = deckCards[deckCardName]
-		oracleText = deckCard.jsonData.get('oracle_text', '')
-		typeLine = deckCard.jsonData.get('type_line', '')
-
-		for face in deckCard.jsonData.get('card_faces', []):
-			oracleText = oracleText + '\n' + face.get('oracle_text', '')
-			typeLine = typeLine + '\n' + face.get('type_line', '')
+		oracleText = util.getFullOracleText(deckCard)
+		typeLine = util.getFullTypeLine(deckCard)
 
 		matchLand = re.search('(\\b[lL]and\\b)', typeLine)
 		if (matchLand):
