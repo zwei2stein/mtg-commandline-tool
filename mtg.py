@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import sys
+from http import HTTPStatus
 
 import mtgCardTextFileDao
 import mtgCardInCollectionObject
@@ -94,6 +95,8 @@ def main():
 	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff):
 		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern)
 
+	ready = True
+
 	if (args.cache):
 		if (args.cache == 'flush'):
 			scryfall.flushCache()
@@ -102,48 +105,59 @@ def main():
 			cardsToInitCache.update(cardCollection)
 			for file in decks:
 				cardsToInitCache.update(decks[file])
-			scryfall.initCache(cardsToInitCache)
+			try:
+				scryfall.initCache(cardsToInitCache)
+			except scryfall.CardRetrievalError as e:
+				if (e.errorCode == 404):
+					print ("Card " + e.cardName + " not found on scryfall, aborting.")
+				elif (e.errorCode >= 500):
+					print ("Scryfall server error " + str(e.errorCode) + " - " + HTTPStatus(e.errorCode).phrase + " for card " + e.cardName + ", aborting.")
+				else:
+					print ("Unexpected error " + str(e.errorCode) + " - " + HTTPStatus(e.errorCode).phrase + " for card " + e.cardName + ", aborting.")
+				ready = False
 
-	for file in decks:
-		print (file + ":")
-		deck = decks[file]
+	if (ready):
 
-		if (args.missingCards):
-			verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency))
-		if (args.listTokens):
-			listTokens.printTokensToConsole(listTokens.listTokens(deck))
-		if (args.manaCurve):
-			manaCurve.printManaCurveToConsole(manaCurve.manaCurve(deck))
-		if (args.manaSymbols):
-			manaSymbols.printManaSymbolsToConsole(manaSymbols.manaSymbols(deck))
-		if (args.landMana):
-			landMana.printLandManaToConsole(landMana.landMana(deck))
-		if (args.deckPrice):
-			deckPrice.printPricesToConsole(deckPrice.deckPrice(deck, args.currency))
-		if (args.isSingleton):
-			deckStatistics.printgetIsDeckSingletonToConsole(deckStatistics.getIsDeckSingleton(deck))
-		if (args.cardCount):
-			deckStatistics.printGetDeckCardCountToConsole(deckStatistics.getDeckCardCount(deck))
-		if (args.deckFormat or args.deckFormatInspect):
-			deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck, args.deckFormatInspect), onlyInspect = not args.deckFormat)
-		if (args.nameDeck):
-			nameDeck.printnDeckNameToConsole(nameDeck.nameDeck(deck))
-		if (args.deckCreatureTypes):
-			deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
-		if (args.drawCards):
-			drawCards.drawCards(deck, args.drawCards)
-		if (args.diff):
-			deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True)
-			deckDiff.diff(deck, deck2)
+		for file in decks:
+			print (file + ":")
+			deck = decks[file]
 
-	if (args.saveList is not None):
-		if (args.saveList == 'console'):
-			mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group)		
-		else:
-			print ("Saving", args.saveList)
-			file = open(args.saveList, 'w')
-			mtgCardTextFileDao.saveCardFile(file, cardCollection, args.group)
-			file.close()
-			print ('Saved file ' + args.saveList)
+			if (args.missingCards):
+				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency))
+			if (args.listTokens):
+				listTokens.printTokensToConsole(listTokens.listTokens(deck))
+			if (args.manaCurve):
+				manaCurve.printManaCurveToConsole(manaCurve.manaCurve(deck))
+			if (args.manaSymbols):
+				manaSymbols.printManaSymbolsToConsole(manaSymbols.manaSymbols(deck))
+			if (args.landMana):
+				landMana.printLandManaToConsole(landMana.landMana(deck))
+			if (args.deckPrice):
+				deckPrice.printPricesToConsole(deckPrice.deckPrice(deck, args.currency))
+			if (args.isSingleton):
+				deckStatistics.printgetIsDeckSingletonToConsole(deckStatistics.getIsDeckSingleton(deck))
+			if (args.cardCount):
+				deckStatistics.printGetDeckCardCountToConsole(deckStatistics.getDeckCardCount(deck))
+			if (args.deckFormat or args.deckFormatInspect):
+				deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck, args.deckFormatInspect), onlyInspect = not args.deckFormat)
+			if (args.nameDeck):
+				nameDeck.printnDeckNameToConsole(nameDeck.nameDeck(deck))
+			if (args.deckCreatureTypes):
+				deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
+			if (args.drawCards):
+				drawCards.drawCards(deck, args.drawCards)
+			if (args.diff):
+				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True)
+				deckDiff.diff(deck, deck2)
+
+		if (args.saveList is not None):
+			if (args.saveList == 'console'):
+				mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group)		
+			else:
+				print ("Saving", args.saveList)
+				file = open(args.saveList, 'w')
+				mtgCardTextFileDao.saveCardFile(file, cardCollection, args.group)
+				file.close()
+				print ('Saved file ' + args.saveList)
 
 main()

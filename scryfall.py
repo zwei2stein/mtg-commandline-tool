@@ -17,6 +17,12 @@ valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 clearCache = 'none'
 cacheTimeout = 365
 
+class CardRetrievalError(Exception):
+    def __init__(self, message, cardName, errorCode):
+        super(CardRetrievalError, self).__init__(message)
+        self.cardName = cardName
+        self.errorCode = errorCode
+
 def getCacheDir():
 	return os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
 
@@ -24,7 +30,7 @@ def flushCache():
 	try:
 		shutil.rmtree(getCacheDir())
 	except OSError as e:
-		print ("Error: %s - %s." % (e.filename, e.strerror))
+		print ("Error where clearing cache directory at " + getCacheDir() + ": %s - %s." % (e.filename, e.strerror))
 
 def initCache(collection):
 	lastLength = 0
@@ -63,16 +69,20 @@ def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):
 
 def fetchCardJson(card, jsonFile):
 	response = requests.get("http://api.scryfall.com/cards/named",  params={'exact': card.name}, proxies=proxies, auth=auth)
+	fuzzyResult = False
 	if (response.status_code == 404):
 		print ()
 		print (console.CRED + "Card '" + card.name + "' (" + str(card.sourceFile) + ") Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
 		response = requests.get("http://api.scryfall.com/cards/named",  params={'fuzzy': card.name}, proxies=proxies, auth=auth)
+		fuzzyResult = True
 		if (response.status_code < 400):
-			print ("\'" + card.name + "\' found as \'" + response.json()["name"] + "\'.")
+			print ("\'" + card.name + "\' found as \'" + response.json()["name"] + "\'. " + console.CRED + "Fix files " + str(sourceFile) + console.CEND)
 	if (response.status_code >= 400):
-		raise Exception('Bad response ' + str(response.status_code) + ' for ' + card.name) 
-	with open(jsonFile, 'w') as f:
-		json.dump(response.json(), f)
+		sys.stdout.write('\n')
+		raise CardRetrievalError('Bad response ' + str(response.status_code) + ' for ' + card.name, card.name, response.status_code) 
+	if (not fuzzyResult):
+		with open(jsonFile, 'w') as f:
+			json.dump(response.json(), f)
 	return response.json()
 
 def getCachedCardJson(card):
