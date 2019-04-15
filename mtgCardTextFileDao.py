@@ -38,13 +38,13 @@ def readCardFile(f, cardFile, cards, asDeck):
 					if (errorCount == 0):
 						print ()
 					errorCount += 1
-					print ("Line format error " + str(errorCount) + " in file '" + cardFile + "', line " + str(lineCounter) + ", ignoring '" + line + "'")
+					print ("Card list format error " + str(errorCount) + " in file '" + cardFile + "', line " + str(lineCounter) + ", ignoring '" + line + "'")
 					continue
 				name = splitLine[1]
 				if ('#' in name):
 					commentedName = name.split('#')
 					name = commentedName[0]
-					print ("comment", commentedName[1:])
+					# print ("comment", commentedName[1:])
 				name = re.sub(" \[[A-Z0-9]{3,4}\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
 				name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
