@@ -38,7 +38,13 @@ def listTokens(deckCards):
 
 		match = re.search("(Afterlife [0-9]+)", oracleText)
 		if (match):
-			appendListInMap(tokens,  "1/1 white and black Spirit creature token with flying", deckCard)
+			appendListInMap(tokens, "1/1 white and black Spirit creature token with flying", deckCard)
+			foundToken = True
+
+		match = re.search("([Aa]mass [0-9]+)", oracleTexst)
+		if (match):
+			appendListInMap(tokens, "0/0 black Zombie Army creature token", deckCard)
+			appendListInMap(counters,  "+1/+1 counter", deckCard)
 			foundToken = True
 
 		match = re.search("(Embalm)", oracleText)
@@ -134,9 +140,9 @@ def listTokens(deckCards):
 
 		match = re.search('(Storm)', oracleTextWithoutCardName)
 		if (match):
-			appendListInMap(counters, "Storm counter", deckCard)
+			appendListInMap(misc, "Storm count marker", deckCard)
 
-		for match in re.finditer('([\+\-]1/[\+\-]1 [Cc]ounter)', oracleText):
+		for match in re.finditer('([\+\-]\d/[\+\-]\d [Cc]ounter)', oracleText):
 			appendListInMap(counters, match.string[match.start(1):match.end(1)], deckCard)
 
 		badMatches = {'and counter', 'another counter', 'be counter', 'get counter', 'have counter', 'is counter', 'more counter', 'no counter', 'of counter', 'the counter', 'those counter', 'with counter'}
