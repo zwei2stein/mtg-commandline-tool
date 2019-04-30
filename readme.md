@@ -206,6 +206,12 @@ optional arguments:
 
  * When checking deck legality, check more than 4-of cards and more than 1-of if in restricted list.
 
- * Seet if commander commander can be commander
+ * Check if commander commander can be commander
 
  * When checking deck legality in singleton, fix Persistent Petitioners
+
+ * token with "ability"
+
+ * make Deck object with accessors (commander, deck, sideboard)
+
+ * move getFullOracleText ad getFullTypeLine to card object
