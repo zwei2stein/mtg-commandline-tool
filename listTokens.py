@@ -10,10 +10,10 @@ def appendListInMap(map, key, item):
 	map[key].add(item)
 
 def addCounter(counterType, keyWords, list, oracleText, deckCard):
-		for keyWord in keyWords:
-			match = re.search('('+keyWord+')', oracleText)			
-			if (match):
-				appendListInMap(list, counterType, deckCard)
+	for keyWord in keyWords:
+		match = re.search('('+keyWord+')', oracleText)			
+		if (match):
+			appendListInMap(list, counterType, deckCard)
 
 def listTokens(deckCards):
 	tokens = {}
@@ -41,7 +41,7 @@ def listTokens(deckCards):
 			appendListInMap(tokens, "1/1 white and black Spirit creature token with flying", deckCard)
 			foundToken = True
 
-		match = re.search("([Aa]mass [0-9]+)", oracleTexst)
+		match = re.search("([Aa]mass [0-9]+)", oracleText)
 		if (match):
 			appendListInMap(tokens, "0/0 black Zombie Army creature token", deckCard)
 			appendListInMap(counters,  "+1/+1 counter", deckCard)
