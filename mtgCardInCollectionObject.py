@@ -1,4 +1,6 @@
 import scryfall
+import cernyrytir
+
 import mtgColors
 import sets
 import util
@@ -74,11 +76,17 @@ class CardInCollection:
 		if (propName == 'cmc'):
 			return self.jsonData["cmc"]
 		if (propName == 'price'):
-			return float(self.jsonData.get(CardInCollection.args.currency, "0.0"))
+			if (CardInCollection.args.currency == 'czk'):
+				return float(cernyrytir.getCardPrice(self))
+			else:
+				return float(self.jsonData.get(CardInCollection.args.currency, "0.0"))
 		if (propName == 'count'):
 			return self.count
 		if (propName == 'name'):
-			return self.name
+			if (self.jsonData.get('card_faces', None) is not None):
+				return self.jsonData['card_faces'][0]['name']
+			else:
+				return self.jsonData['name']
 		if (propName == 'color'):
 			return mtgColors.colorIdentity2String(self.jsonData['color_identity'])
 		if (propName == 'set'):
