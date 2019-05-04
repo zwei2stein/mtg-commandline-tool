@@ -11,10 +11,10 @@ def deckPrice(deckCards, currency):
 
 	for deckCardName in deckCards:
 		deckCard = deckCards[deckCardName]
-		totalPrice += ((deckCard.count - deckCard.sideboard) * Decimal(deckCard.jsonData.get(currency, "0.0")))
-		sideboardPrice += (deckCard.sideboard * Decimal(deckCard.jsonData.get(currency, "0.0")))
+		totalPrice += ((deckCard.count - deckCard.sideboard) * Decimal(deckCard.getProp('price')))
+		sideboardPrice += (deckCard.sideboard * Decimal(deckCard.getProp('price')))
 		if (deckCard.commander):
-			commanderPrice += Decimal(deckCard.jsonData.get(currency, "0.0"))
+			commanderPrice += Decimal(deckCard.getProp('price'))
 
 	deckPrice = totalPrice - (sideboardPrice + commanderPrice)
 
