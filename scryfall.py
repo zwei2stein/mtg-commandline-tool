@@ -1,18 +1,15 @@
-import requests
-import json
-import string
-import unicodedata
-import os
-import sys
 import datetime
+import json
+import os
+import requests
 import shutil
+import sys
 
 import console
+import util
 
 proxies = None
 auth = None
-
-valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
 
 clearCache = 'none'
 cacheTimeout = 365
@@ -24,7 +21,10 @@ class CardRetrievalError(Exception):
         self.errorCode = errorCode
 
 def getCacheDir():
-	return os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
+	baseDir = os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
+	if (not os.path.exists(baseDir)):
+		os.makedirs(baseDir)
+	return baseDir
 
 def flushCache():
 	try:
@@ -55,17 +55,6 @@ def initCache(collection):
 	doneMessage = ''
 	sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\r')
 	sys.stdout.flush()
-		
-def cleanFilename(filename, whitelist=valid_filename_chars, replace=' '):
-	# replace spaces
-	for r in replace:
-		filename = filename.replace(r, '_')
-	
-	# keep only valid ascii chars
-	cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
-	
-	# keep only whitelisted chars
-	return ''.join(c for c in cleaned_filename if c in whitelist)
 
 def fetchCardJson(card, jsonFile):
 	response = requests.get("http://api.scryfall.com/cards/named",  params={'exact': card.name}, proxies=proxies, auth=auth)
@@ -76,7 +65,7 @@ def fetchCardJson(card, jsonFile):
 		response = requests.get("http://api.scryfall.com/cards/named",  params={'fuzzy': card.name}, proxies=proxies, auth=auth)
 		fuzzyResult = True
 		if (response.status_code < 400):
-			print ("\'" + card.name + "\' found as \'" + response.json()["name"] + "\'. " + console.CRED + "Fix files " + str(sourceFile) + console.CEND)
+			print ("\'" + card.name + "\' found as \'" + response.json()["name"] + "\'. " + console.CRED + "Fix files " + str(card.sourceFile) + console.CEND)
 	if (response.status_code >= 400):
 		sys.stdout.write('\n')
 		raise CardRetrievalError('Bad response ' + str(response.status_code) + ' for ' + card.name, card.name, response.status_code) 
@@ -86,10 +75,7 @@ def fetchCardJson(card, jsonFile):
 	return response.json()
 
 def getCachedCardJson(card):
-	baseDir = getCacheDir()
-	jsonFile = os.path.join(baseDir, cleanFilename(card.name) + ".json")
-	if (not os.path.exists(baseDir)):
-		os.makedirs(baseDir)
+	jsonFile = os.path.join(getCacheDir(), util.cleanFilename(card) + ".json")
 	if (os.path.exists(jsonFile)):
 		fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
 

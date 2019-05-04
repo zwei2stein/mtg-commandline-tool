@@ -4,8 +4,8 @@ import console
 import util
 import mtgCardInCollectionObject
 
-def getPrice(deckCard, count, currency):
-	return count * Decimal(deckCard.jsonData.get(currency, "0.0"));
+def getPrice(deckCard, count):
+	return count * Decimal(deckCard.getProp('price'));
 
 def missingCards(deckCards, libraryCards, currency):
 
@@ -37,7 +37,7 @@ def missingCards(deckCards, libraryCards, currency):
 
 	for deckCard in shoppingList:
 		totalCount += shoppingList[deckCard]
-		totalPrice += getPrice(deckCard, shoppingList[deckCard], currency)				
+		totalPrice += getPrice(deckCard, shoppingList[deckCard])
 
 	response['totalCount'] = totalCount
 	response['totalPrice'] = totalPrice

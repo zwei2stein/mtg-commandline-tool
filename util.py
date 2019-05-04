@@ -1,4 +1,21 @@
+import unicodedata
+import string
+import os
 
+valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+
+def cleanFilename(card, whitelist=valid_filename_chars, replace=' '):
+
+	filename = card.name
+	# replace spaces
+	for r in replace:
+		filename = filename.replace(r, '_')
+	
+	# keep only valid ascii chars
+	cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
+	
+	# keep only whitelisted chars
+	return ''.join(c for c in cleaned_filename if c in whitelist)
 
 def currencyToGlyph(currency):
 	if (currency == 'eur'):
@@ -7,6 +24,8 @@ def currencyToGlyph(currency):
 		return '$'
 	elif (currency == 'tix'):
 		return 'tix'
+	elif (currency == 'czk'):
+		return 'kc'
 	else:
 		return ''
 
