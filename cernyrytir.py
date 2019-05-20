@@ -1,7 +1,9 @@
+import datetime
 import json
 import os
 import re
 import requests
+import shutil
 import sys
 
 import console
@@ -11,6 +13,7 @@ baseUrl = "http://cernyrytir.cz/index.php3"
 
 clearCache = 'none'
 cacheTimeout = 365
+smartFlush = False
 args = {}
 
 def getCacheDir():
@@ -26,8 +29,34 @@ def flushCache():
 		except OSError as e:
 			print ("Error where clearing cache directory at " + getCacheDir() + ": %s - %s." % (e.filename, e.strerror))
 
+def smartFlushCache():
+	# 1) highest price is likely to be most volatile
+	# 2) don't redownload on same day.
+
+	cacheDir = getCacheDir()
+
+	maxPriceFile = None
+	maxPrice = 0
+
+	for dirpath, dirnames, files in os.walk(cacheDir):
+		for file in files:
+			jsonFile = os.path.join(dirpath, file)
+			fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
+			if (fileAge.days > 0):
+				with open(jsonFile, encoding='utf-8') as json_data:
+					price = json.load(json_data)["price"]
+					if (price > maxPrice):
+						maxPrice = price
+						maxPriceFile = jsonFile
+
+	if (maxPriceFile is not None):
+		os.remove(maxPriceFile)
+
 def initCache(collection):
 	if (args.currency == 'czk'):
+		if (smartFlush):
+			smartFlushCache()
+
 		lastLength = 0
 		count = 1
 
@@ -57,26 +86,36 @@ def getCardPrice(card):
 	price = None
 
 	if (os.path.exists(jsonFile)):
+		fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
 
-		with open(jsonFile, encoding='utf-8') as json_data:
-			price = json.load(json_data)["price"]
+		if (clearCache == 'always' or (clearCache == 'timeout' and fileAge.days > cacheTimeout) or (clearCache == 'price' and fileAge.days > 1)):
+			price = fetchCardPriceMark(card, jsonFile)
+		else:
+			with open(jsonFile, encoding='utf-8') as json_data:
+				price = json.load(json_data)["price"]
 
 	else:
 
-		response = fetchCardPrice(card)
-
-		if (response is not None):
-			with open(jsonFile, 'w') as f:
-				json.dump({"price": response, "name": card.name}, f)
-		else:
-			print(console.CRED +  "Price not found for '" + card.name + "' card at Cerny Rytir." + console.CEND)
-
-		price = response
+		price = fetchCardPriceMark(card, jsonFile)
 
 	if (price is None):
 		price = 0
 
 	return float(price)
+
+def fetchCardPriceMark(card, jsonFile):
+
+	response = fetchCardPrice(card)
+
+	if (response is not None):
+		with open(jsonFile, 'w') as f:
+			json.dump({"price": response, "name": card.name}, f)
+	else:
+		print(console.CRED +  "Price not found for '" + card.name + "' card at Cerny Rytir." + console.CEND)
+
+	price = response
+
+	return price
 
 def fetchCardPrice(card, page = 0, cheapestPrice = None):
 	pageSize = 30

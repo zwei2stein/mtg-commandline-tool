@@ -39,7 +39,7 @@ def main():
 
 	parser.add_argument('-cache', '--cache', choices=['init', 'flush', 'auto'], default='init', help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory, \'auto\' does nothing.')
 
-	parser.add_argument('-clearCache', '--clearCache', choices=['awlays', '4price', 'timeout', 'none'], default=configuration["scryfall"]["clearCache"],
+	parser.add_argument('-clearCache', '--clearCache', choices=['awlays', 'price', 'timeout', 'none'], default=configuration["scryfall"]["clearCache"],
 			help='Determines how is caching from scrycall handled. \'always\' - always fetch fresh data. \'price\' - fetch data if price changes. \'timeout\' - fetch data if ' + str(configuration["scryfall"]["cacheTimeout"]) + ' days have passed. \'none\' - always use cached version. Default \''  +configuration["scryfall"]["clearCache"] + '\'')
 
 	group = parser.add_mutually_exclusive_group(required = True)
@@ -87,7 +87,8 @@ def main():
 	scryfall.cacheTimeout = configuration["scryfall"]["cacheTimeout"]
 
 	cernyrytir.clearCache = args.clearCache
-	cernyrytir.cacheTimeout = configuration["scryfall"]["cacheTimeout"]
+	cernyrytir.cacheTimeout = configuration["cernyrytir"]["cacheTimeout"]
+	cernyrytir.smartFlush = configuration["cernyrytir"]["smartFlush"]
 	cernyrytir.args = args
 
 #	deckAutocomplete.deckAutocomplete("./meta/")

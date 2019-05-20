@@ -79,7 +79,7 @@ def getCachedCardJson(card):
 	if (os.path.exists(jsonFile)):
 		fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
 
-		if (clearCache == 'always' or (clearCache == 'timeout' and fileAge > cacheTimeout) or (clearCache == 'price' and fileAge > 1)):
+		if (clearCache == 'always' or (clearCache == 'timeout' and fileAge.days > cacheTimeout) or (clearCache == 'price' and fileAge.days > 1)):
 			return fetchCardJson(card, jsonFile)
 		else:
 #		print("Loading cached " + jsonFile)

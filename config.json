@@ -1,9 +1,14 @@
 {
 	"defaultCurrency": "eur",
-	"collectionDirectory": "./library",
+	"collectionDirectory": "./collection",
 	"filePattern": ".*\\.txt",
 	"scryfall": {
 		"cacheTimeout": 365,
-		"clearCache": "none"
+		"clearCache": "none",
+		"smartFlush": false
+	},
+	"cernyrytir": {
+		"cacheTimeout": 365,
+		"smartFlush": true
 	}
 }
