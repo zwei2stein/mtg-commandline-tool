@@ -18,7 +18,7 @@ def deckPrice(deckCards, currency):
 
 	deckPrice = totalPrice - (sideboardPrice + commanderPrice)
 
-	response = { "currency": currency, "deckPrice": deckPrice, "sideboardPrice": sideboardPrice, "totalPrice": totalPrice, "commanderPrice": commanderPrice }
+	response = { "currency": currency, "deckPrice": deckPrice.quantize(Decimal('.01'), rounding=ROUND_DOWN), "sideboardPrice": sideboardPrice.quantize(Decimal('.01'), rounding=ROUND_DOWN), "totalPrice": totalPrice.quantize(Decimal('.01'), rounding=ROUND_DOWN), "commanderPrice": commanderPrice.quantize(Decimal('.01'), rounding=ROUND_DOWN) }
 	
 	return response
 

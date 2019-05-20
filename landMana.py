@@ -25,10 +25,8 @@ def landMana(deckCards):
 	totalLandSymbolCount = Decimal(sum(landSymbols.values()))
 	percentLandSymbols = {}
 
-	getcontext().prec = 3
-
 	for symbol in mtgColors.colorCosts:
-		percentLandSymbols[symbol] = Decimal(100 * landSymbols[symbol]) / totalLandSymbolCount
+		percentLandSymbols[symbol] = (Decimal(100 * landSymbols[symbol]) / totalLandSymbolCount).quantize(Decimal('.1'), rounding=ROUND_DOWN)
 
 	response = { "landSymbols": landSymbols, "percentLandSymbols": percentLandSymbols }
 

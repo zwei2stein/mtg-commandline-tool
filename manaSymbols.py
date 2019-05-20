@@ -19,13 +19,11 @@ def manaSymbols(deckCards):
 	for symbol in mtgColors.colorCosts:
 		symbols[symbol] = manaCost.count('{'+symbol+'}')
 
-	getcontext().prec = 3
-
 	totalSymbolCount = Decimal(sum(symbols.values()))
 	percentSymbols = {}
 
 	for symbol in mtgColors.colorCosts:
-		percentSymbols[symbol] = Decimal(100 * symbols[symbol]) / totalSymbolCount
+		percentSymbols[symbol] = (Decimal(100 * symbols[symbol]) / totalSymbolCount).quantize(Decimal('.1'), rounding=ROUND_DOWN)
 
 	response = { "symbols": symbols, "percentSymbols": percentSymbols }
 
