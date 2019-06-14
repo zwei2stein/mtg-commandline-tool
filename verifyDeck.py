@@ -55,7 +55,10 @@ def printMissingCardsToConsole(response):
 
 	print ()
 
-	print ("Have: " + "{:3.2f}".format(100 * (response['totalDeckCards'] - response['totalCount']) / response['totalDeckCards']) + "%")
+	if (response['totalDeckCards'] == 0):
+		print ("Have: 100.00%")
+	else:
+		print ("Have: " + "{:3.2f}".format(100 * (response['totalDeckCards'] - response['totalCount']) / response['totalDeckCards']) + "%")
 
 	print (console.CGREEN + "Commander:" + console.CEND)
 
