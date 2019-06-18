@@ -1,5 +1,6 @@
 import scryfall
 import cernyrytir
+import najada
 
 import mtgColors
 import sets
@@ -77,7 +78,7 @@ class CardInCollection:
 			return self.jsonData["cmc"]
 		if (propName == 'price'):
 			if (CardInCollection.args.currency == 'czk'):
-				return float(cernyrytir.getCardPrice(self))
+				return float(najada.getCardPrice(self))
 			else:
 				return float(self.jsonData.get(CardInCollection.args.currency, "0.0"))
 		if (propName == 'count'):

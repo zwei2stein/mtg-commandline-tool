@@ -89,3 +89,23 @@ def getCachedCardJson(card):
 #		print("Loading online " + jsonFile)
 		return fetchCardJson(card, jsonFile)
 #
+
+def search(query):
+
+	foundCardNames = []
+
+	response = requests.get('https://api.scryfall.com/cards/search',  params={'q': query}, proxies=proxies, auth=auth)
+
+	while(response is not None and response.status_code == 200):
+
+		json = response.json()
+
+		for card in json['data']:
+			foundCardNames.append(card['name'])
+
+		if (json['has_more'] == True):
+			response = requests.get(json['next_page'], proxies=proxies, auth=auth)
+		else:
+			response = None
+
+	return foundCardNames

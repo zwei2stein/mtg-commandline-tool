@@ -20,6 +20,7 @@ import deckFormat
 import deckCreatureTypes
 import drawCards
 import deckDiff
+import search
 
 import scryfall
 import cernyrytir
@@ -45,6 +46,7 @@ def main():
 	group = parser.add_mutually_exclusive_group(required = True)
 	group.add_argument('-sl', '--saveList', help='Save consolidated collection or print it to \'console\'', type=str)
 	group.add_argument('-d', '--deck', help='Chooses deck file to work on, required for deck tools. If directory is specified, tool will work on each deck file found in directory', type=str)
+	group.add_argument('-search', '--search', default=None, type=str, help='Search your collection with scryfall. Use scryfall search string')
 
 	cardProps = ['price', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType', 'rarity']
 
@@ -80,7 +82,6 @@ def main():
 		else:
 			args.sort = args.group
 
-
 	mtgCardInCollectionObject.CardInCollection.args = args
 
 	scryfall.clearCache = args.clearCache
@@ -94,7 +95,7 @@ def main():
 #	deckAutocomplete.deckAutocomplete("./meta/")
 
 	cardCollection = {}
-	if ((args.missingCards or args.saveList is not None) or args.cache == 'init'):
+	if ((args.missingCards or args.saveList is not None or args.search is not None) or args.cache == 'init'):
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
 
 	decks = {}
@@ -169,5 +170,8 @@ def main():
 				mtgCardTextFileDao.saveCardFile(file, cardCollection, args.group)
 				file.close()
 				print ('Saved file ' + args.saveList)
+
+		if (args.search is not None):
+			search.search(args.search, cardCollection)
 
 main()
