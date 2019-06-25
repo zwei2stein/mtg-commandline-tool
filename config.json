@@ -7,8 +7,18 @@
 		"clearCache": "none",
 		"smartFlush": false
 	},
-	"cernyrytir": {
-		"cacheTimeout": 365,
-		"smartFlush": true
+	"priceSources": {
+		"cernyrytir": {
+			"cacheTimeout": 90,
+			"smartFlush": true,
+			"priority": 2,
+			"enabled": true
+		},
+		"najada": {
+			"cacheTimeout": 90,
+			"smartFlush": true,
+			"priority": 1,
+			"enabled": true
+		}
 	}
 }

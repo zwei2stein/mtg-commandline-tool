@@ -42,12 +42,16 @@ This is tool for handling decklists and card collection.
 
 `$ python ./tool/mtg.py -d ./decklists/comanders_quaters/100/Teysa\ Karlov.txt -dfi modern`
 
+### Search your collection for goblins that cost one mana.
+
+`$ python ./tool/mtg.py -search 't:goblin cmc:1'`
+
 ## Setup:
 ---------
 
  * requires 'requests' package
 
-First, you need plain text files with your collection and decks.
+First, you need plain text files with your collection and decks. Collection is necesary if you want to use features that will work with it.
 
 You can get that done in several ways:
 
@@ -121,14 +125,17 @@ Commander:
 
 ```
 usage: mtg.py [-h] [-cd COLLECTIONDIRECTORY] [-id] [-fp FILEPATTERN]
-              [-c {eur,usd,tix}] [-cache {init,flush}]
-              [-clearCache {awlays,4price,timeout,none}]
-              (-sl SAVELIST | -d DECK) [-pp] [-pc]
+              [-c {eur,usd,tix,czk}] [-cache {init,flush,auto}]
+              [-clearCache {awlays,price,timeout,none}]
+              (-sl SAVELIST | -d DECK | -search SEARCH)
+              [-p [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
               [-s [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
               [-g [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
-              [-fl {standard,future,frontier,modern,legacy,pauper,vintage,penny,commander,1v1,duel,brawl}]
+              [-fl {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}]
               [-ft FILTERTYPE] [-mc] [-lt] [-dp] [-mcu] [-ms] [-lm] [-cc]
-              [-is] [-df] [-ct] [-draw DRAWCARDS] [-nd] [-diff DIFF]
+              [-is] [-df]
+              [-dfi {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}]
+              [-ct] [-draw DRAWCARDS] [-nd] [-diff DIFF]
 
 Process MTG card plain text lists (decks and collection)
 
@@ -136,7 +143,7 @@ optional arguments:
   -h, --help            show this help message and exit
   -cd COLLECTIONDIRECTORY, --collectionDirectory COLLECTIONDIRECTORY
                         Sets root directory to scan for card collection.
-                        Default is './library' directory. Single file
+                        Default is './collection' directory. Single file
                         representing collection can be specified instead of
                         directory.
   -id, --ignoreDecks    Ignore files with 'deck' in path. Usefull when you
@@ -144,32 +151,35 @@ optional arguments:
   -fp FILEPATTERN, --filePattern FILEPATTERN
                         Regular expression pattern for files that are
                         considered part of collection. Default is '.*\.txt'
-  -c {eur,usd,tix}, --currency {eur,usd,tix}
+  -c {eur,usd,tix,czk}, --currency {eur,usd,tix,czk}
                         Currency used for sorting by price and for output of
                         price. Default 'eur'
-  -cache {init,flush}, --cache {init,flush}
+  -cache {init,flush,auto}, --cache {init,flush,auto}
                         Manual cache control: 'init' fetches all cards from
                         collectin from scryfall to cache, 'flush' clears cache
-                        directory.
-  -clearCache {awlays,4price,timeout,none}, --clearCache {awlays,4price,timeout,none}
+                        directory, 'auto' does nothing.
+  -clearCache {awlays,price,timeout,none}, --clearCache {awlays,price,timeout,none}
                         Determines how is caching from scrycall handled.
                         'always' - always fetch fresh data. 'price' - fetch
                         data if price changes. 'timeout' - fetch data if 365
                         days have passed. 'none' - always use cached version.
                         Default 'none'
   -sl SAVELIST, --saveList SAVELIST
-                        Save consolidated list or print it to 'console'
+                        Save consolidated collection or print it to 'console'
   -d DECK, --deck DECK  Chooses deck file to work on, required for deck tools.
                         If directory is specified, tool will work on each deck
                         file found in directory
-  -pp, --printPrice     Add price to output
-  -pc, --printColor     Add color identity to output
+  -search SEARCH, --search SEARCH
+                        Search your collection with scryfall. Use scryfall
+                        search string
+  -p [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]], --print [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]
+                        Add given atributes to card printout
   -s [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]], --sort [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]
                         Sort list order by. Default 'name'.
   -g [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]], --group [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]
                         Group saved list by given parameter. Always groups
                         sideboards together.
-  -fl {standard,future,frontier,modern,legacy,pauper,vintage,penny,commander,1v1,duel,brawl}, --filterLegality {standard,future,frontier,modern,legacy,pauper,vintage,penny,commander,1v1,duel,brawl}
+  -fl {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}, --filterLegality {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}
                         Filter result list by format legality. Default is no
                         filter.
   -ft FILTERTYPE, --filterType FILTERTYPE
@@ -184,6 +194,9 @@ optional arguments:
   -cc, --cardCount      Gives total count of cards for deck
   -is, --isSingleton    Checks deck if it is singeton
   -df, --deckFormat     Prints formats in which is deck legal
+  -dfi {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}, --deckFormatInspect {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}
+                        Show detailed information about why deck does not meet
+                        format criteria.
   -ct, --deckCreatureTypes
                         Prints list of creature types in deck with their
                         counts (not including possible tokens)
@@ -191,7 +204,7 @@ optional arguments:
                         Draw N cards from deck.
   -nd, --nameDeck       Attempts to generate name for given deck
   -diff DIFF, --diff DIFF
-                        Diffe deck with another deck.
+                        Difference of deck with another deck.
 ```
 
 ## TODO:
@@ -215,3 +228,7 @@ optional arguments:
  * make Deck object with accessors (commander, deck, sideboard)
 
  * move getFullOracleText ad getFullTypeLine to card object
+
+ * better search output
+
+ * Total shopping list price: 67.26000000000000111216591490

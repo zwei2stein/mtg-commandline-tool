@@ -1,5 +1,5 @@
 import scryfall
-import cernyrytir
+import priceSourceHandler
 import najada
 
 import mtgColors
@@ -77,8 +77,8 @@ class CardInCollection:
 		if (propName == 'cmc'):
 			return self.jsonData["cmc"]
 		if (propName == 'price'):
-			if (CardInCollection.args.currency == 'czk'):
-				return float(najada.getCardPrice(self))
+			if (priceSourceHandler.handlesCurrency(CardInCollection.args.currency)):
+				return float(priceSourceHandler.getCardPrice('czk', self))
 			else:
 				return float(self.jsonData.get(CardInCollection.args.currency, "0.0"))
 		if (propName == 'count'):

@@ -23,7 +23,8 @@ import deckDiff
 import search
 
 import scryfall
-import cernyrytir
+
+import priceSourceHandler
 
 def main():
 
@@ -87,10 +88,7 @@ def main():
 	scryfall.clearCache = args.clearCache
 	scryfall.cacheTimeout = configuration["scryfall"]["cacheTimeout"]
 
-	cernyrytir.clearCache = args.clearCache
-	cernyrytir.cacheTimeout = configuration["cernyrytir"]["cacheTimeout"]
-	cernyrytir.smartFlush = configuration["cernyrytir"]["smartFlush"]
-	cernyrytir.args = args
+	priceSourceHandler.initPriceSource(args.clearCache, configuration["priceSources"])
 
 #	deckAutocomplete.deckAutocomplete("./meta/")
 
@@ -107,7 +105,7 @@ def main():
 	if (args.cache):
 		if (args.cache == 'flush'):
 			scryfall.flushCache()
-			cernyrytir.flushCache()
+			priceSourceHandler.flushCache()
 		if (args.cache == 'init'):
 			cardsToInitCache = {}
 			cardsToInitCache.update(cardCollection)
@@ -117,7 +115,6 @@ def main():
 			cardsToInitCache.update(decksToInit)
 			try:
 				scryfall.initCache(cardsToInitCache)
-				cernyrytir.initCache(decksToInit)
 			except scryfall.CardRetrievalError as e:
 				if (e.errorCode == 404):
 					print ("Card " + e.cardName + " not found on scryfall, aborting.")
@@ -126,6 +123,7 @@ def main():
 				else:
 					print ("Unexpected error " + str(e.errorCode) + " - " + HTTPStatus(e.errorCode).phrase + " for card " + e.cardName + ", aborting.")
 				ready = False
+			priceSourceHandler.initCache(decksToInit)
 
 	if (ready):
 

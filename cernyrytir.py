@@ -1,159 +1,57 @@
-import datetime
-import json
-import os
 import re
 import requests
-import shutil
-import sys
 
-import console
-import util
+from priceSource import PriceSource
 
-baseUrl = "http://cernyrytir.cz/index.php3"
+class CernyRytir(PriceSource):
 
-clearCache = 'none'
-cacheTimeout = 365
-smartFlush = False
-args = {}
+	def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
+		self.clearCache = clearCache
+		self.cacheTimeout = cacheTimeout
+		self.smartFlush = smartFlush
+		self.sourceName = 'Cerny Rytir'
+		self.supportedCurrency = 'czk'
+		self.cacheDir = '.cernyRytirCache'
+		self.priority = priority
+		self.baseUrl = "http://cernyrytir.cz/index.php3"
 
-def getCacheDir():
-	baseDir = os.path.join(os.path.dirname(sys.argv[0]), ".cernyRytirCache")
-	if (not os.path.exists(baseDir)):
-		os.makedirs(baseDir)
-	return baseDir
+	def fetchCardPrice(self, card, page = 0, cheapestPrice = None):
+		pageSize = 30
 
-def flushCache():
-	if (args.currency == 'czk'):
-		try:
-			shutil.rmtree(getCacheDir())
-		except OSError as e:
-			print ("Error where clearing cache directory at " + getCacheDir() + ": %s - %s." % (e.filename, e.strerror))
+		# URL will not accept encoded ', it needs non-UTF8 ´
+		name = card.getProp('name').replace('\'', '´').replace('\"', '„').encode("Windows-1252", "ignore")
 
-def smartFlushCache():
-	# 1) highest price is likely to be most volatile
-	# 2) don't redownload on same day.
+		response = requests.post(self.baseUrl, data={'searchname': name, 'searchtype': 'card', 'akce': '3', 'limit': page * pageSize}, params={'searchname': name, 'searchtype': 'card', 'akce': '3', 'limit': page * pageSize})
 
-	cacheDir = getCacheDir()
+		regex = '<font style="font-weight : bolder;">(.*?)</font>'
 
-	maxPriceFile = None
-	maxPrice = 0
+		items = re.findall(regex, response.text)
 
-	for dirpath, dirnames, files in os.walk(cacheDir):
-		for file in files:
-			jsonFile = os.path.join(dirpath, file)
-			fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
-			if (fileAge.days > 0):
-				with open(jsonFile, encoding='utf-8') as json_data:
-					price = json.load(json_data)["price"]
-					if (price > maxPrice):
-						maxPrice = price
-						maxPriceFile = jsonFile
+		names = items[0::3]
+		prices = items[2::3]
 
-	if (maxPriceFile is not None):
-		os.remove(maxPriceFile)
+		for name, price in zip(names, prices):
 
-def initCache(collection):
-	if (args.currency == 'czk'):
-		if (smartFlush):
-			smartFlushCache()
+			ends = [' - foil', ' - lightly played', ' / lightly played', ' - played', ' / played', 
+				' / non-english', ' - played / japanese', ' / japanese', ' - japanese', ' - non-english',
+				' / chinese', ' / russian', ' - russian']
 
-		lastLength = 0
-		count = 1
+			for end in ends:
+				name = name[::-1].replace(end[::-1], '', 1)[::-1]
 
-		for card in collection:
+			name = name.split(' (')[0]
 
-			statusLine = 'Fetching cerny rytir price for (' + str(count) + '/' + str(len(collection)) + ', ...' + str(collection[card].sourceFile)[-50:-2]  + '): ' + card + " ..."
+			name = name.replace('´', '\'').replace('\x84', '\"')
 
-			count += 1
-			currentLength = len(statusLine)
-			if (currentLength < lastLength):
-				statusLine = statusLine + (lastLength - currentLength) * ' '
-			# newline before doing "status"
-			if (lastLength == 0):
-				sys.stdout.write('\n')
-			lastLength = currentLength
+			price = int(price.split('&')[0])
 
-			sys.stdout.write('\r' + statusLine)
+			if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.getProp('name').lower()):
+				cheapestPrice = price
+
+		if (len(names) == pageSize and 'Nalezeno' in response.text):
+			sys.stdout.write('.')
 			sys.stdout.flush()
-			collection[card].getProp("price")
-		doneMessage = ''
-		sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\r')
-		sys.stdout.flush()
-
-def getCardPrice(card):
-	jsonFile = os.path.join(getCacheDir(), util.cleanFilename(card) + ".json")
-
-	price = None
-
-	if (os.path.exists(jsonFile)):
-		fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
-
-		if (clearCache == 'always' or (clearCache == 'timeout' and fileAge.days > cacheTimeout) or (clearCache == 'price' and fileAge.days > 1)):
-			price = fetchCardPriceMark(card, jsonFile)
+			return self.fetchCardPrice(card, page = page + 1, cheapestPrice = cheapestPrice)
 		else:
-			with open(jsonFile, encoding='utf-8') as json_data:
-				price = json.load(json_data)["price"]
 
-	else:
-
-		price = fetchCardPriceMark(card, jsonFile)
-
-	if (price is None):
-		price = 0
-
-	return float(price)
-
-def fetchCardPriceMark(card, jsonFile):
-
-	response = fetchCardPrice(card)
-
-	if (response is not None):
-		with open(jsonFile, 'w') as f:
-			json.dump({"price": response, "name": card.name}, f)
-	else:
-		print(console.CRED +  "Price not found for '" + card.name + "' card at Cerny Rytir." + console.CEND)
-
-	price = response
-
-	return price
-
-def fetchCardPrice(card, page = 0, cheapestPrice = None):
-	pageSize = 30
-
-	# URL will not accept encoded ', it needs non-UTF8 ´
-	name = card.getProp('name').replace('\'', '´').replace('\"', '„').encode("Windows-1252", "ignore")
-
-	response = requests.post(baseUrl, data={'searchname': name, 'searchtype': 'card', 'akce': '3', 'limit': page * pageSize}, params={'searchname': name, 'searchtype': 'card', 'akce': '3', 'limit': page * pageSize})
-
-	regex = '<font style="font-weight : bolder;">(.*?)</font>'
-
-	items = re.findall(regex, response.text)
-
-	names = items[0::3]
-	prices = items[2::3]
-
-	for name, price in zip(names, prices):
-
-		ends = [' - foil', ' - lightly played', ' / lightly played', ' - played', ' / played', 
-			' / non-english', ' - played / japanese', ' / japanese', ' - japanese', ' - non-english',
-			' / chinese', ' / russian', ' - russian']
-
-		for end in ends:
-			name = name[::-1].replace(end[::-1], '', 1)[::-1]
-
-		name = name.split(' (')[0]
-
-		name = name.replace('´', '\'').replace('\x84', '\"')
-
-		price = int(price.split('&')[0])
-
-		if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.getProp('name').lower()):
-			cheapestPrice = price
-
-	if (len(names) == pageSize and 'Nalezeno' in response.text):
-		sys.stdout.write('.')
-		sys.stdout.flush()
-		return fetchCardPrice(card, page = page + 1, cheapestPrice = cheapestPrice)
-	else:
-
-		return cheapestPrice
+			return cheapestPrice
