@@ -5,12 +5,27 @@ import console
 def search(query, collection):
 	found = scryfall.search(query)
 
+	have = []
+	havenot = []
+
 	for card in found:
 		if (card in collection):
 			collectionCard = collection[card]
 			if (collectionCard.count > 0):
-				print (console.CGREEN + card + console.CEND)
+				have.append(card)
 			else:
-				print (console.CRED + card + console.CEND)
+				havenot.append(card)
 		else:
-			print (console.CRED + card + console.CEND)
+			havenot.append(card)
+
+	if (len(have) > 0):
+		print ('Have:')
+
+	for card in have:
+		print (card.count + " " + console.CGREEN + card + console.CEND)
+
+	if (len(have) > 0):
+		print ('Don\'t have:')
+
+	for card in havenot:
+		print ("0 " + console.CRED + card + console.CEND)
