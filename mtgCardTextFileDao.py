@@ -23,7 +23,7 @@ def readCardFile(f, cardFile, cards, asDeck):
 			if (asDeck):
 #				print ("Sideboard found")
 				isSideboard = True
-		if (line.lower().startswith("commander")):
+		if (line.lower().startswith("commander") or line.startswith("// Commander")):
 			if (asDeck):
 #				print ("Commander found")
 				isCommander = True
