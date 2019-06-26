@@ -80,7 +80,12 @@ class CardInCollection:
 			if (priceSourceHandler.handlesCurrency(CardInCollection.args.currency)):
 				return float(priceSourceHandler.getCardPrice('czk', self))
 			else:
-				return float(self.jsonData.get(CardInCollection.args.currency, "0.0"))
+				price = self.jsonData['prices'].get(CardInCollection.args.currency, "0.0")
+				if (price is None):
+					price = self.jsonData['prices'].get(CardInCollection.args.currency + '_foil', "0.0")
+				if (price is None):
+					price = 0
+				return float(price)
 		if (propName == 'count'):
 			return self.count
 		if (propName == 'name'):

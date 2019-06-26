@@ -125,4 +125,4 @@ def printMissingCardsToConsole(response):
 
 		if ("price" in mtgCardInCollectionObject.CardInCollection.args.print):
 			print ()
-			print ( console.CRED + 'Total shopping list price:' + console.CEND + " " + str(response['totalPrice']) + util.currencyToGlyph(response['currency'] ))
+			print ( console.CRED + 'Total shopping list price:' + console.CEND + " " + "{:3.2f}".format(response['totalPrice']) + util.currencyToGlyph(response['currency'] ))
