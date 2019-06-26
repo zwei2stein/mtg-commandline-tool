@@ -2,12 +2,11 @@ import deckStatistics
 
 import console
 
-formatList = ["commander", "duel", "frontier", "future", "legacy", "modern", "pauper", "penny", "standard", "vintage", "oldschool"]
+formatList = ["commander", "duel", "future", "legacy", "modern", "pauper", "penny", "standard", "vintage", "oldschool"]
 
 singletonFormats = {
 	"commander": True,
 	"duel": True,
-	"frontier": False,
 	"future": False,
 	"legacy": False,
 	"modern": False,
@@ -21,7 +20,6 @@ singletonFormats = {
 requiresCommander = {
 	"commander": True,
 	"duel": True,
-	"frontier": False,
 	"future": False,
 	"legacy": False,
 	"modern": False,
@@ -35,7 +33,6 @@ requiresCommander = {
 minCardCount = {
 	"commander": 100,
 	"duel": 100,
-	"frontier": 60,
 	"future": 60,
 	"legacy": 60,
 	"modern": 60,
@@ -49,7 +46,6 @@ minCardCount = {
 maxSideboardSize = {
 	"commander": 0,
 	"duel": 0,
-	"frontier": 15,
 	"future": 15,
 	"legacy": 15,
 	"modern": 15,
@@ -62,11 +58,11 @@ maxSideboardSize = {
 
 specificityOfFormat = {
 	"standard": 10,
-	"frontier": 9,
 	"modern": 8,
 	"pauper": 7,
 	"penny": 6,
 	"commander": 5,
+	"EDH": 5,
 	"duel": 4,
 	"vintage": 2,
 	"legacy": 1,
@@ -76,7 +72,6 @@ specificityOfFormat = {
 
 budgetPrice = {
 	"standard": 50,
-	"frontier": 150,
 	"modern": 100,
 	"pauper": 20,
 	"penny": 5,
@@ -87,6 +82,21 @@ budgetPrice = {
 	"oldschool": 500,
 	"future": -1
 }
+
+def canBeCommander(card):
+
+	commanderLegality = card.jsonData.get('legalities', {}).get("commander", "not_legal")
+	if (commanderLegality in ['not_legal', 'banned']):
+		return False
+
+	faceTypes = card.jsonData.get('type_line', '').split("//")
+	faceType = faceTypes[0]
+	typesSplit = faceType.strip().split("\u2014")
+	if (len(typesSplit) > 1):
+		if ("Creature" not in typesSplit[0] or "Legendary" not in typesSplit[0]):
+			return False
+
+	return True
 
 def getDeckFormat(deck, watchFormat=None):
 
@@ -109,7 +119,7 @@ def getDeckFormat(deck, watchFormat=None):
 
 	for deckCardName in deck:
 		deckCard = deck[deckCardName]
-		legalities = deckCard.jsonData.get('legalities', 'C')
+		legalities = deckCard.jsonData.get('legalities', {})
 		for format in formats:
 			# We assume that if legality infor is not available, then it is not legal
 			legality = legalities.get(format, "not_legal")
