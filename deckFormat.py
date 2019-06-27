@@ -106,7 +106,6 @@ def getDeckFormat(deck, watchFormat=None):
 	formats = {
 		"commander": True,
 		"duel": True,
-		"frontier": True,
 		"future": True,
 		"legacy": True,
 		"modern": True,
