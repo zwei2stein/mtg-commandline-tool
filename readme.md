@@ -124,17 +124,18 @@ Commander:
 ## Commandline help
 
 ```
+
 usage: mtg.py [-h] [-cd COLLECTIONDIRECTORY] [-id] [-fp FILEPATTERN]
-              [-c {eur,usd,tix,czk}] [-cache {init,flush,auto}]
+              [-c {usd,eur,tix,czk}] [-cache {init,flush,auto}]
               [-clearCache {awlays,price,timeout,none}]
               (-sl SAVELIST | -d DECK | -search SEARCH)
               [-p [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
               [-s [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
               [-g [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
-              [-fl {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}]
+              [-fl {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}]
               [-ft FILTERTYPE] [-mc] [-lt] [-dp] [-mcu] [-ms] [-lm] [-cc]
               [-is] [-df]
-              [-dfi {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}]
+              [-dfi {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}]
               [-ct] [-draw DRAWCARDS] [-nd] [-diff DIFF]
 
 Process MTG card plain text lists (decks and collection)
@@ -151,7 +152,7 @@ optional arguments:
   -fp FILEPATTERN, --filePattern FILEPATTERN
                         Regular expression pattern for files that are
                         considered part of collection. Default is '.*\.txt'
-  -c {eur,usd,tix,czk}, --currency {eur,usd,tix,czk}
+  -c {usd,eur,tix,czk}, --currency {usd,eur,tix,czk}
                         Currency used for sorting by price and for output of
                         price. Default 'eur'
   -cache {init,flush,auto}, --cache {init,flush,auto}
@@ -179,7 +180,7 @@ optional arguments:
   -g [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]], --group [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]
                         Group saved list by given parameter. Always groups
                         sideboards together.
-  -fl {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}, --filterLegality {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}
+  -fl {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}, --filterLegality {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}
                         Filter result list by format legality. Default is no
                         filter.
   -ft FILTERTYPE, --filterType FILTERTYPE
@@ -194,7 +195,7 @@ optional arguments:
   -cc, --cardCount      Gives total count of cards for deck
   -is, --isSingleton    Checks deck if it is singeton
   -df, --deckFormat     Prints formats in which is deck legal
-  -dfi {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}, --deckFormatInspect {commander,duel,frontier,future,legacy,modern,pauper,penny,standard,vintage,oldschool}
+  -dfi {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}, --deckFormatInspect {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}
                         Show detailed information about why deck does not meet
                         format criteria.
   -ct, --deckCreatureTypes
@@ -205,6 +206,7 @@ optional arguments:
   -nd, --nameDeck       Attempts to generate name for given deck
   -diff DIFF, --diff DIFF
                         Difference of deck with another deck.
+
 ```
 
 ## TODO:
