@@ -37,7 +37,7 @@ def main():
 	parser.add_argument('-cd', '--collectionDirectory', help='Sets root directory to scan for card collection. Default is \'' + configuration["collectionDirectory"] + '\' directory. Single file representing collection can be specified instead of directory.', type=str, default=configuration["collectionDirectory"] , required=False)
 	parser.add_argument('-id', '--ignoreDecks', action='store_const', const='deck', default=None, help='Ignore files with \'deck\' in path. Usefull when you store decks along with your collection.')
 	parser.add_argument('-fp', '--filePattern', type=str, default=configuration["filePattern"], help='Regular expression pattern for files that are considered part of collection. Default is \'' + configuration["filePattern"] + '\'')
-	parser.add_argument('-c', '--currency', choices=['eur', 'usd', 'tix', 'czk'], default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
+	parser.add_argument('-c', '--currency', choices=priceSourceHandler.getSupportedCurrencies(), default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
 
 	parser.add_argument('-cache', '--cache', choices=['init', 'flush', 'auto'], default='init', help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory, \'auto\' does nothing.')
 
