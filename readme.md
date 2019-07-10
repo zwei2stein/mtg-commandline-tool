@@ -227,10 +227,8 @@ optional arguments:
 
  * token with "ability"
 
- * make Deck object with accessors (commander, deck, sideboard)
+ * make Deck object with accessors (commander, deck, sideboard, statistics, etc ... move utility methods there)
 
  * move getFullOracleText ad getFullTypeLine to card object
 
- * better search output
-
- * Total shopping list price: 67.26000000000000111216591490
+ * better output for card line in lists
