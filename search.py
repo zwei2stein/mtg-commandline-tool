@@ -12,7 +12,7 @@ def search(query, collection):
 		if (card in collection):
 			collectionCard = collection[card]
 			if (collectionCard.count > 0):
-				have.append(card)
+				have.append(collectionCard)
 			else:
 				havenot.append(card)
 		else:
@@ -22,7 +22,7 @@ def search(query, collection):
 		print ('Have:')
 
 	for card in have:
-		print (card.count + " " + console.CGREEN + card + console.CEND)
+		print (str(card.count) + " " + console.CGREEN + card.name + console.CEND)
 
 	if (len(have) > 0):
 		print ('Don\'t have:')
