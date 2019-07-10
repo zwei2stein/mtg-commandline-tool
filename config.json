@@ -17,7 +17,7 @@
 		"najada": {
 			"cacheTimeout": 90,
 			"smartFlush": true,
-			"priority": 1,
+			"priority": 2,
 			"enabled": true
 		}
 	}

@@ -33,9 +33,13 @@ def initCache(decksToInit):
 
 def getCardPrice(currency, cardObject):
 	global handlers
+	price = 0
+	priceSourceCount = 0
 	for handler in handlers:
 		if (handler.getSupportedCurrency() == currency):
-			price = handler.getCardPrice(cardObject)
-			if (price > 0):
-				return price
-	return 0
+			price = price + handler.getCardPrice(cardObject)
+			priceSourceCount = priceSourceCount + 1
+	if (priceSourceCount > 0):
+		return price / priceSourceCount
+	else:
+		return 0
