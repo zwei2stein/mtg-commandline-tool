@@ -37,8 +37,10 @@ def getCardPrice(currency, cardObject):
 	priceSourceCount = 0
 	for handler in handlers:
 		if (handler.getSupportedCurrency() == currency):
-			price = price + handler.getCardPrice(cardObject)
-			priceSourceCount = priceSourceCount + 1
+			addedPrice = handler.getCardPrice(cardObject)
+			if (addedPrice > 0):
+				price = price + addedPrice
+				priceSourceCount = priceSourceCount + 1
 	if (priceSourceCount > 0):
 		return price / priceSourceCount
 	else:
