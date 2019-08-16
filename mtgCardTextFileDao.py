@@ -3,6 +3,7 @@ import os
 import sys
 import functools
 
+import console
 import mtgCardInCollectionObject
 import mtgColors
 import sets
@@ -45,18 +46,21 @@ def readCardFile(f, cardFile, cards, asDeck):
 					commentedName = name.split('#')
 					name = commentedName[0]
 					# print ("comment", commentedName[1:])
-				name = re.sub(" \[[A-Z0-9]{3,4}\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
+				name = re.sub(" \[[A-Z0-9]{3,5}\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
 				name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
 				name = name.strip()
+				sideboardCount = 0
+				if (isSideboard):
+					sideboardCount = count
 				if (name in cards):
-					cards[name].add(count, cardFile, isSideboard, isCommander)
+					cards[name].add(count, cardFile, sideboardCount, isCommander)
 				else:
-					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, isSideboard, isCommander)
+					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, sideboardCount, isCommander)
 				isCommander = False
 	return cards
 
-def saveCardFile(file, cards, sorts, diffFormat=False):
+def saveCardFile(file, cards, sorts, diffFormat=False, color=None):
 
 	hasSideboard = functools.reduce((lambda x, v: x or v.getProp('sideboard')), cards.values(), False)
 
@@ -66,18 +70,21 @@ def saveCardFile(file, cards, sorts, diffFormat=False):
 		file.write('\n')
 		file.write('Commander:')
 		file.write('\n')
-		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('commander')}, [], diffFormat)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if v.getProp('commander')}, [], diffFormat, color = color)
+		file.write('\n')
+		file.write('# Main deck:')
+		file.write('\n')
 	if (hasSideboard):
-		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if (v.getProp('mainboard') and not v.getProp('commander'))}, sorts, diffFormat, sideboard = False)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if (v.getProp('mainboard') and not v.getProp('commander'))}, sorts, diffFormat, sideboard = False, color = color)
 		file.write('\n')
 		file.write('Sideboard:')
 		file.write('\n')
-		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if (v.getProp('sideboard') and not v.getProp('commander'))}, sorts, diffFormat, sideboard = True)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if (v.getProp('sideboard') and not v.getProp('commander'))}, sorts, diffFormat, sideboard = True, color = color)
 	else:
-		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if not v.getProp('commander')}, sorts, diffFormat)
+		saveCardFileSlice(file, {k:v for (k,v) in cards.items() if not v.getProp('commander')}, sorts, diffFormat, color = color)
 
-def saveCardFileSlice(file, cards, sorts, diffFormat, sideboard = False):
-
+def saveCardFileSlice(file, cards, sorts, diffFormat, sideboard = False, color=None):
+	
 	lastGroup = {}
 	
 	for sort in sorts:
@@ -114,15 +121,18 @@ def saveCardFileSlice(file, cards, sorts, diffFormat, sideboard = False):
 			if (not (mtgCardInCollectionObject.CardInCollection.args.filterType in cards[card].jsonData['type_line'])):
 				continue
 
-		printCard(file, cards[card], sideboard, diffFormat)
+		printCard(file, cards[card], sideboard, diffFormat, color = color)
 
 
 
-def printCard(file, card, sideboard, diffFormat):
+def printCard(file, card, sideboard, diffFormat, color=None):
 
 	count = 0
 	if (sideboard):
-		count = card.sideboard
+		if (card.count < card.sideboard):
+			count = card.sideboard - card.count 
+		else:	
+			count = card.sideboard
 	else:
 		count = card.count - card.sideboard
 
@@ -130,13 +140,16 @@ def printCard(file, card, sideboard, diffFormat):
 		for x in range(count):
 			printCardLine(file, 1, card)	
 	else:
-		printCardLine(file, count, card)
+		printCardLine(file, count, card, color = color)
 
-def printCardLine(file, count, card):
-
+def printCardLine(file, count, card, color = None):
 	file.write(str(count))
 	file.write(" ")
+	if (color is not None):
+		file.write(color)
 	file.write(str(card))
+	if (color is not None):
+		file.write(console.CEND)
 	file.write('\n')
 
 def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):

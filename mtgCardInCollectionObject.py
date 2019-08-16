@@ -1,6 +1,5 @@
 import scryfall
 import priceSourceHandler
-import najada
 
 import mtgColors
 import sets
@@ -33,25 +32,22 @@ class CardInCollection:
 
 	args = None
 
-	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = False, commander = False):
+	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = 0, commander = False):
 		self.name = name
 		self.count = count
-		if (sideboard):
-			self.sideboard = count
-		else:
-			self.sideboard = 0
+		self.sideboard = sideboard
 		self.commander = commander
 		self.sourceFile = []
 		self.sourceFile.append(sourceFile)
 		self._jsonData = jsonData
 
-	def add(self, count, sourceFile, sideboard = False, commander = False):
+	def add(self, count, sourceFile, sideboard = 0, commander = False):
 		self.count += count
-		if (sideboard):
-			self.sideboard += count
+		self.sideboard += count
 		if (commander):
 			self.commander = commander
-		self.sourceFile.append(sourceFile)
+		if (sourceFile is not None):
+			self.sourceFile.append(sourceFile)
 
 	@property
 	def jsonData(self):

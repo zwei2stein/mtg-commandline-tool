@@ -1,6 +1,8 @@
 import scryfall
+import cardListFormater
 
 import console
+
 
 def search(query, collection):
 	found = scryfall.search(query)
@@ -20,12 +22,11 @@ def search(query, collection):
 
 	if (len(have) > 0):
 		print ('Have:')
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectListToCardObjectMap(have), color=console.CGREEN)
 
-	for card in have:
-		print (str(card.count) + " " + console.CGREEN + card.name + console.CEND)
+	if (len(have) > 0 and len(havenot) > 0):
+		print ('')
 
-	if (len(have) > 0):
+	if (len(havenot) > 0):
 		print ('Don\'t have:')
-
-	for card in havenot:
-		print ("0 " + console.CRED + card + console.CEND)
+		cardListFormater.printCardObjectList(cardListFormater.cardListToCardObjectMap(havenot, 1), color=console.CRED)

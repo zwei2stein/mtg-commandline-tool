@@ -154,7 +154,7 @@ def main():
 			if (args.deckCreatureTypes):
 				deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
 			if (args.drawCards):
-				drawCards.drawCards(deck, args.drawCards)
+				drawCards.printManaSymbolsToConsole(drawCards.drawCards(deck, args.drawCards))
 			if (args.diff):
 				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True)
 				deckDiff.diff(deck, deck2)

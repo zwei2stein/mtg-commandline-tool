@@ -3,6 +3,7 @@ import console
 
 import util
 import mtgCardInCollectionObject
+import cardListFormater
 
 def getPrice(deckCard, count):
 	return count * Decimal(deckCard.getProp('price'));
@@ -60,68 +61,20 @@ def printMissingCardsToConsole(response):
 	else:
 		print ("Have: " + "{:3.2f}".format(100 * (response['totalDeckCards'] - response['totalCount']) / response['totalDeckCards']) + "%")
 
-	print (console.CGREEN + "Commander:" + console.CEND)
-
-	for deckCard in sorted(haveList):
-		if (deckCard.commander):
-			print (haveList[deckCard], console.CGREEN + str(deckCard) + console.CEND)
-
-	print (console.CGREEN + "Main deck:" + console.CEND)
-
-	for deckCard in sorted(haveList):
-		if (deckCard.sideboard == 0 and not deckCard.commander):
-			print (haveList[deckCard], console.CGREEN + str(deckCard) + console.CEND)
-
-	print (console.CGREEN + "Main deck + sideboard:" + console.CEND)
-
-	for deckCard in sorted(haveList):
-		if (deckCard.count != deckCard.sideboard and haveList[deckCard] > deckCard.count - deckCard.sideboard and not deckCard.commander):
-			print (haveList[deckCard], console.CGREEN + str(deckCard) + console.CEND, str(deckCard.count - deckCard.sideboard) + "+" + str(deckCard.sideboard))
-
-	print (console.CGREEN + "Sideboard:" + console.CEND)
-
-	for deckCard in sorted(haveList):
-		if (deckCard.count == deckCard.sideboard and not deckCard.commander):
-			print (haveList[deckCard], console.CGREEN + str(deckCard) + console.CEND)
+	cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(haveList), console.CGREEN)
 
 	if (len(response['shoppingList']) == 0):
 
 		print ()
-
 		print (console.CGREEN + "Nothing to buy." + console.CEND)
 
 	else:
 
 		print ()
-
 		print (console.CRED + "Shopping list:" + console.CEND)
-
 		print ()
 
-		print (console.CRED + "Commander:" + console.CEND)
-
-		for deckCard in sorted(shoppingList):
-			if (deckCard.commander):
-				print (shoppingList[deckCard], str(deckCard))
-
-		print (console.CRED + "Main deck:" + console.CEND)
-
-		for deckCard in sorted(shoppingList):
-			if (deckCard.sideboard == 0 and not deckCard.commander):
-				print (shoppingList[deckCard], deckCard)
-
-		print (console.CRED + "Main deck + sideboard:" + console.CEND)
-
-		for deckCard in sorted(shoppingList):
-			if (deckCard.count != deckCard.sideboard and shoppingList[deckCard] > deckCard.count - deckCard.sideboard and not deckCard.commander):
-				print (shoppingList[deckCard], deckCard, str(deckCard.count - deckCard.sideboard) + "+" + str(deckCard.sideboard))
-
-		print ( console.CRED + "Sideboard:" + console.CEND)
-
-		for deckCard in sorted(shoppingList):
-			if (deckCard.count == deckCard.sideboard and not deckCard.commander):
-				print (shoppingList[deckCard], deckCard)
-
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(shoppingList), console.CRED)
 
 		if ("price" in mtgCardInCollectionObject.CardInCollection.args.print):
 			print ()
