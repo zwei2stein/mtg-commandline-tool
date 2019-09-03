@@ -7,6 +7,9 @@ import sys
 import console
 import util
 
+class PriceNotFoundException(Exception):
+	pass
+
 class PriceSource:
 
 	def getPriority(self):
@@ -58,9 +61,11 @@ class PriceSource:
 		lastLength = 0
 		count = 1
 
+		errors = []
+
 		for card in collection:
 
-			statusLine = 'Fetching ' + self.sourceName + ' price for (' + str(count) + '/' + str(len(collection)) + ', ...' + str(collection[card].sourceFile)[-50:-2]  + '): ' + card + " ..."
+			statusLine = 'Fetching ' + self.sourceName + ' price for (' + str(count) + '/' + str(len(collection)) + ', ...' + str(collection[card].sourceFile)[-50:-2]  + '): "' + card + '" ...'
 
 			count += 1
 			currentLength = len(statusLine)
@@ -73,9 +78,14 @@ class PriceSource:
 
 			sys.stdout.write('\r' + statusLine)
 			sys.stdout.flush()
-			collection[card].getProp("price")
+			try: 
+				self.getCardPrice(collection[card])
+			except PriceNotFoundException as e:
+				errors.append('Price for ' + card + ' not found at ' + self.sourceName )
 		doneMessage = ''
 		sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\r')
+		for error in errors:
+			sys.stdout.write(error + '\n')
 		sys.stdout.flush()
 
 	def getCardPrice(self, card):
@@ -93,13 +103,12 @@ class PriceSource:
 					price = json.load(json_data)["price"]
 
 		else:
-
 			price = self.fetchCardPriceMark(card, jsonFile)
 
 		if (price is None):
-			price = 0
-
-		return float(price)
+			raise PriceNotFoundException()
+		else:
+			return price
 
 	def fetchCardPriceMark(self, card, jsonFile):
 
@@ -108,8 +117,6 @@ class PriceSource:
 		if (response is not None):
 			with open(jsonFile, 'w') as f:
 				json.dump({"price": response, "name": card.name}, f)
-		else:
-			print(console.CRED +  "Price not found for '" + card.name + "' card at " + self.sourceName + "." + console.CEND)
 
 		price = response
 

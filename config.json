@@ -19,6 +19,12 @@
 			"smartFlush": true,
 			"priority": 2,
 			"enabled": true
+		},
+		"blacklotus": {
+			"cacheTimeout": 90,
+			"smartFlush": true,
+			"priority": 2,
+			"enabled": true
 		}
 	}
 }
