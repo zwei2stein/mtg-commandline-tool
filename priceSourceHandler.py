@@ -6,6 +6,8 @@ from blacklotus import BlackLotus
 from scryfallPriceSource import ScryfallPriceSource
 from priceSource import PriceNotFoundException
 
+import util
+
 handlers = []
 
 errors = []
@@ -58,3 +60,31 @@ def getCardPrice(currency, cardObject):
 		return Decimal(0)
 
 	print(errors)
+
+def apparise(cardObject, currency):
+	global handlers
+
+	prices = {}
+
+	for handler in handlers:
+		if (handler.getSupportedCurrency() == currency):
+			try:
+				prices[handler.sourceName] = handler.getCardPrice(cardObject)
+			except PriceNotFoundException as e:
+				errors.append('Price for ' + cardObject.name + ' not found at ' + handler.sourceName )
+
+	response = {}
+	response['card'] = cardObject
+	response['prices'] = prices 
+	response['errors'] = errors
+	response["currency"] = currency
+	
+	return response
+
+def printApparise(response):
+
+	for source in response['prices']:
+		print(source + ' ' + str(response['prices'][source]), util.currencyToGlyph(response["currency"]))
+
+	for error in response['errors']: 
+		print (error)

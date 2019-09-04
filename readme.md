@@ -46,6 +46,10 @@ This is tool for handling decklists and card collection.
 
 `$ python ./tool/mtg.py -search 't:goblin cmc:1'`
 
+### Get value of Giant Spider card from all sources with given currency
+
+`$ python ./tool/mtg.py -c czk -apr 'Giant Spider'`
+
 ## Setup:
 ---------
 

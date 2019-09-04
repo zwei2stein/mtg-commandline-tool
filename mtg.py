@@ -48,9 +48,9 @@ def main():
 	group.add_argument('-sl', '--saveList', help='Save consolidated collection or print it to \'console\'', type=str)
 	group.add_argument('-d', '--deck', help='Chooses deck file to work on, required for deck tools. If directory is specified, tool will work on each deck file found in directory', type=str)
 	group.add_argument('-search', '--search', default=None, type=str, help='Search your collection with scryfall. Use scryfall search string')
+	group.add_argument('-apr', '--appraise', default=None, type=str, help='Print price of card in all sources in given currency')
 
 	cardProps = ['price', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType', 'rarity']
-
 	parser.add_argument('-p', '--print', nargs='*',choices=cardProps, default=[], help='Add given atributes to card printout')
 	parser.add_argument('-s', '--sort', nargs='*', choices=cardProps, default=[], help='Sort list order by. Default \'name\'.')
 	parser.add_argument('-g', '--group', nargs='*', choices=cardProps, default=[], help='Group saved list by given parameter. Always groups sideboards together.')
@@ -124,6 +124,10 @@ def main():
 					print ("Unexpected error " + str(e.errorCode) + " - " + HTTPStatus(e.errorCode).phrase + " for card " + e.cardName + ", aborting.")
 				ready = False
 			priceSourceHandler.initCache(decksToInit)
+			if (args.appraise is not None):
+				appraiseCards = {}
+				appraiseCards[args.appraise] = mtgCardInCollectionObject.CardInCollection(args.appraise, 1, None, None, 0, False)
+				priceSourceHandler.initCache(appraiseCards)
 
 	if (ready):
 
@@ -171,5 +175,8 @@ def main():
 
 		if (args.search is not None):
 			search.search(args.search, cardCollection)
+
+		if (args.appraise is not None):
+			priceSourceHandler.printApparise(priceSourceHandler.apparise(mtgCardInCollectionObject.CardInCollection(args.appraise, 1, None, None, 0, False), args.currency))
 
 main()

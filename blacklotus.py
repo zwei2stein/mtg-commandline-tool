@@ -1,9 +1,7 @@
-from decimal import *
 import base64
 import re
 import requests
-
-import datetime
+import sys
 
 from priceSource import PriceSource
 
@@ -54,4 +52,14 @@ class BlackLotus(PriceSource):
 			if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.getProp('name').lower()):
 				cheapestPrice = price
 
-		return cheapestPrice
+		start = response.text.find('<div class="paging">')
+		end = response.text.find('</div>', start + 1)
+		hasNextPage = 'http://www.blacklotus.cz/img/design/arrow.gif' in response.text[start:end]
+
+		if hasNextPage and page < 5:
+			sys.stdout.write('.')
+			sys.stdout.flush()
+			return self.fetchCardPrice(card, page = page + 1, cheapestPrice = cheapestPrice)
+
+		else:
+			return cheapestPrice

@@ -1,5 +1,6 @@
 import re
 import requests
+import sys
 
 from priceSource import PriceSource
 
