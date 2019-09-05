@@ -1,7 +1,8 @@
 import base64
 import re
 import requests
-import sys
+
+import util
 
 from priceSource import PriceSource
 
@@ -57,8 +58,7 @@ class BlackLotus(PriceSource):
 		hasNextPage = 'http://www.blacklotus.cz/img/design/arrow.gif' in response.text[start:end]
 
 		if hasNextPage and page < 5:
-			sys.stdout.write('.')
-			sys.stdout.flush()
+			util.printProgress(page)
 			return self.fetchCardPrice(card, page = page + 1, cheapestPrice = cheapestPrice)
 
 		else:

@@ -1,6 +1,7 @@
 import re
 import requests
-import sys
+
+import util
 
 from priceSource import PriceSource
 
@@ -50,8 +51,7 @@ class CernyRytir(PriceSource):
 				cheapestPrice = price
 
 		if (len(names) == pageSize and 'Nalezeno' in response.text):
-			sys.stdout.write('.')
-			sys.stdout.flush()
+			util.printProgress(page)
 			return self.fetchCardPrice(card, page = page + 1, cheapestPrice = cheapestPrice)
 		else:
 

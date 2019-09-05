@@ -1,8 +1,16 @@
 import unicodedata
 import string
 import os
+import sys
 
 valid_filename_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+
+progressAnimation = ['|', '/', '-', '\\']
+
+def printProgress(progress):
+	sys.stdout.write('\b')
+	sys.stdout.write(progressAnimation[progress % len(progressAnimation)])
+	sys.stdout.flush()
 
 def cleanFilename(card, whitelist=valid_filename_chars, replace=' '):
 
