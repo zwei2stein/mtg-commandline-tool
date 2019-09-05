@@ -5,6 +5,7 @@ from cernyrytir import CernyRytir
 from blacklotus import BlackLotus
 from scryfallPriceSource import ScryfallPriceSource
 from priceSource import PriceNotFoundException
+from tolarie import Tolarie
 
 import util
 
@@ -21,6 +22,8 @@ def initPriceSource(clearCache, configuration):
 		handlers.append(CernyRytir(clearCache, configuration["cernyrytir"]["cacheTimeout"], configuration["cernyrytir"]["smartFlush"], configuration["cernyrytir"]["priority"]))
 	if (configuration["blacklotus"]["enabled"]):
 		handlers.append(BlackLotus(clearCache, configuration["blacklotus"]["cacheTimeout"], configuration["blacklotus"]["smartFlush"], configuration["blacklotus"]["priority"]))
+	if (configuration["tolarie"]["enabled"]):
+		handlers.append(Tolarie(clearCache, configuration["tolarie"]["cacheTimeout"], configuration["tolarie"]["smartFlush"], configuration["tolarie"]["priority"]))
 
 	handlers.append(ScryfallPriceSource('tix'))
 	handlers.append(ScryfallPriceSource('usd'))
