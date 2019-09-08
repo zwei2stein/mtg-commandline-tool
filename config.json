@@ -31,6 +31,12 @@
 			"smartFlush": true,
 			"priority": 2,
 			"enabled": true
+		},
+		"mysticshop": {
+			"cacheTimeout": 90,
+			"smartFlush": true,
+			"priority": 2,
+			"enabled": true
 		}
 	}
 }

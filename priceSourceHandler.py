@@ -6,6 +6,7 @@ from blacklotus import BlackLotus
 from scryfallPriceSource import ScryfallPriceSource
 from priceSource import PriceNotFoundException
 from tolarie import Tolarie
+from mysticshop import MysticShop
 
 import util
 
@@ -24,6 +25,8 @@ def initPriceSource(clearCache, configuration):
 		handlers.append(BlackLotus(clearCache, configuration["blacklotus"]["cacheTimeout"], configuration["blacklotus"]["smartFlush"], configuration["blacklotus"]["priority"]))
 	if (configuration["tolarie"]["enabled"]):
 		handlers.append(Tolarie(clearCache, configuration["tolarie"]["cacheTimeout"], configuration["tolarie"]["smartFlush"], configuration["tolarie"]["priority"]))
+	if (configuration["mysticshop"]["enabled"]):
+		handlers.append(MysticShop(clearCache, configuration["mysticshop"]["cacheTimeout"], configuration["mysticshop"]["smartFlush"], configuration["mysticshop"]["priority"]))
 
 	handlers.append(ScryfallPriceSource('tix'))
 	handlers.append(ScryfallPriceSource('usd'))
