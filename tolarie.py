@@ -44,7 +44,7 @@ class Tolarie(PriceSource):
 
 				price = int(price)
 
-				if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.getProp('name').lower()):
+				if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.name.lower()):
 					cheapestPrice = price
 
 		hasNextPage = 'class="">Další</a>' in response.text

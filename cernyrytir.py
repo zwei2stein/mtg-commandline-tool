@@ -21,7 +21,7 @@ class CernyRytir(PriceSource):
 		pageSize = 30
 
 		# URL will not accept encoded ', it needs non-UTF8 ´
-		name = card.getProp('name').replace('\'', '´').replace('\"', '„').encode("Windows-1252", "ignore")
+		name = card.name.replace('\'', '´').replace('\"', '„').encode("Windows-1252", "ignore")
 
 		response = requests.post(self.baseUrl, data={'searchname': name, 'searchtype': 'card', 'akce': '3', 'limit': page * pageSize}, params={'searchname': name, 'searchtype': 'card', 'akce': '3', 'limit': page * pageSize})
 
@@ -33,6 +33,7 @@ class CernyRytir(PriceSource):
 		prices = items[2::3]
 
 		for name, price in zip(names, prices):
+
 
 			ends = [' - foil', ' - lightly played', ' / lightly played', ' - played', ' / played', 
 				' / non-english', ' - played / japanese', ' / japanese', ' - japanese', ' - non-english',
@@ -47,7 +48,7 @@ class CernyRytir(PriceSource):
 
 			price = int(price.split('&')[0])
 
-			if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.getProp('name').lower()):
+			if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.name.lower()):
 				cheapestPrice = price
 
 		if (len(names) == pageSize and 'Nalezeno' in response.text):

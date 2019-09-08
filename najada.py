@@ -47,6 +47,8 @@ class Najada(PriceSource):
 
 			name = re.sub(cleanHtml, '', name).strip()
 
+			name = re.sub( '\\('+str(card.getProp('name'))+'\\)', '', name).strip()
+
 			if (name == '&nbsp;'):
 				name = prevName
 			else:
@@ -54,7 +56,7 @@ class Najada(PriceSource):
 
 			price = int(price)
 
-			if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.getProp('name').lower()):
+			if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.name.lower()):
 				cheapestPrice = price
 
 		return cheapestPrice

@@ -46,7 +46,7 @@ class PriceSource:
 				fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
 				if (fileAge.days > 0):
 					with open(jsonFile, encoding='utf-8') as json_data:
-						price = json.load(json_data)["price"]
+						price = float(json.load(json_data)["price"])
 						if (price > maxPrice):
 							maxPrice = price
 							maxPriceFile = jsonFile
