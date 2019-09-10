@@ -4,10 +4,16 @@ import os
 import shutil
 import sys
 
+from requests.exceptions import ProxyError
+from requests.exceptions import ConnectionError
+
 import console
 import util
 
 class PriceNotFoundException(Exception):
+	pass
+
+class SourceUnreachableException(Exception):
 	pass
 
 class PriceSource:
@@ -82,6 +88,8 @@ class PriceSource:
 				self.getCardPrice(collection[card])
 			except PriceNotFoundException as e:
 				errors.append('Price for ' + card + ' not found at ' + self.sourceName )
+			except SourceUnreachableException as e:
+				errors.append(self.sourceName + ' is unreachable')
 		doneMessage = ''
 		sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\r')
 		for error in errors:
@@ -112,7 +120,13 @@ class PriceSource:
 
 	def fetchCardPriceMark(self, card, jsonFile):
 
-		response = self.fetchCardPrice(card)
+		response = None
+		try:
+			response = self.fetchCardPrice(card)
+		except ProxyError as e:
+			raise SourceUnreachableException() from None
+		except ConnectionError as e:
+			raise SourceUnreachableException() from None
 
 		if (response is not None):
 			with open(jsonFile, 'w') as f:

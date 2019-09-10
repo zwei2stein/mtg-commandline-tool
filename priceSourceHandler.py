@@ -5,6 +5,7 @@ from cernyrytir import CernyRytir
 from blacklotus import BlackLotus
 from scryfallPriceSource import ScryfallPriceSource
 from priceSource import PriceNotFoundException
+from priceSource import SourceUnreachableException
 from tolarie import Tolarie
 from mysticshop import MysticShop
 
@@ -61,6 +62,8 @@ def getCardPrice(currency, cardObject):
 					priceSourceCount = priceSourceCount + 1
 			except PriceNotFoundException as e:
 				errors.append('Price for ' + cardObject.name + ' not found at ' + handler.sourceName )
+			except SourceUnreachableException as e:
+				errors.append(handler.sourceName + ' is unreachable')
 	if (priceSourceCount > 0):
 		return Decimal(price / priceSourceCount).quantize(Decimal('.01'), rounding=ROUND_UP)
 	else:
@@ -68,7 +71,7 @@ def getCardPrice(currency, cardObject):
 
 	print(errors)
 
-def apparise(cardObject, currency):
+def apparise(currency, cardObject):
 	global handlers
 
 	prices = {}
@@ -105,7 +108,9 @@ def apparise(cardObject, currency):
 					maxPrice = prices[handler.sourceName]
 
 			except PriceNotFoundException as e:
-				errors.append('Price for ' + cardObject.name + ' not found at ' + handler.sourceName )
+				errors.append('Price for ' + cardObject.name + ' not found at ' + handler.sourceName)
+			except SourceUnreachableException as e:
+				errors.append(handler.sourceName + ' is unreachable')
 
 	response = {}
 	response['min'] = minKey
@@ -131,7 +136,52 @@ def printApparise(response):
 			prefix = console.CGREEN
 			sufix = console.CEND
 
-		print(prefix + source + ' ' + str(response['prices'][source]), util.currencyToGlyph(response["currency"]) + sufix)
+		print(prefix + source + ' ' + str(response['prices'][source]) + util.currencyToGlyph(response["currency"]) + sufix)
 
 	for error in response['errors']: 
 		print (console.CRED + error + console.CEND)
+
+def stringApparise(response):
+
+	res = ''
+
+	first = True
+
+	for source in response['prices']:
+
+		prefix = ''
+		sufix = ''
+
+		if (source in response['max']):
+			prefix = console.CRED
+			sufix = console.CEND
+		if (source in response['min']):
+			prefix = console.CGREEN
+			sufix = console.CEND
+
+		if (not first):
+			res = res + ', '
+		else:
+			first = False
+
+		res =  res + prefix + source + ': ' + str(response['prices'][source]) + util.currencyToGlyph(response["currency"]) + sufix
+
+	return res
+
+def stringMinPrices(response):
+
+	res = ''
+
+	first = True
+
+	for source in sorted(response['min']):
+
+		if (not first):
+			res = res + ', '
+		else:
+			first = False
+
+		res = res + source
+
+	return res
+	

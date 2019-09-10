@@ -50,6 +50,10 @@ This is tool for handling decklists and card collection.
 
 `$ python ./tool/mtg.py -c czk -apr 'Giant Spider'`
 
+### Print missing cards for deck, grouped by price sources where each card is cheapest and with printout of all known prices
+
+'$ python ./tool/mtg.py -d ./decklists/professors_pauper/Pauper\ Mono\ Green\ Tron.txt -mc -p fullPrices -c czk -g cheapestPriceSource'
+
 ## Setup:
 ---------
 

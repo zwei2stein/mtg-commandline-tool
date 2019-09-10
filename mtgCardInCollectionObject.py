@@ -5,6 +5,8 @@ import mtgColors
 import sets
 import util
 
+cardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType', 'rarity']
+
 rarityOrder = {
 	'common' : 0,
 	'uncommon' : 1,
@@ -74,6 +76,10 @@ class CardInCollection:
 			return self.jsonData["cmc"]
 		if (propName == 'price'):
 			return float(priceSourceHandler.getCardPrice(CardInCollection.args.currency, self))
+		if (propName == 'fullPrices'):
+			return priceSourceHandler.stringApparise(priceSourceHandler.apparise(CardInCollection.args.currency, self))
+		if (propName == 'cheapestPriceSource'):
+			return priceSourceHandler.stringMinPrices(priceSourceHandler.apparise(CardInCollection.args.currency, self))
 		if (propName == 'count'):
 			return self.count
 		if (propName == 'name'):

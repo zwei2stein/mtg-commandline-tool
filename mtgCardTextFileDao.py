@@ -147,9 +147,10 @@ def printCardLine(file, count, card, color = None):
 	file.write(" ")
 	if (color is not None):
 		file.write(color)
-	file.write(str(card))
+	file.write(card.name)
 	if (color is not None):
 		file.write(console.CEND)
+	file.write(card.getDisplaySuffix())
 	file.write('\n')
 
 def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern):

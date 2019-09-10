@@ -50,10 +50,10 @@ def main():
 	group.add_argument('-search', '--search', default=None, type=str, help='Search your collection with scryfall. Use scryfall search string')
 	group.add_argument('-apr', '--appraise', default=None, type=str, help='Print price of card in all sources in given currency')
 
-	cardProps = ['price', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType', 'rarity']
-	parser.add_argument('-p', '--print', nargs='*',choices=cardProps, default=[], help='Add given atributes to card printout')
-	parser.add_argument('-s', '--sort', nargs='*', choices=cardProps, default=[], help='Sort list order by. Default \'name\'.')
-	parser.add_argument('-g', '--group', nargs='*', choices=cardProps, default=[], help='Group saved list by given parameter. Always groups sideboards together.')
+	
+	parser.add_argument('-p', '--print', nargs='*',choices=mtgCardInCollectionObject.cardProps, default=[], help='Add given atributes to card printout')
+	parser.add_argument('-s', '--sort', nargs='*', choices=mtgCardInCollectionObject.cardProps, default=[], help='Sort list order by. Default \'name\'.')
+	parser.add_argument('-g', '--group', nargs='*', choices=mtgCardInCollectionObject.cardProps, default=[], help='Group saved list by given parameter. Always groups sideboards together.')
 	parser.add_argument('-fl', '--filterLegality', choices=deckFormat.formatList, default=None, help='Filter result list by format legality. Default is no filter.')
 	parser.add_argument('-ft', '--filterType', default=None, help='Filter results by type line of card')
 
@@ -177,6 +177,6 @@ def main():
 			search.search(args.search, cardCollection)
 
 		if (args.appraise is not None):
-			priceSourceHandler.printApparise(priceSourceHandler.apparise(mtgCardInCollectionObject.CardInCollection(args.appraise, 1, None, None, 0, False), args.currency))
+			priceSourceHandler.printApparise(priceSourceHandler.apparise(args.currency, mtgCardInCollectionObject.CardInCollection(args.appraise, 1, None, None, 0, False)))
 
 main()
