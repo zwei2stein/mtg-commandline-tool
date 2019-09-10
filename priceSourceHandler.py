@@ -8,6 +8,7 @@ from priceSource import PriceNotFoundException
 from tolarie import Tolarie
 from mysticshop import MysticShop
 
+import console
 import util
 
 handlers = []
@@ -72,14 +73,43 @@ def apparise(cardObject, currency):
 
 	prices = {}
 
+	minKey = []
+	minPrice = None
+
+	maxKey = []
+	maxPrice = None
+
 	for handler in handlers:
 		if (handler.getSupportedCurrency() == currency):
 			try:
 				prices[handler.sourceName] = handler.getCardPrice(cardObject)
+
+				if (minPrice is None):
+					minKey.append(handler.sourceName)
+					minPrice = prices[handler.sourceName]
+				elif (minPrice == prices[handler.sourceName]):
+					minKey.append(handler.sourceName)
+				elif (minPrice > prices[handler.sourceName]):
+					minKey = []
+					minKey.append(handler.sourceName)
+					minPrice = prices[handler.sourceName]
+
+				if (maxPrice is None):
+					maxKey.append(handler.sourceName)
+					maxPrice = prices[handler.sourceName]
+				elif (maxPrice == prices[handler.sourceName]):
+					maxKey.append(handler.sourceName)
+				elif (maxPrice < prices[handler.sourceName]):
+					maxKey = []
+					maxKey.append(handler.sourceName)
+					maxPrice = prices[handler.sourceName]
+
 			except PriceNotFoundException as e:
 				errors.append('Price for ' + cardObject.name + ' not found at ' + handler.sourceName )
 
 	response = {}
+	response['min'] = minKey
+	response['max'] = maxKey
 	response['card'] = cardObject
 	response['prices'] = prices 
 	response['errors'] = errors
@@ -90,7 +120,18 @@ def apparise(cardObject, currency):
 def printApparise(response):
 
 	for source in response['prices']:
-		print(source + ' ' + str(response['prices'][source]), util.currencyToGlyph(response["currency"]))
+
+		prefix = ''
+		sufix = ''
+
+		if (source in response['max']):
+			prefix = console.CRED
+			sufix = console.CEND
+		if (source in response['min']):
+			prefix = console.CGREEN
+			sufix = console.CEND
+
+		print(prefix + source + ' ' + str(response['prices'][source]), util.currencyToGlyph(response["currency"]) + sufix)
 
 	for error in response['errors']: 
-		print (error)
+		print (console.CRED + error + console.CEND)
