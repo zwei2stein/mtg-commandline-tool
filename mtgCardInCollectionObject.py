@@ -42,6 +42,7 @@ class CardInCollection:
 		self.sourceFile = []
 		self.sourceFile.append(sourceFile)
 		self._jsonData = jsonData
+		self.propCache = {}
 
 	def add(self, count, sourceFile, sideboard = 0, commander = False):
 		self.count += count
@@ -72,6 +73,14 @@ class CardInCollection:
 		return self.name + self.getDisplaySuffix()
 
 	def getProp(self, propName):
+
+		if (propName not in self.propCache):
+			self.propCache[propName] = self.getRawProp(propName)
+		
+		return self.propCache[propName]
+
+	def getRawProp(self, propName):
+
 		if (propName == 'cmc'):
 			return self.jsonData["cmc"]
 		if (propName == 'price'):
