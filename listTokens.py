@@ -79,6 +79,11 @@ def listTokens(deckCards):
 			appendListInMap(tokens, tokenString, deckCard)
 			foundToken = True
 
+		match = re.search('[Cc]reate(s)? [a-zX ]+ Food token(s)?', oracleText)
+		if (match):
+			appendListInMap(tokens, "Food token", deckCard)
+			foundToken = True
+
 		match = re.search('[Cc]reate(s)? [a-zX]+ colorless Treasure artifact token(s)?', oracleText)
 		if (match):
 			appendListInMap(tokens, "colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color to your mana pool.\"", deckCard)
@@ -103,6 +108,10 @@ def listTokens(deckCards):
 		match = re.search('([Pp]rowess)', oracleText)
 		if (match):
 			appendListInMap(misc, "Prowess marker", deckCard)
+
+		match = re.search('(Adventure)', typeLine)
+		if (match):
+			appendListInMap(misc, "On an Adventure marker", deckCard)
 
 		match = re.search('([aA]scend)', oracleText)
 		if (match):
