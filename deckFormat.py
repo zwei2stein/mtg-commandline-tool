@@ -2,7 +2,7 @@ import deckStatistics
 
 import console
 
-formatList = ["commander", "duel", "future", "legacy", "modern", "pauper", "penny", "standard", "vintage", "oldschool"]
+formatList = ["commander", "duel", "future", "legacy", "modern", "pauper", "penny", "standard", "vintage", "oldschool", "pioneer"]
 
 singletonFormats = {
 	"commander": True,
@@ -14,7 +14,8 @@ singletonFormats = {
 	"penny": False,
 	"standard": False,
 	"vintage": False,
-	"oldschool": False
+	"oldschool": False,
+	"pioneer": False
 }
 
 requiresCommander = {
@@ -27,7 +28,8 @@ requiresCommander = {
 	"penny": False,
 	"standard": False,
 	"vintage": False,
-	"oldschool": False
+	"oldschool": False,
+	"pioneer": False
 }
 
 minCardCount = {
@@ -40,7 +42,8 @@ minCardCount = {
 	"penny": 60,
 	"standard": 60,
 	"vintage": 60,
-	"oldschool": 40
+	"oldschool": 40,
+	"pioneer": 60
 }
 
 maxSideboardSize = {
@@ -53,12 +56,14 @@ maxSideboardSize = {
 	"penny": 15,
 	"standard": 15,
 	"vintage": 15,
-	"oldschool": 15
+	"oldschool": 15,
+	"pioneer": 15
 }
 
 specificityOfFormat = {
 	"standard": 10,
-	"modern": 8,
+	"modern": 9,
+	"pioneer": 8,
 	"pauper": 7,
 	"penny": 6,
 	"commander": 5,
@@ -80,7 +85,8 @@ budgetPrice = {
 	"vintage": 500,
 	"legacy": 500,
 	"oldschool": 500,
-	"future": -1
+	"future": -1,
+	"pioneer": 75
 }
 
 def canBeCommander(card):
@@ -113,7 +119,8 @@ def getDeckFormat(deck, watchFormat=None):
 		"penny": True,
 		"standard": True,
 		"vintage": True,
-		"oldschool": True
+		"oldschool": True,
+		"pioneer": True
 	}
 
 	for deckCardName in deck:
