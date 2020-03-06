@@ -120,9 +120,9 @@ def listTokens(deckCards):
 		if (match):
 			appendListInMap(counters, "Energy counter", deckCard)
 
-		match = re.search('devotion to', oracleText)
+		match = re.search('(devotion to ([a-z]+( and [a-z]+)?))', oracleText)
 		if (match):
-			appendListInMap(counters, "Devotion marker", deckCard)
+			appendListInMap(counters, "Devotion marker for " + match.string[match.start(2):match.end(2)], deckCard)
 
 		match = re.search('(Exert)', oracleText)
 		if (match):
