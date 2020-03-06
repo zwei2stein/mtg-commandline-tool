@@ -19,10 +19,11 @@ def readCardFile(f, cardFile, cards, asDeck):
 	isCommander = False
 	for line in f:
 		lineCounter += 1
+#		print (lineCounter, isSideboard)
 		line = line.strip()
-		if (line.lower().startswith("sideboard")):
+		if (line.lower().startswith("sideboard") or line.startswith("// Sideboard")):
 			if (asDeck):
-#				print ("Sideboard found")
+#				print ("Sideboard found ", lineCounter)
 				isSideboard = True
 		if (line.lower().startswith("commander") or line.startswith("// Commander")):
 			if (asDeck):
@@ -46,6 +47,8 @@ def readCardFile(f, cardFile, cards, asDeck):
 					commentedName = name.split('#')
 					name = commentedName[0]
 					# print ("comment", commentedName[1:])
+				if (' / ' in name):
+					name = re.sub(' / ', ' // ', name, 1)
 				name = re.sub(" \[[A-Z0-9]{3,5}\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
 				name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
@@ -65,6 +68,8 @@ def saveCardFile(file, cards, sorts, diffFormat=False, color=None):
 	hasSideboard = functools.reduce((lambda x, v: x or v.getProp('sideboard')), cards.values(), False)
 
 	hasCommander = functools.reduce((lambda x, v: x or v.getProp('commander')), cards.values(), False)
+
+#	print (hasSideboard)
 
 	if (hasCommander):
 		file.write('\n')

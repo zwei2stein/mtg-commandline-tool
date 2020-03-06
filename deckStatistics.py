@@ -1,4 +1,3 @@
-import util
 
 def getIsDeckSingleton(deck):
 
@@ -7,7 +6,7 @@ def getIsDeckSingleton(deck):
 	for deckCardName in deck:
 		deckCard = deck[deckCardName]
 
-		oracleText = util.getFullOracleText(deckCard)
+		oracleText = deckCard.getFullOracleText()
 		if ("A deck can have any number of cards named" in oracleText):
 			continue
 

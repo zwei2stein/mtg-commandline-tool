@@ -46,7 +46,7 @@ class CardInCollection:
 
 	def add(self, count, sourceFile, sideboard = 0, commander = False):
 		self.count += count
-		self.sideboard += count
+		self.sideboard += sideboard
 		if (commander):
 			self.commander = commander
 		if (sourceFile is not None):
@@ -73,7 +73,6 @@ class CardInCollection:
 		return self.name + self.getDisplaySuffix()
 
 	def getProp(self, propName):
-
 		if (propName not in self.propCache):
 			self.propCache[propName] = self.getRawProp(propName)
 		
@@ -112,6 +111,20 @@ class CardInCollection:
 			return self.jsonData["rarity"]
 		if (propName == 'commander'):
 			return self.commander
+
+	def getFullOracleText(self):
+		oracleText = self.jsonData.get('oracle_text', '')
+		for face in self.jsonData.get('card_faces', []):
+			oracleText = oracleText + '\n' + face.get('oracle_text', '')
+		
+		return oracleText
+
+	def getFullTypeLine(self):
+		typeLine = self.jsonData.get('type_line', '')
+		for face in self.jsonData.get('card_faces', []):
+			typeLine = typeLine + '\n' + face.get('type_line', '')
+
+		return typeLine
 
 	def __gt__(self, cardInCollection):
 

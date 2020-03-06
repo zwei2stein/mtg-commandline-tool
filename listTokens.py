@@ -1,7 +1,6 @@
 import re
 
 import console
-import util
 
 def appendListInMap(map, key, item):
 	key = key.capitalize()
@@ -23,8 +22,8 @@ def listTokens(deckCards):
 
 	for deckCardName in deckCards:
 		deckCard = deckCards[deckCardName]
-		oracleText = util.getFullOracleText(deckCard)
-		typeLine = util.getFullTypeLine(deckCard)
+		oracleText = deckCard.getFullOracleText()
+		typeLine = deckCard.getFullTypeLine()
 
 		oracleTextWithoutCardName = oracleText.replace(deckCardName, 'CARD_NAME')
 
@@ -120,6 +119,10 @@ def listTokens(deckCards):
 		match = re.search('({E})', oracleText)
 		if (match):
 			appendListInMap(counters, "Energy counter", deckCard)
+
+		match = re.search('devotion to', oracleText)
+		if (match):
+			appendListInMap(counters, "Devotion marker", deckCard)
 
 		match = re.search('(Exert)', oracleText)
 		if (match):
