@@ -2,23 +2,20 @@ import difflib
 import io
 import mtgCardTextFileDao
 import mtgCardInCollectionObject
+import mtgDeckObject
 import console
 
 def diff (deck1, deck2):
 
 	originalSort = mtgCardInCollectionObject.CardInCollection.args.sort
 
-	groups = ['shortType']
-
-	sort = ['shortType', 'name']
-
-	mtgCardInCollectionObject.CardInCollection.args.sort = sort
+	mtgCardInCollectionObject.CardInCollection.args.sort = mtgDeckObject.prettyPrintSort
 
 	deck1Pretty = io.StringIO()
-	mtgCardTextFileDao.saveCardFile(deck1Pretty, deck1, groups, diffFormat=True)
+	mtgCardTextFileDao.saveCardFile(deck1Pretty, deck1, mtgDeckObject.prettyPrintGroups, diffFormat=True)
 
 	deck2Pretty = io.StringIO()
-	mtgCardTextFileDao.saveCardFile(deck2Pretty, deck2, groups, diffFormat=True)
+	mtgCardTextFileDao.saveCardFile(deck2Pretty, deck2, mtgDeckObject.prettyPrintGroups, diffFormat=True)
 
 	previousLine = None
 	sameCount = 1

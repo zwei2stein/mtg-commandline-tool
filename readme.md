@@ -219,24 +219,14 @@ optional arguments:
 
 ## TODO:
 
- * sort by set (by set) - better order - from scyfall?
-
- * loading set info from file
-
- * normalize deck file.
-
- * smart set choice for group by / order
+ * Multiple commanders in pretty save 
 
  * When checking deck legality, check more than 4-of cards and more than 1-of if in restricted list.
 
  * Check if commander commander can be commander
 
- * When checking deck legality in singleton, fix Persistent Petitioners
+ * When checking deck legality in singleton, fix Persistent Petitioners, Dwarvers, etc...
 
  * token with "ability"
 
  * make Deck object with accessors (commander, deck, sideboard, statistics, etc ... move utility methods there)
-
- * move getFullOracleText ad getFullTypeLine to card object
-
- * better output for card line in lists

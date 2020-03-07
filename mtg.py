@@ -6,7 +6,8 @@ from http import HTTPStatus
 
 import mtgCardTextFileDao
 import mtgCardInCollectionObject
-import deckAutocomplete
+import mtgDeckObject
+#import deckAutocomplete
 
 import listTokens
 import verifyDeck
@@ -59,6 +60,7 @@ def main():
 
 	parser.add_argument('-mc', '--missingCards', action='store_true', help='Prints cards missing from given deck file')
 	parser.add_argument('-lt', '--listTokens', action='store_true', help='Prints tokens and counters for given deck file')
+	parser.add_argument('-pp', '--printPretty', action='store_true', help='Prints neatly formated deck for given deck file')
 	parser.add_argument('-dp', '--deckPrice', action='store_true', help='Prints price of given deck file')
 	parser.add_argument('-mcu', '--manaCurve', action='store_true', help='Prints mana curve of given deck file')
 	parser.add_argument('-ms', '--manaSymbols', action='store_true', help='Prints mana symbols count in casting costs of given deck file')
@@ -97,7 +99,7 @@ def main():
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
 
 	decks = {}
-	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff):
+	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff or args.printPretty):
 		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern)
 
 	ready = True
@@ -162,15 +164,24 @@ def main():
 			if (args.diff):
 				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True)
 				deckDiff.diff(deck, deck2)
+			if (args.printPretty):
+				originalSorts = mtgCardInCollectionObject.CardInCollection.args.sort
+				mtgCardInCollectionObject.CardInCollection.args.sort = mtgDeckObject.prettyPrintSort
+				formatedFileName = file + ".formated.txt"
+				formatedFile = open(formatedFileName, 'w')
+				mtgCardTextFileDao.saveCardFile(formatedFile, deck, mtgDeckObject.prettyPrintGroups)
+				formatedFile.close()
+				print ("Saved", formatedFileName)
+				mtgCardInCollectionObject.CardInCollection.args.sort = originalSorts
 
 		if (args.saveList is not None):
 			if (args.saveList == 'console'):
 				mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group)		
 			else:
 				print ("Saving", args.saveList)
-				file = open(args.saveList, 'w')
-				mtgCardTextFileDao.saveCardFile(file, cardCollection, args.group)
-				file.close()
+				savedFile = open(args.saveList, 'w')
+				mtgCardTextFileDao.saveCardFile(savedFile, cardCollection, args.group)
+				savedFile.close()
 				print ('Saved file ' + args.saveList)
 
 		if (args.search is not None):
