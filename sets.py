@@ -60,7 +60,7 @@ sets = {
 	'gpt': { 'code' : 'GPT', 'date' : '2006-02', 'name' : 'Guildpact', 'description' : 'Expansion set - 37th expansion' },
 	'dis': { 'code' : 'DIS', 'date' : '2006-05', 'name' : 'Dissension', 'description' : 'Expansion set - 38th expansion' },
 	'csp': { 'code' : 'CSP', 'date' : '2006-07', 'name' : 'Coldsnap', 'description' : 'Expansion set - 39th expansion' },
-	'tsb': { 'code' : 'TSP', 'date' : '2006-10', 'name' : 'Time Spiral', 'description' : 'Expansion set - 40th expansion' },
+	'tsp': { 'code' : 'TSP', 'date' : '2006-10', 'name' : 'Time Spiral', 'description' : 'Expansion set - 40th expansion' },
 	'plc': { 'code' : 'PLC', 'date' : '2007-02', 'name' : 'Planar Chaos', 'description' : 'Expansion set - 41st expansion' },
 	'fut': { 'code' : 'FUT', 'date' : '2007-05', 'name' : 'Future Sight', 'description' : 'Expansion set - 42nd expansion' },
 	'10e': { 'code' : '10E', 'date' : '2007-07', 'name' : 'Tenth Edition', 'description' : 'Core set - Core set #10' },
@@ -75,7 +75,7 @@ sets = {
 	'ala': { 'code' : 'ALA', 'date' : '2008-09', 'name' : 'Shards of Alara', 'description' : 'Expansion set - 47th expansion' },
 	'jvc': { 'code' : 'DD2', 'date' : '2008-11', 'name' : 'Duel Decks: Jace vs. Chandra', 'description' : 'Box set - Duel Decks set #2' },
 	'con': { 'code' : 'CON', 'date' : '2009-02', 'name' : 'Conflux', 'description' : 'Expansion set - 48th expansion' },
-	'ddc': { 'code' : 'DDC', 'date' : '2009-04', 'name' : 'Duel Decks: Divine vs. Demonic', 'description' : 'Box set - Duel Decks set #3' },
+	'dvd': { 'code' : 'DVD', 'date' : '2009-04', 'name' : 'Duel Decks: Divine vs. Demonic', 'description' : 'Box set - Duel Decks set #3' },
 	'arb': { 'code' : 'ARB', 'date' : '2009-04', 'name' : 'Alara Reborn', 'description' : 'Expansion set - 49th expansion' },
 	'm10': { 'code' : 'M10', 'date' : '2009-07', 'name' : 'Magic 2010', 'description' : 'Core set - Core set #11' },
 	'td0': { 'code' : 'TD0', 'date' : '2009-08', 'name' : 'Commander Theme Decks', 'description' : 'Box set - Magic Online only' },
@@ -197,7 +197,19 @@ sets = {
 	'gnt': { 'code' : 'GNT', 'date' : '2018-11', 'name' : 'Game Night', 'description' : 'Box set - ' },
 	'uma': { 'code' : 'UMA', 'date' : '2018-12', 'name' : 'Ultimate Masters', 'description' : 'Compilation set - Masters set #7' },
 	'rna': { 'code' : 'RNA', 'date' : '2019-01', 'name' : 'Ravnica Allegiance', 'description' : 'Expansion set - 80th expansion' },
-	'gk2': { 'code' : 'GK2', 'date' : '2019-02', 'name' : 'Ravnica Allegiance Guild Kits', 'description' : 'Box set - Annex set #5, 2nd set of Guild Kits' }
+	'gk2': { 'code' : 'GK2', 'date' : '2019-02', 'name' : 'Ravnica Allegiance Guild Kits', 'description' : 'Box set - Annex set #5, 2nd set of Guild Kits' },
+	'q02': { 'code' : 'Q02', 'date' : '2019-04', 'name' : 'Challenger Decks 2019', 'description': 'Box set	Challenger Decks set #2'},
+	'med': { 'code' : 'MED', 'date' : '2019-05', 'name' : 'War of the Spark Mythic Edition', 'description': 'Special edition	'},
+	'war': { 'code' : 'WAR', 'date' : '2019-05', 'name' : 'War of the Spark', 'description': 'Expansion set	81st expansion'},
+	'mh1': { 'code' : 'MH1', 'date' : '2019-06', 'name' : 'Modern Horizons', 'description': 'Supplemental set	'},
+	'ss2': { 'code' : 'SS2', 'date' : '2019-06', 'name' : 'Signature Spellbook: Gideon', 'description': 'Box set	Signature Spellbook set #2'},
+	'm20': { 'code' : 'M20', 'date' : '2019-07', 'name' : 'Core Set 2020', 'description': 'Core set	Core set #19'},
+	'c19': { 'code' : 'C19', 'date' : '2019-08', 'name' : 'Commander 2019', 'description': 'Box set	Commander set #10'},
+	'eld': { 'code' : 'ELD', 'date' : '2019-10', 'name' : 'Throne of Eldraine', 'description': 'Expansion set	82nd expansion'},
+	'gn2': { 'code' : 'GN2', 'date' : '2019-11', 'name' : 'Game Night 2019', 'description': 'Box set	Game Night set #2'},
+	'sld': { 'code' : 'SLD', 'date' : '2019-12', 'name' : 'Secret Lair Drop Series', 'description': 'Box set	Secret Lair set #1'},
+	'thb': { 'code' : 'THB', 'date' : '2020-01', 'name' : 'Theros Beyond Death', 'description': 'Expansion set	83rd expansion'},
+	'usd': { 'code' : 'USD', 'date' : '2020-02', 'name' : 'Unsanctioned', 'description': 'Box set	Un-set #4'}
 }
 
 def getSetOrder(set):

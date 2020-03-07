@@ -34,7 +34,7 @@ class CardInCollection:
 
 	args = None
 
-	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = 0, commander = False):
+	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = 0, commander = False, setName = None):
 		self.name = name
 		self.count = count
 		self.sideboard = sideboard
@@ -43,14 +43,19 @@ class CardInCollection:
 		self.sourceFile.append(sourceFile)
 		self._jsonData = jsonData
 		self.propCache = {}
+		self.setName = setName
 
-	def add(self, count, sourceFile, sideboard = 0, commander = False):
+	def add(self, count, sourceFile, sideboard = 0, commander = False, setName = None):
 		self.count += count
 		self.sideboard += sideboard
 		if (commander):
 			self.commander = commander
 		if (sourceFile is not None):
 			self.sourceFile.append(sourceFile)
+		if (self.setName is None and setName is not None):
+			self.setName = setName
+		elif (setName is not None and self.setName is not None and not setName == self.setName):
+			print ("Multiple sets for " + self.name + " - " + setName + " " + self.setName + " using " + self.setName)
 
 	@property
 	def jsonData(self):
@@ -98,7 +103,10 @@ class CardInCollection:
 		if (propName == 'color'):
 			return mtgColors.colorIdentity2String(self.jsonData['color_identity'])
 		if (propName == 'set'):
-			return self.jsonData["set"]
+			if (self.setName is not None):
+				return self.setName 
+			else:
+				return self.jsonData.get('set', '') 
 		if (propName == 'sideboard'):
 			return self.sideboard > 0
 		if (propName == 'mainboard'):
@@ -111,6 +119,7 @@ class CardInCollection:
 			return self.jsonData["rarity"]
 		if (propName == 'commander'):
 			return self.commander
+
 
 	def getFullOracleText(self):
 		oracleText = self.jsonData.get('oracle_text', '')

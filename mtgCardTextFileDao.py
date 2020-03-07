@@ -49,6 +49,13 @@ def readCardFile(f, cardFile, cards, asDeck):
 					# print ("comment", commentedName[1:])
 				if (' / ' in name):
 					name = re.sub(' / ', ' // ', name, 1)
+
+				setName = None
+
+				match = re.search(" \[([A-Z0-9]{3,5})\]\Z", name)
+				if (match):
+					setName = match.string[match.start(1):match.end(1)].lower()
+
 				name = re.sub(" \[[A-Z0-9]{3,5}\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
 				name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
@@ -57,9 +64,9 @@ def readCardFile(f, cardFile, cards, asDeck):
 				if (isSideboard):
 					sideboardCount = count
 				if (name in cards):
-					cards[name].add(count, cardFile, sideboardCount, isCommander)
+					cards[name].add(count, cardFile, sideboardCount, isCommander, setName)
 				else:
-					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, sideboardCount, isCommander)
+					cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None, sideboardCount, isCommander, setName)
 				isCommander = False
 	return cards
 
