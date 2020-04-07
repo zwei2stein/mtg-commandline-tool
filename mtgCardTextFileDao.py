@@ -29,7 +29,7 @@ def readCardFile(f, cardFile, cards, asDeck):
 			if (asDeck):
 #				print ("Commander found")
 				isCommander = True
-		elif (line != "" and not line.lower().startswith("#")):
+		elif (line != "" and not (line.startswith("#") or line.startswith("TOTAL:"))):
 #				print ("'"+line+"'")
 			splitLine = line.split(" ", 1)
 			if (len(splitLine) == 2):
@@ -56,9 +56,11 @@ def readCardFile(f, cardFile, cards, asDeck):
 				if (match):
 					setName = match.string[match.start(1):match.end(1)].lower()
 
-				name = re.sub(" \[[A-Z0-9]{3,5}\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
+				name = re.sub(" \[[A-Za-z0-9]{3,5}\]\Z", "", name, 1) # strip set tag from end i.e. [AKH]
 				name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
+				name = re.sub(" - Full Art", "", name, 1) # strip full card notice
 				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
+				name = re.sub(" \([A-Z][a-z]+\)\Z", "", name, 1) # strip showcase marker, artist marker, other markers
 				name = name.strip()
 				sideboardCount = 0
 				if (isSideboard):

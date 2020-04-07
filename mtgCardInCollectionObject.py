@@ -43,7 +43,9 @@ class CardInCollection:
 		self.sourceFile.append(sourceFile)
 		self._jsonData = jsonData
 		self.propCache = {}
-		self.setName = setName
+		self.setName = {}
+		if (setName is not None):
+			self.setName[setName] = count
 
 	def add(self, count, sourceFile, sideboard = 0, commander = False, setName = None):
 		self.count += count
@@ -52,10 +54,11 @@ class CardInCollection:
 			self.commander = commander
 		if (sourceFile is not None):
 			self.sourceFile.append(sourceFile)
-		if (self.setName is None and setName is not None):
-			self.setName = setName
-		elif (setName is not None and self.setName is not None and not setName == self.setName):
-			print ("Multiple sets for " + self.name + " - " + setName + " " + self.setName + " using " + self.setName)
+		if (setName is not None):
+			if (setName in self.setName):
+				self.setName[setName] = self.setName[setName] + count
+			else:
+				self.setName[setName] = count
 
 	@property
 	def jsonData(self):
@@ -103,8 +106,8 @@ class CardInCollection:
 		if (propName == 'color'):
 			return mtgColors.colorIdentity2String(self.jsonData['color_identity'])
 		if (propName == 'set'):
-			if (self.setName is not None):
-				return self.setName 
+			if (len(self.setName) > 0):
+				return max(self.setName, key = a_dictionary.get)
 			else:
 				return self.jsonData.get('set', '') 
 		if (propName == 'sideboard'):
