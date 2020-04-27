@@ -60,7 +60,7 @@ def readCardFile(f, cardFile, cards, asDeck):
 				name = re.sub(" \([CURM]\)\Z", "", name, 1) # strip rarity from end i.e. (R)
 				name = re.sub(" - Full Art", "", name, 1) # strip full card notice
 				name = re.sub(" \([0-9]+\)\Z", "", name, 1) # strip collector number, etc...
-				name = re.sub(" \([A-Z][a-z]+\)\Z", "", name, 1) # strip showcase marker, artist marker, other markers
+				name = re.sub(" \([0-9A-Za-z ]+\)\Z", "", name, 1) # strip showcase marker, artist marker, other markers
 				name = name.strip()
 				sideboardCount = 0
 				if (isSideboard):
