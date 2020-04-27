@@ -78,6 +78,12 @@ def listTokens(deckCards):
 			appendListInMap(tokens, tokenString, deckCard)
 			foundToken = True
 
+		for match in re.finditer('[Cc]reate(s)? ([a-zX ]+) (([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?(\\. It has \"[A-Za-z\\\'\\. ]+\")?)', oracleText):
+			tokenString = match.string[match.start(3):match.end(3)]
+			tokenString = re.sub("tokens", "token", tokenString, 1)
+			appendListInMap(tokens, tokenString, deckCard)
+			foundToken = True
+
 		match = re.search('[Cc]reate(s)? [a-zX ]+ Food token(s)?', oracleText)
 		if (match):
 			appendListInMap(tokens, "Food token", deckCard)
@@ -122,7 +128,7 @@ def listTokens(deckCards):
 
 		match = re.search('(devotion to ([a-z]+( and [a-z]+)?))', oracleText)
 		if (match):
-			appendListInMap(counters, "Devotion marker for " + match.string[match.start(2):match.end(2)], deckCard)
+			appendListInMap(misc, "Devotion marker for " + match.string[match.start(2):match.end(2)], deckCard)
 
 		match = re.search('(Exert)', oracleText)
 		if (match):
@@ -137,7 +143,7 @@ def listTokens(deckCards):
 
 		match = re.search('(Cumulative upkeep)', oracleText)
 		if (match):
-			appendListInMap(tokens, "Age counter", deckCard)
+			appendListInMap(counters, "Age counter", deckCard)
 
 		addCounter("Time counter", {'Vanishing', 'Suspend'}, counters, oracleText, deckCard)
 
@@ -157,7 +163,7 @@ def listTokens(deckCards):
 		for match in re.finditer('([\+\-]\d/[\+\-]\d [Cc]ounter)', oracleText):
 			appendListInMap(counters, match.string[match.start(1):match.end(1)], deckCard)
 
-		badMatches = {'and counter', 'another counter', 'be counter', 'get counter', 'have counter', 'is counter', 'more counter', 'no counter', 'of counter', 'the counter', 'those counter', 'with counter'}
+		badMatches = {'may counter', 'and counter', 'another counter', 'be counter', 'get counter', 'have counter', 'is counter', 'more counter', 'no counter', 'of counter', 'the counter', 'those counter', 'with counter'}
 		for match in re.finditer('([A-Za-z][a-z]+ [Cc]ounter)', oracleText):
 			counter = match.string[match.start(1):match.end(1)]
 			if (counter.lower() not in badMatches):
