@@ -8,7 +8,7 @@ import cardListFormater
 def getPrice(deckCard, count):
 	return count * Decimal(deckCard.getProp('price'));
 
-def missingCards(deckCards, libraryCards, currency):
+def missingCards(deckCards, libraryCards, currency, threshold = None):
 
 	response = {}
 
@@ -38,10 +38,12 @@ def missingCards(deckCards, libraryCards, currency):
 
 	for deckCard in shoppingList:
 		totalCount += shoppingList[deckCard]
-		totalPrice += getPrice(deckCard, shoppingList[deckCard])
+		if (threshold is None or Decimal(deckCard.getProp('price')) >= Decimal(threshold)):
+			totalPrice += getPrice(deckCard, shoppingList[deckCard])
 
 	response['totalCount'] = totalCount
 	response['totalPrice'] = totalPrice
+	response['threshold'] = threshold
 	response['totalDeckCards'] = totalDeckCards
 	response['shoppingList'] = shoppingList
 	response['currency'] = currency
@@ -79,3 +81,6 @@ def printMissingCardsToConsole(response):
 		if ("price" in mtgCardInCollectionObject.CardInCollection.args.print):
 			print ()
 			print ( console.CRED + 'Total shopping list price:' + console.CEND + " " + "{:3.2f}".format(response['totalPrice']) + util.currencyToGlyph(response['currency'] ))
+			if (response['threshold'] is not None): 
+				print ()
+				print ('(Cards with price lower than ' + str(response['threshold']) + util.currencyToGlyph(response["currency"]) + ' were not inluded in total price.)')

@@ -134,16 +134,17 @@ Commander:
 ```
 
 usage: mtg.py [-h] [-cd COLLECTIONDIRECTORY] [-id] [-fp FILEPATTERN]
-              [-c {usd,eur,tix,czk}] [-cache {init,flush,auto}]
+              [-c {usd,eur,tix,czk}] [-pt PRICETHRESHOLD]
+              [-cache {init,flush,auto}]
               [-clearCache {awlays,price,timeout,none}]
-              (-sl SAVELIST | -d DECK | -search SEARCH)
-              [-p [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
-              [-s [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
-              [-g [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]]
-              [-fl {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}]
-              [-ft FILTERTYPE] [-mc] [-lt] [-dp] [-mcu] [-ms] [-lm] [-cc]
-              [-is] [-df]
-              [-dfi {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}]
+              (-sl SAVELIST | -d DECK | -search SEARCH | -apr APPRAISE)
+              [-p [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]]]
+              [-s [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]]]
+              [-g [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]]]
+              [-fl {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}]
+              [-ft FILTERTYPE] [-mc] [-lt] [-pp] [-dp] [-mcu] [-ms] [-lm]
+              [-cc] [-is] [-df]
+              [-dfi {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}]
               [-ct] [-draw DRAWCARDS] [-nd] [-diff DIFF]
 
 Process MTG card plain text lists (decks and collection)
@@ -163,6 +164,10 @@ optional arguments:
   -c {usd,eur,tix,czk}, --currency {usd,eur,tix,czk}
                         Currency used for sorting by price and for output of
                         price. Default 'eur'
+  -pt PRICETHRESHOLD, --priceThreshold PRICETHRESHOLD
+                        When calculating total sum of prices of cards, cards
+                        will be included only if their price is higher than
+                        value of this parameter.
   -cache {init,flush,auto}, --cache {init,flush,auto}
                         Manual cache control: 'init' fetches all cards from
                         collectin from scryfall to cache, 'flush' clears cache
@@ -181,20 +186,23 @@ optional arguments:
   -search SEARCH, --search SEARCH
                         Search your collection with scryfall. Use scryfall
                         search string
-  -p [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]], --print [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]
+  -apr APPRAISE, --appraise APPRAISE
+                        Print price of card in all sources in given currency
+  -p [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]], --print [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]]
                         Add given atributes to card printout
-  -s [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]], --sort [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]
+  -s [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]], --sort [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]]
                         Sort list order by. Default 'name'.
-  -g [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]], --group [{price,cmc,name,count,color,set,type,shortType,rarity} [{price,cmc,name,count,color,set,type,shortType,rarity} ...]]
+  -g [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]], --group [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]]
                         Group saved list by given parameter. Always groups
                         sideboards together.
-  -fl {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}, --filterLegality {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}
+  -fl {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}, --filterLegality {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}
                         Filter result list by format legality. Default is no
                         filter.
   -ft FILTERTYPE, --filterType FILTERTYPE
                         Filter results by type line of card
   -mc, --missingCards   Prints cards missing from given deck file
   -lt, --listTokens     Prints tokens and counters for given deck file
+  -pp, --printPretty    Prints neatly formated deck for given deck file
   -dp, --deckPrice      Prints price of given deck file
   -mcu, --manaCurve     Prints mana curve of given deck file
   -ms, --manaSymbols    Prints mana symbols count in casting costs of given
@@ -203,7 +211,7 @@ optional arguments:
   -cc, --cardCount      Gives total count of cards for deck
   -is, --isSingleton    Checks deck if it is singeton
   -df, --deckFormat     Prints formats in which is deck legal
-  -dfi {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}, --deckFormatInspect {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool}
+  -dfi {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}, --deckFormatInspect {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}
                         Show detailed information about why deck does not meet
                         format criteria.
   -ct, --deckCreatureTypes
@@ -230,3 +238,5 @@ optional arguments:
  * token with "ability"
 
  * make Deck object with accessors (commander, deck, sideboard, statistics, etc ... move utility methods there)
+
+ * ommit cards with zero count from prints

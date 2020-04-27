@@ -39,6 +39,7 @@ def main():
 	parser.add_argument('-id', '--ignoreDecks', action='store_const', const='deck', default=None, help='Ignore files with \'deck\' in path. Usefull when you store decks along with your collection.')
 	parser.add_argument('-fp', '--filePattern', type=str, default=configuration["filePattern"], help='Regular expression pattern for files that are considered part of collection. Default is \'' + configuration["filePattern"] + '\'')
 	parser.add_argument('-c', '--currency', choices=priceSourceHandler.getSupportedCurrencies(), default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
+	parser.add_argument('-pt', '--priceThreshold', type=int, help='When calculating total sum of prices of cards, cards will be included only if their price is higher than value of this parameter.')
 
 	parser.add_argument('-cache', '--cache', choices=['init', 'flush', 'auto'], default='init', help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory, \'auto\' does nothing.')
 
@@ -138,7 +139,7 @@ def main():
 			deck = decks[file]
 
 			if (args.missingCards):
-				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency))
+				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, args.priceThreshold))
 			if (args.listTokens):
 				listTokens.printTokensToConsole(listTokens.listTokens(deck))
 			if (args.manaCurve):
@@ -148,7 +149,7 @@ def main():
 			if (args.landMana):
 				landMana.printLandManaToConsole(landMana.landMana(deck))
 			if (args.deckPrice):
-				deckPrice.printPricesToConsole(deckPrice.deckPrice(deck, args.currency))
+				deckPrice.printPricesToConsole(deckPrice.deckPrice(deck, args.currency, args.priceThreshold))
 			if (args.isSingleton):
 				deckStatistics.printgetIsDeckSingletonToConsole(deckStatistics.getIsDeckSingleton(deck))
 			if (args.cardCount):
