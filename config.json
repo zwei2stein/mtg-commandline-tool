@@ -1,5 +1,6 @@
 {
 	"defaultCurrency": "eur",
+	"defaultCache": "auto",
 	"collectionDirectory": "./collection",
 	"filePattern": ".*\\.txt",
 	"scryfall": {

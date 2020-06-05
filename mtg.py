@@ -41,7 +41,7 @@ def main():
 	parser.add_argument('-c', '--currency', choices=priceSourceHandler.getSupportedCurrencies(), default=configuration["defaultCurrency"], help='Currency used for sorting by price and for output of price. Default \'' + configuration["defaultCurrency"] + '\'')
 	parser.add_argument('-pt', '--priceThreshold', type=int, help='When calculating total sum of prices of cards, cards will be included only if their price is higher than value of this parameter.')
 
-	parser.add_argument('-cache', '--cache', choices=['init', 'flush', 'auto'], default='init', help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory, \'auto\' does nothing.')
+	parser.add_argument('-cache', '--cache', choices=['init', 'flush', 'auto'], default=configuration["defaultCache"], help='Manual cache control: \'init\' fetches all cards from collectin from scryfall to cache, \'flush\' clears cache directory, \'auto\' does nothing.')
 
 	parser.add_argument('-clearCache', '--clearCache', choices=['awlays', 'price', 'timeout', 'none'], default=configuration["scryfall"]["clearCache"],
 			help='Determines how is caching from scrycall handled. \'always\' - always fetch fresh data. \'price\' - fetch data if price changes. \'timeout\' - fetch data if ' + str(configuration["scryfall"]["cacheTimeout"]) + ' days have passed. \'none\' - always use cached version. Default \''  +configuration["scryfall"]["clearCache"] + '\'')
