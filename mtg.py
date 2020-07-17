@@ -77,6 +77,8 @@ def main():
 	parser.add_argument('-nd', '--nameDeck', action='store_true', help='Attempts to generate name for given deck')
 
 	parser.add_argument('-diff', '--diff', help='Difference of deck with another deck.', type=str)
+	parser.add_argument('-update', '--update', help='New deck list to be updtated into', type=str)
+
 
 	args = parser.parse_args()
 
@@ -96,11 +98,11 @@ def main():
 #	deckAutocomplete.deckAutocomplete("./meta/")
 
 	cardCollection = {}
-	if ((args.missingCards or args.saveList is not None or args.search is not None) or args.cache == 'init'):
+	if ((args.missingCards is not None or args.update is not None or args.saveList is not None or args.search is not None) or args.cache == 'init'):
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
 
 	decks = {}
-	if (args.deckPrice or args.missingCards or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff or args.printPretty):
+	if (args.deckPrice or args.missingCards or args.update or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff or args.printPretty):
 		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern)
 
 	ready = True
@@ -139,7 +141,10 @@ def main():
 			deck = decks[file]
 
 			if (args.missingCards):
-				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, args.priceThreshold))
+				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, None, args.priceThreshold))
+			if (args.update):
+				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.update, {}, True)
+				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, deck2, args.priceThreshold))
 			if (args.listTokens):
 				listTokens.printTokensToConsole(listTokens.listTokens(deck))
 			if (args.manaCurve):

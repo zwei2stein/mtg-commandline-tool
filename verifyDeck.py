@@ -8,7 +8,7 @@ import cardListFormater
 def getPrice(deckCard, count):
 	return count * Decimal(deckCard.getProp('price'));
 
-def missingCards(deckCards, libraryCards, currency, threshold = None):
+def missingCards(deckCards, collection, currency, oldDeck = None, threshold = None):
 
 	response = {}
 
@@ -16,22 +16,45 @@ def missingCards(deckCards, libraryCards, currency, threshold = None):
 
 	haveList = {}
 
+	haveInDeckAlreadyList = {}
+
+	removeFromOldDeckList = dict()
+
+	if (oldDeck is not None):
+		for deckCardName in sorted(oldDeck, key=oldDeck.__getitem__):
+			removeFromOldDeckList[oldDeck[deckCardName]] = oldDeck[deckCardName].count
+
 	totalDeckCards = 0
 
 	for deckCardName in sorted(deckCards, key=deckCards.__getitem__):
 		deckCard = deckCards[deckCardName]
 		totalDeckCards += deckCard.count
-		if (deckCardName in libraryCards):
-			libraryCard = libraryCards[deckCard.name]
-			if (libraryCard.count >= deckCard.count):
-				haveList[deckCard] = deckCard.count
-			elif (libraryCard.count <= 0):
-				shoppingList[deckCard] = deckCard.count
-			elif (libraryCard.count < deckCard.count):
-				haveList[deckCard] = libraryCard.count
-				shoppingList[deckCard] = deckCard.count - libraryCard.count
-		else:
-			shoppingList[deckCard] = deckCard.count
+		#for each card in deck:
+		neededAmount = deckCard.count
+
+		if (oldDeck is not None):
+			if (deckCardName in oldDeck):
+				cardAlreadyInDeck = oldDeck[deckCard.name]
+				if (cardAlreadyInDeck.count >= neededAmount):
+					haveInDeckAlreadyList[deckCard] = neededAmount
+					neededAmount = 0
+				else:
+					haveInDeckAlreadyList[deckCard] = cardInCollection.count
+					neededAmount = neededAmount - cardInCollection.count
+				removeFromOldDeckList[cardAlreadyInDeck] = neededAmount
+				
+		if (neededAmount > 0):
+			if (deckCardName in collection):
+				cardInCollection = collection[deckCard.name]
+				if (cardInCollection.count >= neededAmount):
+					haveList[deckCard] = neededAmount
+				elif (cardInCollection.count <= 0):
+					shoppingList[deckCard] = neededAmount
+				elif (cardInCollection.count < neededAmount):
+					haveList[deckCard] = cardInCollection.count
+					shoppingList[deckCard] = neededAmount - cardInCollection.count
+			else:
+				shoppingList[deckCard] = neededAmount
 
 	totalCount = 0
 	totalPrice = Decimal(0)
@@ -41,6 +64,8 @@ def missingCards(deckCards, libraryCards, currency, threshold = None):
 		if (threshold is None or Decimal(deckCard.getProp('price')) >= Decimal(threshold)):
 			totalPrice += getPrice(deckCard, shoppingList[deckCard])
 
+	removeFromOldDeckList = {k: v for k, v in removeFromOldDeckList.items() if v > 0}
+
 	response['totalCount'] = totalCount
 	response['totalPrice'] = totalPrice
 	response['threshold'] = threshold
@@ -48,14 +73,13 @@ def missingCards(deckCards, libraryCards, currency, threshold = None):
 	response['shoppingList'] = shoppingList
 	response['currency'] = currency
 	response['haveList'] = haveList
+	response['oldDeck'] = oldDeck is not None
+	response['haveInDeckAlreadyList'] = haveInDeckAlreadyList
+	response['removeFromOldDeckList'] = removeFromOldDeckList
 
 	return response
 
 def printMissingCardsToConsole(response):
-
-	shoppingList = response['shoppingList']
-	haveList = response['haveList']
-
 	print ()
 
 	if (response['totalDeckCards'] == 0):
@@ -63,7 +87,27 @@ def printMissingCardsToConsole(response):
 	else:
 		print ("Have: " + "{:3.2f}".format(100 * (response['totalDeckCards'] - response['totalCount']) / response['totalDeckCards']) + "%")
 
-	cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(haveList), console.CGREEN)
+	if (len(response['haveInDeckAlreadyList']) > 0):
+
+		print ()
+		print ("Cards already in deck:")
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['haveInDeckAlreadyList']), console.CGREEN)
+
+	if (len(response['haveList']) > 0):
+		
+		print ()
+		print ("Cards already in collection, not in deck:")
+		print ()
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['haveList']), console.CGREEN)
+
+
+	if (len(response['removeFromOldDeckList']) > 0):
+
+		print ()
+		print (console.CRED + "Cards removed from deck:" + console.CEND)
+		print ()
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['removeFromOldDeckList']), console.CRED)
+
 
 	if (len(response['shoppingList']) == 0):
 
@@ -76,7 +120,7 @@ def printMissingCardsToConsole(response):
 		print (console.CRED + "Shopping list:" + console.CEND)
 		print ()
 
-		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(shoppingList), console.CRED)
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['shoppingList']), console.CRED)
 
 		if ("price" in mtgCardInCollectionObject.CardInCollection.args.print):
 			print ()
