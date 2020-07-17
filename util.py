@@ -23,7 +23,11 @@ def cleanFilename(card, whitelist=valid_filename_chars, replace=' '):
 	cleaned_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore').decode()
 	
 	# keep only whitelisted chars
-	return ''.join(c for c in cleaned_filename if c in whitelist)
+	valid_filename = ''.join(c for c in cleaned_filename if c in whitelist)
+
+	# collapse multiple spaces
+	return '_'.join(valid_filename.split('_'))
+
 
 def currencyToGlyph(currency):
 	if (currency == 'eur'):
