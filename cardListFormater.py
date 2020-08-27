@@ -16,7 +16,7 @@ def cardObjectListToCardObjectMap(cardObjectList):
 	map = {}
 	for card in cardObjectList:
 		if (card.name in map):
-			map[card.name].add(card.count, card, card.sideboard, card.commander)
+			map[card.name].add(card.count, card, card.sideboard, card.commander, card.getProp('set'))
 		else:
 			map[card.name] = card
 	return map
@@ -31,7 +31,7 @@ def cardCountMapToCardObjectMap(cardCountMap):
 
 # {CardInCollection(Shock): 1} ->  {'Shock': CardInCollection(Shock)}
 def cardObjectCountMapToCardObjectMap(cardObjectCountMap):
-	return  {card.name: mtgCardInCollectionObject.CardInCollection(card.name, cardObjectCountMap[card], None, None, card.sideboard, card.commander) for card in cardObjectCountMap}
+	return  {card.name: mtgCardInCollectionObject.CardInCollection(card.name, cardObjectCountMap[card], None, None, card.sideboard, card.commander, card.getProp('set'), card.propCache) for card in cardObjectCountMap}
 
 def printCardObjectList(cardList, color=None):
 	sorts = mtgCardInCollectionObject.CardInCollection.args.group

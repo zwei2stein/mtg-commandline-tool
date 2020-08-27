@@ -21,11 +21,11 @@ def readCardFile(f, cardFile, cards, asDeck):
 		lineCounter += 1
 #		print (lineCounter, isSideboard)
 		line = line.strip()
-		if (line.lower().startswith("sideboard") or line.startswith("// Sideboard")):
+		if (line.lower().startswith("sideboard") or line.startswith("// Sideboard") or line.startswith("// Outside the Game")):
 			if (asDeck):
 #				print ("Sideboard found ", lineCounter)
 				isSideboard = True
-		if (line.lower().startswith("commander") or line.startswith("// Commander")):
+		elif (line.lower().startswith("commander") or line.startswith("// Commander")):
 			if (asDeck):
 #				print ("Commander found")
 				isCommander = True
@@ -77,8 +77,6 @@ def saveCardFile(file, cards, sorts, diffFormat=False, color=None):
 	hasSideboard = functools.reduce((lambda x, v: x or v.getProp('sideboard')), cards.values(), False)
 
 	hasCommander = functools.reduce((lambda x, v: x or v.getProp('commander')), cards.values(), False)
-
-#	print (hasSideboard)
 
 	if (hasCommander):
 		file.write('\n')

@@ -34,7 +34,7 @@ class CardInCollection:
 
 	args = None
 
-	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = 0, commander = False, setName = None):
+	def __init__(self, name, count, sourceFile, jsonData = None, sideboard = 0, commander = False, setName = None, propCache = None):
 		self.name = name
 		self.count = count
 		self.sideboard = sideboard
@@ -42,7 +42,10 @@ class CardInCollection:
 		self.sourceFile = []
 		self.sourceFile.append(sourceFile)
 		self._jsonData = jsonData
-		self.propCache = {}
+		if (propCache is not None):
+			self.propCache = propCache
+		else:
+			self.propCache = {}
 		self.setName = {}
 		if (setName is not None):
 			self.setName[setName] = count
