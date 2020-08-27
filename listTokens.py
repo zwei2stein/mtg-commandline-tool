@@ -25,6 +25,7 @@ def listTokens(deckCards):
 		oracleText = deckCard.getFullOracleText()
 		typeLine = deckCard.getFullTypeLine()
 
+		oracleText = oracleText.replace('nontoken', '~')
 		oracleTextWithoutCardName = oracleText.replace(deckCardName, 'CARD_NAME')
 
 		foundToken = False
