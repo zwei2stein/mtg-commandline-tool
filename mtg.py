@@ -77,7 +77,7 @@ def main():
 	parser.add_argument('-nd', '--nameDeck', action='store_true', help='Attempts to generate name for given deck')
 
 	parser.add_argument('-diff', '--diff', help='Difference of deck with another deck.', type=str)
-	parser.add_argument('-update', '--update', help='New deck list to be updtated into', type=str)
+	parser.add_argument('-update', '--update', '-upgrade', '--upgrade', help='New deck list to be updated into', type=str)
 
 
 	args = parser.parse_args()
