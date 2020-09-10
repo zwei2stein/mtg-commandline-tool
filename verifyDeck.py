@@ -39,8 +39,8 @@ def missingCards(deckCards, collection, currency, oldDeck = None, threshold = No
 					haveInDeckAlreadyList[deckCard] = neededAmount
 					neededAmount = 0
 				else:
-					haveInDeckAlreadyList[deckCard] = cardInCollection.count
-					neededAmount = neededAmount - cardInCollection.count
+					haveInDeckAlreadyList[deckCard] = cardAlreadyInDeck.count
+					neededAmount = neededAmount - cardAlreadyInDeck.count
 				removeFromOldDeckList[cardAlreadyInDeck] = neededAmount
 				
 		if (neededAmount > 0):
