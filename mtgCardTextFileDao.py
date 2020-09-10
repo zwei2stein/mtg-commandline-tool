@@ -207,15 +207,32 @@ def readDeckDirectory(path, decks, cardListfilePattern):
 		decks[path] = readCardFileFromPath(path, {}, asDeck=True)
 	elif (os.path.isdir(path)):
 		print ("Reading directory ", path)
+
+		lastLength = 0
+		count = 1
+
 		for root, dirs, files in os.walk(path):
 			for file in files:
 				cardFile = os.path.join(root, file)
 				match = re.search(cardListfilePattern, cardFile)
 				if (match):
-					print ("Reading file '", cardFile, "'")
+					statusLine = "Reading file #" + str(count) + " '" + cardFile + "'..."
+
+					currentLength = len(statusLine)
+					if (currentLength < lastLength):
+						statusLine = statusLine + (lastLength - currentLength) * ' '
+					lastLength = currentLength
+
+					sys.stdout.write('\r' + statusLine)
+					sys.stdout.flush()
+
 					decks[cardFile] = readCardFileFromPath(cardFile, {}, asDeck=True)
 				else:
 					print ("Ignoring file '", cardFile, "'")
+					
+		doneMessage = "Done reading '" + path + "'"
+		sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\n')
+		sys.stdout.flush()
 	else:
 		print ("'" + path + "' is not a file or directory.")
 

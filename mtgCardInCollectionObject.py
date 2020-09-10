@@ -7,6 +7,8 @@ import util
 
 cardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType', 'rarity']
 
+globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'color', 'type', 'shortType', 'rarity']
+
 rarityOrder = {
 	'common' : 0,
 	'uncommon' : 1,
@@ -23,6 +25,8 @@ shortTypeOrder = {
 	'Artifact' : 6,
 	'Land' : 7
 }
+
+globalCache = {}
 
 def getRarityOrder(rarity):
 	return rarityOrder[rarity]
@@ -84,10 +88,21 @@ class CardInCollection:
 		return self.name + self.getDisplaySuffix()
 
 	def getProp(self, propName):
-		if (propName not in self.propCache):
-			self.propCache[propName] = self.getRawProp(propName)
+
+		propValue = None
+
+		if (propName in globalCardProps):
+			if (self.name not in globalCache):
+				globalCache[self.name] = {}
+			if (propName not in globalCache[self.name]):
+				globalCache[self.name][propName] = self.getRawProp(propName)
+			propValue = globalCache[self.name][propName] 
+		else:
+			if (propName not in self.propCache):
+				self.propCache[propName] = self.getRawProp(propName)
+			propValue = self.propCache[propName]
 		
-		return self.propCache[propName]
+		return propValue
 
 	def getRawProp(self, propName):
 
