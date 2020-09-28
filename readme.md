@@ -240,3 +240,5 @@ optional arguments:
  * make Deck object with accessors (commander, deck, sideboard, statistics, etc ... move utility methods there)
 
  * ommit cards with zero count from prints
+
+ * deck age (latest set)

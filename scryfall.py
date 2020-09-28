@@ -56,7 +56,7 @@ def initCache(collection):
 	sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\r')
 	sys.stdout.flush()
 
-def fetchCardJson(card, jsonFile):
+def fetchCardJson(card, jsonFile, retryTimes = 3):
 	response = requests.get("http://api.scryfall.com/cards/named",  params={'exact': card.name}, proxies=proxies, auth=auth)
 	fuzzyResult = False
 	if (response.status_code == 404):
@@ -66,8 +66,10 @@ def fetchCardJson(card, jsonFile):
 		fuzzyResult = True
 		if (response.status_code < 400):
 			print ("\'" + card.name + "\' found as \'" + response.json()["name"] + "\'. " + console.CRED + "Fix files " + str(card.sourceFile) + console.CEND)
-	if (response.status_code >= 400):
-		sys.stdout.write('\n')
+	if ((response.status_code == 503 or response.status_code == 504) and retryTimes > 0):
+		sys.stderr.write('Retrying ' + response.url)
+		fetchCardJson(card, jsonFile, retryTimes - 1)
+	elif (response.status_code >= 400 or retryTimes == 0):	
 		raise CardRetrievalError('Bad response ' + str(response.status_code) + ' for ' + card.name, card.name, response.status_code) 
 	if (not fuzzyResult):
 		with open(jsonFile, 'w') as f:
