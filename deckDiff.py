@@ -1,52 +1,52 @@
 import difflib
 import io
-import mtgCardTextFileDao
-import mtgCardInCollectionObject
-import mtgDeckObject
+
 import console
+import mtgCardTextFileDao
+import mtgDeckObject
 
-def diff (deck1, deck2):
 
-	originalSort = mtgCardInCollectionObject.CardInCollection.args.sort
+def diff(deck1, deck2, context):
+    original_sort = context.sort
 
-	mtgCardInCollectionObject.CardInCollection.args.sort = mtgDeckObject.prettyPrintSort
+    context.sort = mtgDeckObject.prettyPrintSort
 
-	deck1Pretty = io.StringIO()
-	mtgCardTextFileDao.saveCardFile(deck1Pretty, deck1, mtgDeckObject.prettyPrintGroups, diffFormat=True)
+    deck1_pretty = io.StringIO()
+    mtgCardTextFileDao.saveCardFile(deck1_pretty, deck1, mtgDeckObject.prettyPrintGroups, context, diffFormat=True)
 
-	deck2Pretty = io.StringIO()
-	mtgCardTextFileDao.saveCardFile(deck2Pretty, deck2, mtgDeckObject.prettyPrintGroups, diffFormat=True)
+    deck2_pretty = io.StringIO()
+    mtgCardTextFileDao.saveCardFile(deck2_pretty, deck2, mtgDeckObject.prettyPrintGroups, context, diffFormat=True)
 
-	previousLine = None
-	sameCount = 1
-	result = []
-	for line in difflib.unified_diff(deck1Pretty.getvalue().split('\n'), deck2Pretty.getvalue().split('\n'), n=1000):
+    previous_line = None
+    same_count = 1
+    result = []
+    for line in difflib.unified_diff(deck1_pretty.getvalue().split('\n'), deck2_pretty.getvalue().split('\n'), n=1000):
 
-		if (line.startswith('+++') or line.startswith('---') or line.startswith('@@')):
-			continue
-		if (len(line.strip()) == 0):
-			result.append('')
-		elif (previousLine != line):
-			result.append(line)
-			sameCount = 1
-			previousLine = line
-		else:
-			sameCount += 1
-			marker = line[0]
-			result[-1] = marker + str(sameCount) + " " + line[2:].split(" ", 1)[1]
+        if line.startswith('+++') or line.startswith('---') or line.startswith('@@'):
+            continue
+        if len(line.strip()) == 0:
+            result.append('')
+        elif previous_line != line:
+            result.append(line)
+            same_count = 1
+            previous_line = line
+        else:
+            same_count += 1
+            marker = line[0]
+            result[-1] = marker + str(same_count) + " " + line[2:].split(" ", 1)[1]
 
-	for line in result:
-		if (line.startswith('+')):
-			print (console.CGREEN + line + console.CEND)
-		elif (line.startswith('-')):	
-			print (console.CRED + line + console.CEND)
-		else:
-			print (line)
+    for line in result:
+        if line.startswith('+'):
+            print(console.CGREEN + line + console.CEND)
+        elif line.startswith('-'):
+            print(console.CRED + line + console.CEND)
+        else:
+            print(line)
 
-	if (len(result) == 0):
-		print (console.CGREEN + "Decks are identical" + console.CEND)
-		
-	deck1Pretty.close()
-	deck2Pretty.close()
+    if len(result) == 0:
+        print(console.CGREEN + "Decks are identical" + console.CEND)
 
-	mtgCardInCollectionObject.CardInCollection.args.sort = originalSort
+    deck1_pretty.close()
+    deck2_pretty.close()
+
+    context.sort = original_sort

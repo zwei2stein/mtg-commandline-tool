@@ -228,7 +228,6 @@ sets = {
 	'cmr' : { 'code' : 'CMR', 'date' : '2020-11', 'name' : 'Commander Legends', 'description' : 'Supplemental set'},
 	'cmc' : { 'code' : 'CMC', 'date' : '2020-11', 'name' : 'Commander Legends Commander Decks', 'description' : 'Box set - Commander Decks set #2'},
 	'cc1' : { 'code' : 'CC1', 'date' : '2020-12', 'name' : 'Commander Collection: Green - ', 'description' : 'Box set - Commander Collection #1'}
-
 }
 
 def getSetOrder(set):

@@ -1,34 +1,34 @@
-import cardListFormater
-
 from collections import deque
 from random import shuffle
 
+import cardListFormater
+
+
 def drawCards(deck, count):
-	shuffledDeck = deque()
+    shuffledDeck = deque()
 
-	for card in deck:
-	   	cardInDeck = deck[card]
-	   	if (not cardInDeck.commander):
-	   		for x in range(0, cardInDeck.count - cardInDeck.sideboard):
-	   	  		shuffledDeck.append(cardInDeck.name)
+    for card in deck:
+        cardInDeck = deck[card]
+        if (not cardInDeck.commander):
+            for x in range(0, cardInDeck.count - cardInDeck.sideboard):
+                shuffledDeck.append(cardInDeck.name)
 
-	shuffle(shuffledDeck)
+    shuffle(shuffledDeck)
 
-	drawnCards = []
+    drawnCards = []
 
-	for x in range(0, count):
-		if (len(shuffledDeck) > 0):
-			drawnCards.append(shuffledDeck.popleft())
-		else:
-			print ('Decked :(')
-			break
+    for x in range(0, count):
+        if (len(shuffledDeck) > 0):
+            drawnCards.append(shuffledDeck.popleft())
+        else:
+            print('Decked :(')
+            break
 
-	return drawnCards;
+    return drawnCards;
 
 
-def printManaSymbolsToConsole(drawnCards):
+def printDrawCardsToConsole(drawnCards, context):
+    print(str(len(drawnCards)) + ' cards drawn.')
+    print('')
 
-	print(str(len(drawnCards)) + ' cards drawn.')
-	print('')
-
-	cardListFormater.printCardObjectList(cardListFormater.cardListToCardObjectMap(drawnCards, 1))
+    cardListFormater.printCardObjectList(cardListFormater.cardListToCardObjectMap(drawnCards, context, 1), context)

@@ -34,6 +34,6 @@ def printPricesToConsole(response):
 		print ('Sideboard:', str(response["sideboardPrice"]), util.currencyToGlyph(response["currency"]))
 	print ( console.CRED + 'Total:' + console.CEND, str(response["totalPrice"]), util.currencyToGlyph(response["currency"]))
 
-	if (response['threshold'] is not None): 
+	if response['threshold'] is not None:
 		print ()
-		print ('(Cards with price lower than ' + str(response['threshold']) + util.currencyToGlyph(response["currency"]) + ' were not inluded in total price.)')
+		print ('(Cards with price lower than ' + str(response['threshold']) + util.currencyToGlyph(response["currency"]) + ' were not included in total price.)')

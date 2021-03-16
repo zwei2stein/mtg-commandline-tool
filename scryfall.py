@@ -1,6 +1,8 @@
 import datetime
 import json
 import os
+from json import JSONDecodeError
+
 import requests
 import shutil
 import sys
@@ -84,9 +86,15 @@ def getCachedCardJson(card):
 		if (clearCache == 'always' or (clearCache == 'timeout' and fileAge.days > cacheTimeout) or (clearCache == 'price' and fileAge.days > 1)):
 			return fetchCardJson(card, jsonFile)
 		else:
-#		print("Loading cached " + jsonFile)
+			print("Loading cached " + jsonFile)
 			with open(jsonFile, encoding='utf-8') as json_data:
-				return json.load(json_data)
+				try:
+					return json.load(json_data)
+				except JSONDecodeError:
+					print("Deleting and retrying invalid " + jsonFile)
+					json_data.close()
+					os.remove(jsonFile)
+					return fetchCardJson(card, jsonFile)
 	else:
 #		print("Loading online " + jsonFile)
 		return fetchCardJson(card, jsonFile)

@@ -52,7 +52,7 @@ def main():
 	group.add_argument('-search', '--search', default=None, type=str, help='Search your collection with scryfall. Use scryfall search string')
 	group.add_argument('-apr', '--appraise', default=None, type=str, help='Print price of card in all sources in given currency')
 
-	
+
 	parser.add_argument('-p', '--print', nargs='*',choices=mtgCardInCollectionObject.cardProps, default=[], help='Add given atributes to card printout')
 	parser.add_argument('-s', '--sort', nargs='*', choices=mtgCardInCollectionObject.cardProps, default=[], help='Sort list order by. Default \'name\'.')
 	parser.add_argument('-g', '--group', nargs='*', choices=mtgCardInCollectionObject.cardProps, default=[], help='Group saved list by given parameter. Always groups sideboards together.')
@@ -71,9 +71,9 @@ def main():
 
 	parser.add_argument('-df', '--deckFormat', action='store_true', help='Prints formats in which is deck legal')
 	parser.add_argument('-dfi', '--deckFormatInspect', choices=deckFormat.formatList, default=None, help='Show detailed information about why deck does not meet format criteria.')
-	
+
 	parser.add_argument('-ct', '--deckCreatureTypes', action='store_true', help='Prints list of creature types in deck with their counts (not including possible tokens)')
-	parser.add_argument('-draw', '--drawCards', default=None, help='Draw N cards from deck.', type=int)	
+	parser.add_argument('-draw', '--drawCards', default=None, help='Draw N cards from deck.', type=int)
 	parser.add_argument('-nd', '--nameDeck', action='store_true', help='Attempts to generate name for given deck')
 
 	parser.add_argument('-diff', '--diff', help='Difference of deck with another deck.', type=str)
@@ -88,22 +88,18 @@ def main():
 		else:
 			args.sort = args.group
 
-	mtgCardInCollectionObject.CardInCollection.args = args
-
 	scryfall.clearCache = args.clearCache
 	scryfall.cacheTimeout = configuration["scryfall"]["cacheTimeout"]
 
 	priceSourceHandler.initPriceSource(args.clearCache, configuration["priceSources"])
 
-#	deckAutocomplete.deckAutocomplete("./meta/")
-
 	cardCollection = {}
 	if ((args.missingCards is not None or args.update is not None or args.saveList is not None or args.search is not None) or args.cache == 'init'):
-		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern)
+		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern, args)
 
 	decks = {}
 	if (args.deckPrice or args.missingCards or args.update or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff or args.printPretty):
-		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern)
+		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern, args)
 
 	ready = True
 
@@ -131,7 +127,7 @@ def main():
 			priceSourceHandler.initCache(decksToInit)
 			if (args.appraise is not None):
 				appraiseCards = {}
-				appraiseCards[args.appraise] = mtgCardInCollectionObject.CardInCollection(args.appraise, 1, None, None, 0, False)
+				appraiseCards[args.appraise] = mtgCardInCollectionObject.CardInCollection(args.appraise, 1, None, None, 0, False, None, None, args)
 				priceSourceHandler.initCache(appraiseCards)
 
 	if (ready):
@@ -141,10 +137,10 @@ def main():
 			deck = decks[file]
 
 			if (args.missingCards):
-				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, None, args.priceThreshold))
+				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, None, args.priceThreshold), args)
 			if (args.update):
-				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.update, {}, True)
-				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, deck2, args.priceThreshold))
+				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.update, {}, True, args)
+				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, deck2, args.priceThreshold), args)
 			if (args.listTokens):
 				listTokens.printTokensToConsole(listTokens.listTokens(deck))
 			if (args.manaCurve):
@@ -160,40 +156,40 @@ def main():
 			if (args.cardCount):
 				deckStatistics.printGetDeckCardCountToConsole(deckStatistics.getDeckCardCount(deck))
 			if (args.deckFormat or args.deckFormatInspect):
-				deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck, args.deckFormatInspect), onlyInspect = not args.deckFormat)
+				deckFormat.printDetDeckFormatToConsole(deckFormat.getDeckFormat(deck, args.deckFormatInspect), only_inspect= not args.deckFormat)
 			if (args.nameDeck):
 				nameDeck.printnDeckNameToConsole(nameDeck.nameDeck(deck))
 			if (args.deckCreatureTypes):
 				deckCreatureTypes.printnGetCreatureTypes(deckCreatureTypes.getCreatureTypes(deck))
 			if (args.drawCards):
-				drawCards.printManaSymbolsToConsole(drawCards.drawCards(deck, args.drawCards))
+				drawCards.printDrawCardsToConsole(drawCards.drawCards(deck, args.drawCards), args)
 			if (args.diff):
-				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True)
-				deckDiff.diff(deck, deck2)
+				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.diff, {}, True, args)
+				deckDiff.diff(deck, deck2, args)
 			if (args.printPretty):
-				originalSorts = mtgCardInCollectionObject.CardInCollection.args.sort
-				mtgCardInCollectionObject.CardInCollection.args.sort = mtgDeckObject.prettyPrintSort
+				originalSorts = args.sort
+				args.sort = mtgDeckObject.prettyPrintSort
 				formatedFileName = file + ".formated.txt"
 				formatedFile = open(formatedFileName, 'w')
-				mtgCardTextFileDao.saveCardFile(formatedFile, deck, mtgDeckObject.prettyPrintGroups)
+				mtgCardTextFileDao.saveCardFile(formatedFile, deck, mtgDeckObject.prettyPrintGroups, args)
 				formatedFile.close()
 				print ("Saved", formatedFileName)
-				mtgCardInCollectionObject.CardInCollection.args.sort = originalSorts
+				args.sort = originalSorts
 
 		if (args.saveList is not None):
 			if (args.saveList == 'console'):
-				mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group)		
+				mtgCardTextFileDao.saveCardFile(sys.stdout, cardCollection, args.group, args)
 			else:
 				print ("Saving", args.saveList)
 				savedFile = open(args.saveList, 'w')
-				mtgCardTextFileDao.saveCardFile(savedFile, cardCollection, args.group)
+				mtgCardTextFileDao.saveCardFile(savedFile, cardCollection, args.group, args)
 				savedFile.close()
 				print ('Saved file ' + args.saveList)
 
 		if (args.search is not None):
-			search.search(args.search, cardCollection)
+			search.search(args.search, cardCollection, args)
 
 		if (args.appraise is not None):
-			priceSourceHandler.printApparise(priceSourceHandler.apparise(args.currency, mtgCardInCollectionObject.CardInCollection(args.appraise, 1, None, None, 0, False)))
+			priceSourceHandler.printApparise(priceSourceHandler.apparise(args.currency, mtgCardInCollectionObject.CardInCollection(args.appraise, 1, None, None, 0, False, None, None, args)))
 
 main()

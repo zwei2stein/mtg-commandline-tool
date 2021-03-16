@@ -3,36 +3,45 @@ import sys
 import mtgCardInCollectionObject
 import mtgCardTextFileDao
 
-from pprint import pprint
 
 # ['Shock'] -> {'Shock': CardInCollection(Shock)}
-def cardListToCardObjectMap(cardList, defaultCount = 1):
-	cardObjectList = cardListToCardObjectList(cardList, defaultCount = defaultCount)
-	cardObjectMap = cardObjectListToCardObjectMap(cardObjectList)
-	return cardObjectMap
+def cardListToCardObjectMap(cardList, context, defaultCount=1):
+    cardObjectList = cardListToCardObjectList(cardList, context, defaultCount=defaultCount)
+    cardObjectMap = cardObjectListToCardObjectMap(cardObjectList)
+    return cardObjectMap
+
 
 # [CardInCollection(Shock)] -> {'Shock': CardInCollection(Shock)}
 def cardObjectListToCardObjectMap(cardObjectList):
-	map = {}
-	for card in cardObjectList:
-		if (card.name in map):
-			map[card.name].add(card.count, card, card.sideboard, card.commander, card.getProp('set'))
-		else:
-			map[card.name] = card
-	return map
+    card_map = {}
+    for card in cardObjectList:
+        if card.name in card_map:
+            card_map[card.name].add(card.count, card, card.sideboard, card.commander, card.getProp('set'))
+        else:
+            card_map[card.name] = card
+    return card_map
+
 
 # ['Shock'] -> [CardInCollection(Shock)]
-def cardListToCardObjectList(cardList,  defaultCount = 1):
-	return list(map(lambda name: mtgCardInCollectionObject.CardInCollection(name, defaultCount, None, None, 0, False), cardList))
+def cardListToCardObjectList(cardList, context, defaultCount=1):
+    return list(map(
+        lambda name: mtgCardInCollectionObject.CardInCollection(name, defaultCount, None, None, 0, False, None, None,
+                                                                context), cardList))
+
 
 # {'Shock': 1} -> {'Shock': CardInCollection(Shock)}
-def cardCountMapToCardObjectMap(cardCountMap):
-	return {x: mtgCardInCollectionObject.CardInCollection(x, cardCountMap[x], None, None, 0, False) for x in cardCountMap}
+def cardCountMapToCardObjectMap(cardCountMap, context):
+    return {x: mtgCardInCollectionObject.CardInCollection(x, cardCountMap[x], None, None, 0, False, None, None, context)
+            for x in cardCountMap}
+
 
 # {CardInCollection(Shock): 1} ->  {'Shock': CardInCollection(Shock)}
 def cardObjectCountMapToCardObjectMap(cardObjectCountMap):
-	return  {card.name: mtgCardInCollectionObject.CardInCollection(card.name, cardObjectCountMap[card], None, None, card.sideboard, card.commander, card.getProp('set'), card.propCache) for card in cardObjectCountMap}
+    return {card.name: mtgCardInCollectionObject.CardInCollection(card.name, cardObjectCountMap[card], None, None,
+                                                                  card.sideboard, card.commander, card.getProp('set'),
+                                                                  card.propCache, card.context) for card in
+            cardObjectCountMap}
 
-def printCardObjectList(cardList, color=None):
-	sorts = mtgCardInCollectionObject.CardInCollection.args.group
-	mtgCardTextFileDao.saveCardFile(sys.stdout, cardList, sorts, diffFormat=False, color=color)
+def printCardObjectList(cardList, context, color=None):
+    mtgCardTextFileDao.saveCardFile(sys.stdout, cardList, context.group, context, diffFormat=False, color=color)
+

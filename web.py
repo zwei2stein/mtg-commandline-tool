@@ -1,66 +1,63 @@
+import json
+from types import SimpleNamespace
+
+import hashlib
+
 from flask import Flask
-from flask import render_template
-from flask import url_for
-from flask import request
+from flask import abort
+from flask import jsonify
 
-import io
-
-import listTokens
 import deckPrice
 import mtgCardTextFileDao
+import priceSourceHandler
+from mtgDeckObject import Deck
 
 app = Flask(__name__)
 
-def addSubmitUrlsToModel(model) :
+configuration = {}
+with open('./config.json') as json_data_file:
+	configuration = json.load(json_data_file)
 
-	model["listTokensUrl"] = url_for('listTokensMethod')
-	model["deckPriceUrl"] = url_for('deckPriceMethod')
+priceSourceHandler.initPriceSource('none', configuration["priceSources"])
 
-	return model
+def basicCardList(deckCards):
+	res = []
+	for deckCardName in deckCards:
+		res.append(deckCardName)
+	return res
 
 @app.route('/')
 def index():
-    return 'Hello, World!'
+    abort(403)
 
-@app.route('/tokens')
-def tokensPage():
+@app.route('/<currency>/deckPrice.json', methods=['GET'])
+def deckPriceMethod(currency):
 
-	model = {}
+	context = SimpleNamespace()
+	context.currency = currency
 
-	model = addSubmitUrlsToModel(model)
+	decks = mtgCardTextFileDao.readDeckDirectory('../decklists/comanders_quaters', {}, configuration["filePattern"], context)
 
-	return render_template('tokenForm.html', model=model)
+	response = []
 
-@app.route('/listTokens', methods=['POST'])
-def listTokensMethod():
+	for file in decks:
+		print(file + ":")
+		deckList = decks[file]
+		deckPrices = deckPrice.deckPrice(deckList, currency)
+		deck = Deck(deckList)
 
-	deckList = request.form['deckList']
+		deckPrices["deckPriceTotal"] = str(deckPrices["deckPrice"])
+		deckPrices["commanders"] = basicCardList(deck.getCommander())
+		deckPrices["companions"] = basicCardList(deck.getSideboard())
+		deckPrices["deckFile"] = hashlib.sha256(file.encode()).hexdigest()
 
-	deck = mtgCardTextFileDao.readCardFile(io.StringIO(deckList), 'web', {}, True)
+		response.append(deckPrices)
 
-	response = listTokens.listTokens(deck)
+	jsonResponse = sorted(response, key = lambda i: i['deckPrice'])
 
-	model = response
+	response = jsonify(jsonResponse)
+	response.headers.add('Access-Control-Allow-Origin', '*')
 
-	model = addSubmitUrlsToModel(model)
+	return response
 
-	model["deckList"] = deckList
 
-	return render_template('tokenForm.html', model=model)
-
-@app.route('/deckPrice', methods=['POST'])
-def deckPriceMethod():
-
-	deckList = request.form['deckList']
-
-	deck = mtgCardTextFileDao.readCardFile(io.StringIO(deckList), 'web', {}, True)
-
-	currency = 'eur'
-
-	model = response = deckPrice.deckPrice(deck, currency)
-
-	model = addSubmitUrlsToModel(model)
-
-	model["deckList"] = deckList
-
-	return render_template('tokenForm.html', model=model)

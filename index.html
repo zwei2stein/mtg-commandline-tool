@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <title>The Commander's Quarters - live prices</title>
+    
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+    <link href="https://unpkg.com/@saeris/typeface-beleren-bold@latest/index.css" rel="stylesheet" type="text/css" />
+
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                url: "http://127.0.0.1:5000/usd/deckPrice.json"
+            }).then(function(data) {
+                data.forEach(function (item, index) {
+                  var commanders = ''
+                  item.commanders.forEach(function (item, index) {
+                    commanders = commanders + '<span class="commander">' + item + "</span>"
+                  });
+                  item.companions.forEach(function (item, index) {
+                    commanders = commanders + '<span class="commander">' + item + "</span>"
+                  });
+                  $('#deckTable>tbody').append("<tr><td>"+(index+1)+"</td><td>"+ commanders +'</td><td class="deckPrice">'+ item.deckPriceTotal +"</td><td>usd</td></tr>");
+                });
+            });
+        });
+    </script>
+    
+    <style type="text/css">
+        body { background-color: #a0a0a0; }
+        #deckTable {background-color: #f0f0f0; margin: 1em; border-collapse: collapse; }
+
+        .commander { background-color: #e0e0e0; margin: 4px; padding: 2px; border-radius: 4px; font-family: Beleren;}
+
+        .deckPrice {text-align: right;}
+
+        #deckTable td { padding: 4px; }
+
+        #deckTable tr {border-bottom: 1px solid #ffffff; }
+
+    </style>
+    
+</head>
+<body>
+
+    <h1>The Commander's Quarters - live prices</h1>
+
+    <p>Prices are from scryfall. Caveat: shipping costs exist, local proces may vary and sometimes scryfall does not have card price at all.</p>
+
+    <table id="deckTable">
+        <tbody></tbody>
+    </table>
+
+</body>
+</html>

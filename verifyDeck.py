@@ -45,7 +45,7 @@ def missingCards(deckCards, collection, currency, oldDeck = None, threshold = No
 				
 		if (neededAmount > 0):
 			if (deckCardName in collection):
-				cardInCollection = collection[deckCard.name]
+				cardInCollection = collection[deckCardName]
 				if (cardInCollection.count >= neededAmount):
 					haveList[deckCard] = neededAmount
 				elif (cardInCollection.count <= 0):
@@ -79,7 +79,7 @@ def missingCards(deckCards, collection, currency, oldDeck = None, threshold = No
 
 	return response
 
-def printMissingCardsToConsole(response):
+def printMissingCardsToConsole(response, context):
 	print ()
 
 	if (response['totalDeckCards'] == 0):
@@ -91,14 +91,14 @@ def printMissingCardsToConsole(response):
 
 		print ()
 		print ("Cards already in deck:")
-		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['haveInDeckAlreadyList']), console.CGREEN)
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['haveInDeckAlreadyList']), context, console.CGREEN)
 
 	if (len(response['haveList']) > 0):
 		
 		print ()
 		print ("Cards already in collection, not in deck:")
 		print ()
-		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['haveList']), console.CGREEN)
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['haveList']), context, console.CGREEN)
 
 
 	if (len(response['removeFromOldDeckList']) > 0):
@@ -106,7 +106,7 @@ def printMissingCardsToConsole(response):
 		print ()
 		print (console.CRED + "Cards removed from deck:" + console.CEND)
 		print ()
-		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['removeFromOldDeckList']), console.CRED)
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['removeFromOldDeckList']), context, console.CRED)
 
 
 	if (len(response['shoppingList']) == 0):
@@ -120,9 +120,9 @@ def printMissingCardsToConsole(response):
 		print (console.CRED + "Shopping list:" + console.CEND)
 		print ()
 
-		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['shoppingList']), console.CRED)
+		cardListFormater.printCardObjectList(cardListFormater.cardObjectCountMapToCardObjectMap(response['shoppingList']), context, console.CRED)
 
-		if ("price" in mtgCardInCollectionObject.CardInCollection.args.print):
+		if ("price" in context.print):
 			print ()
 			print ( console.CRED + 'Total shopping list price:' + console.CEND + " " + "{:3.2f}".format(response['totalPrice']) + util.currencyToGlyph(response['currency'] ))
 			if (response['threshold'] is not None): 
