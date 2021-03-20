@@ -9,6 +9,12 @@
 		"smartFlush": false
 	},
 	"priceSources": {
+		"scryfall": {
+			"cacheTimeout": 90,
+			"smartFlush": true,
+			"priority": 5,
+			"enabled": true
+		},
 		"cernyrytir": {
 			"cacheTimeout": 90,
 			"smartFlush": true,
