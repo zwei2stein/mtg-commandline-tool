@@ -7,7 +7,6 @@ from http import HTTPStatus
 import mtgCardTextFileDao
 import mtgCardInCollectionObject
 import mtgDeckObject
-#import deckAutocomplete
 
 import listTokens
 import verifyDeck
@@ -22,6 +21,7 @@ import deckCreatureTypes
 import drawCards
 import deckDiff
 import search
+import deckComplexity
 
 import scryfall
 
@@ -68,6 +68,7 @@ def main():
 	parser.add_argument('-lm', '--landMana', action='store_true', help='Prints mana source count of given deck file')
 	parser.add_argument('-cc', '--cardCount', action='store_true', help='Gives total count of cards for deck')
 	parser.add_argument('-is', '--isSingleton', action='store_true', help='Checks deck if it is singeton')
+	parser.add_argument('-dc', '--deckComplexity', action='store_true', help='Deck complexity index')
 
 	parser.add_argument('-df', '--deckFormat', action='store_true', help='Prints formats in which is deck legal')
 	parser.add_argument('-dfi', '--deckFormatInspect', choices=deckFormat.formatList, default=None, help='Show detailed information about why deck does not meet format criteria.')
@@ -98,7 +99,7 @@ def main():
 		mtgCardTextFileDao.readCardDirectory(args.collectionDirectory, cardCollection, args.ignoreDecks, args.filePattern, args)
 
 	decks = {}
-	if (args.deckPrice or args.missingCards or args.update or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff or args.printPretty):
+	if (args.deckPrice or args.missingCards or args.update or args.listTokens or args.manaCurve or args.manaSymbols or args.landMana or args.nameDeck or args.cardCount or args.isSingleton or args.deckFormat or args.deckFormatInspect or args.deckCreatureTypes or args.drawCards or args.diff or args.printPretty or args.deckComplexity):
 		decks = mtgCardTextFileDao.readDeckDirectory(args.deck, decks, args.filePattern, args)
 
 	ready = True
@@ -175,6 +176,8 @@ def main():
 				formatedFile.close()
 				print ("Saved", formatedFileName)
 				args.sort = originalSorts
+			if (args.deckComplexity):
+				deckComplexity.printDeckComplexityConsole(deckComplexity.deckComplexity(deck))
 
 		if (args.saveList is not None):
 			if (args.saveList == 'console'):

@@ -143,9 +143,9 @@ usage: mtg.py [-h] [-cd COLLECTIONDIRECTORY] [-id] [-fp FILEPATTERN]
               [-g [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} [{price,fullPrices,cheapestPriceSource,cmc,name,count,color,set,type,shortType,rarity} ...]]]
               [-fl {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}]
               [-ft FILTERTYPE] [-mc] [-lt] [-pp] [-dp] [-mcu] [-ms] [-lm]
-              [-cc] [-is] [-df]
+              [-cc] [-is] [-dc] [-df]
               [-dfi {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}]
-              [-ct] [-draw DRAWCARDS] [-nd] [-diff DIFF]
+              [-ct] [-draw DRAWCARDS] [-nd] [-diff DIFF] [-update UPDATE]
 
 Process MTG card plain text lists (decks and collection)
 
@@ -210,6 +210,8 @@ optional arguments:
   -lm, --landMana       Prints mana source count of given deck file
   -cc, --cardCount      Gives total count of cards for deck
   -is, --isSingleton    Checks deck if it is singeton
+  -dc, --deckComplexity
+                        Deck complexity index
   -df, --deckFormat     Prints formats in which is deck legal
   -dfi {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}, --deckFormatInspect {commander,duel,future,legacy,modern,pauper,penny,standard,vintage,oldschool,pioneer}
                         Show detailed information about why deck does not meet
@@ -222,6 +224,8 @@ optional arguments:
   -nd, --nameDeck       Attempts to generate name for given deck
   -diff DIFF, --diff DIFF
                         Difference of deck with another deck.
+  -update UPDATE, --update UPDATE, -upgrade UPDATE, --upgrade UPDATE
+                        New deck list to be updated into
 
 ```
 
@@ -241,4 +245,4 @@ optional arguments:
 
  * ommit cards with zero count from prints
 
- * deck age (latest set)
+ * deck age (latest set, date when deck was possible to assemble in paper)

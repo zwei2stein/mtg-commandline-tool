@@ -98,7 +98,7 @@ def getCachedCardJson(card):
                 clearCache == 'price' and fileAge.days > 1)):
             return fetchCardJson(card, jsonFile)
         else:
-            print("Loading cached " + jsonFile)
+            #print("Loading cached " + jsonFile)
             with open(jsonFile, encoding='utf-8') as json_data:
                 try:
                     return json.load(json_data)
