@@ -86,9 +86,8 @@ def saveCardFile(file, cards, sorts, context, diffFormat=False, color=None):
 
     if (hasCommander):
         file.write('\n')
-        file.write('Commander:')
-        file.write('\n')
         saveCardFileSlice(file, {k: v for (k, v) in cards.items() if v.getProp('commander')}, [], diffFormat, context,
+                          prependTextToCardLine='Commander:\n',
                           color=color)
         file.write('\n')
         file.write('# Main deck:')
@@ -108,7 +107,7 @@ def saveCardFile(file, cards, sorts, context, diffFormat=False, color=None):
                           context, color=color)
 
 
-def saveCardFileSlice(file, cards, sorts, diffFormat, context, sideboard=False, color=None):
+def saveCardFileSlice(file, cards, sorts, diffFormat, context, sideboard=False, prependTextToCardLine=None, color=None):
     lastGroup = {}
 
     for sort in sorts:
@@ -122,7 +121,7 @@ def saveCardFileSlice(file, cards, sorts, diffFormat, context, sideboard=False, 
             if (groupReset):
                 lastGroup[sort] = None
 
-            if (lastGroup[sort] == None or lastGroup[sort] != cards[card].getProp(sort)):
+            if (lastGroup[sort] is None or lastGroup[sort] != cards[card].getProp(sort)):
                 file.write('\n')
                 file.write("# ")
                 if (len(sorts) > 1):
@@ -145,10 +144,10 @@ def saveCardFileSlice(file, cards, sorts, diffFormat, context, sideboard=False, 
             if (not (context.filterType in cards[card].jsonData['type_line'])):
                 continue
 
-        printCard(file, cards[card], sideboard, diffFormat, color=color)
+        printCard(file, cards[card], sideboard, diffFormat, prependTextToCardLine=prependTextToCardLine, color=color)
 
 
-def printCard(file, card, sideboard, diffFormat, color=None):
+def printCard(file, card, sideboard, diffFormat, prependTextToCardLine=None, color=None):
     count = 0
     if (sideboard):
         if (card.count < card.sideboard):
@@ -157,6 +156,9 @@ def printCard(file, card, sideboard, diffFormat, color=None):
             count = card.sideboard
     else:
         count = card.count - card.sideboard
+
+    if prependTextToCardLine is not None:
+        file.write(prependTextToCardLine)
 
     if (diffFormat):
         for x in range(count):
@@ -179,7 +181,7 @@ def printCardLine(file, count, card, color=None):
 
 def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern, context):
     if (os.path.isfile(path)):
-        print("Reading signle file '", path, "'")
+        print("Reading single file '", path, "'")
         readCardFileFromPath(path, cards, asDeck=True, context=context)
     elif (os.path.isdir(path)):
         print("Reading directory ", path)
@@ -216,7 +218,7 @@ def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern, context):
 
 def readDeckDirectory(path, decks, cardListfilePattern, context):
     if (os.path.isfile(path)):
-        print("Reading signle file '", path, "'")
+        print("Reading single file '", path, "'")
         decks[path] = readCardFileFromPath(path, {}, asDeck=True, context=context)
     elif (os.path.isdir(path)):
         print("Reading directory ", path)

@@ -231,8 +231,6 @@ optional arguments:
 
 ## TODO:
 
- * Multiple commanders in pretty save 
-
  * When checking deck legality, check more than 4-of cards and more than 1-of if in restricted list.
 
  * Check if commander commander can be commander
