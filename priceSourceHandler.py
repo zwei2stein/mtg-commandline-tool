@@ -82,8 +82,8 @@ def getCardPrice(currency, cardObject):
                 errors.append('Price for ' + cardObject.name + ' not found at ' + handler.sourceName)
             except SourceUnreachableException as e:
                 errors.append(handler.sourceName + ' is unreachable')
-    if len(errors) > 0:
-        print(errors)
+#    if len(errors) > 0:
+#        print(errors)
     if priceSourceCount > 0:
         return Decimal(price / priceSourceCount).quantize(Decimal('.01'), rounding=ROUND_UP)
     else:

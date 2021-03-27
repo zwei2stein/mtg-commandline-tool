@@ -114,30 +114,54 @@ def getCachedCardJson(card):
 
 #
 
-def searchByUrl(url):
-    foundCards = []
+def searchByCard(card):
+
+    url = card.jsonData['prints_search_uri']
+
+    jsonFile = os.path.join(getCacheDir(), card.jsonData["oracle_id"] + ".prints.json")
+    if os.path.exists(jsonFile):
+        fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
+
+        if (clearCache == 'always' or (clearCache == 'timeout' and fileAge.days > cacheTimeout) or (
+                clearCache == 'price' and fileAge.days > 1)):
+            return fetchCardJson(card, jsonFile)
+        else:
+            #print("Loading cached " + jsonFile)
+            with open(jsonFile, encoding='utf-8') as json_data:
+                try:
+                    return json.load(json_data)
+                except JSONDecodeError:
+                    print("Deleting and retrying invalid " + jsonFile)
+                    json_data.close()
+                    os.remove(jsonFile)
+                    return searchByCard(card)
 
     response = requests.get(url, proxies=proxies, auth=auth)
+
+    foundCardsJson = []
 
     while response is not None and response.status_code == 200:
 
         jsonResponse = response.json()
 
         for card in jsonResponse['data']:
-            foundCards.append(card)
+            foundCardsJson.append(card)
 
         if jsonResponse['has_more']:
             response = requests.get(jsonResponse['next_page'], proxies=proxies, auth=auth)
         else:
             response = None
 
-    return foundCards
+    with open(jsonFile, 'w') as f:
+        json.dump(foundCardsJson, f)
 
+    return foundCardsJson
 
 def search(query):
-    foundCardNames = []
 
     response = requests.get('https://api.scryfall.com/cards/search', params={'q': query}, proxies=proxies, auth=auth)
+
+    foundCardNames = []
 
     while response is not None and response.status_code == 200:
 

@@ -16,7 +16,7 @@ class ScryfallPriceSource(PriceSource):
 
     def fetchCardPrice(self, card, page=0, cheapestPrice=None):
 
-        foundCards = scryfall.searchByUrl(card.jsonData['prints_search_uri'])
+        foundCards = scryfall.searchByCard(card)
 
         minPrice = None
 

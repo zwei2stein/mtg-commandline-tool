@@ -1,3 +1,5 @@
+from datetime import datetime
+
 sets = {
 	'lea': { 'code' : 'LEA', 'date' : '1993-08', 'name' : 'Alpha (Limited Edition)', 'description' : '(1E) - Core set - Core set #1 (1st printing); Cards do not show the expansion symbol.' },
 	'leb': { 'code' : 'LEB', 'date' : '1993-10', 'name' : 'Beta (Limited Edition)', 'description' : '(2E) - Core set - Core set #1 (2nd printing); Cards do not show the expansion symbol.' },
@@ -230,15 +232,21 @@ sets = {
 	'cc1' : { 'code' : 'CC1', 'date' : '2020-12', 'name' : 'Commander Collection: Green - ', 'description' : 'Box set - Commander Collection #1'}
 }
 
+def getSetDate(set):
+	if set in sets:
+		return datetime.strptime(sets[set]["date"], "%Y-%m")
+	else:
+		return datetime.min
+
 def getSetOrder(set):
-	if (set in sets):
+	if set in sets:
 		return sets[set]["date"] + sets[set]["name"]
 	else:
 		print ("unknown set '" + set + "'")
 		return set
 
 def getSetName(set):
-	if (set in sets):
+	if set in sets:
 		return sets[set]["name"]
 	else:
 		print ("unknown set '" + set + "'")
