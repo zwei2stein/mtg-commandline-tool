@@ -1,0 +1,96 @@
+.colorW {
+	background-color: white;
+}
+.colorU {
+	background-color: LightSkyBlue;
+}
+.colorB {
+	background-color: LightSlateGray;
+}
+.colorR {
+	background-color: LightCoral;
+}
+.colorG {
+	background-color: DarkSeaGreen;
+}
+.colorWU {
+	background-image: linear-gradient(to right, white, LightSkyBlue);
+}
+.colorWB {
+	background-image: linear-gradient(to right, white, LightSlateGray);
+}
+.colorWR {
+	background-image: linear-gradient(to right, white, LightCoral);
+}
+.colorWG {
+	background-image: linear-gradient(to right, white, DarkSeaGreen);
+}
+.colorUB {
+	background-image: linear-gradient(to right, LightSkyBlue, LightSlateGray);
+}
+.colorUR {
+	background-image: linear-gradient(to right, LightSkyBlue, LightCoral);
+}
+.colorUG {
+	background-image: linear-gradient(to right, LightSkyBlue, DarkSeaGreen);
+}
+.colorBR {
+	background-image: linear-gradient(to right, LightSlateGray, LightCoral);
+}
+.colorBG {
+	background-image: linear-gradient(to right, LightSlateGray, DarkSeaGreen);
+}
+.colorRG {
+	background-image: linear-gradient(to right, LightCoral, DarkSeaGreen);
+}
+.colorWUB {
+	background-image: linear-gradient(to right, white, LightSkyBlue, LightSlateGray);
+}
+.colorWUR {
+	background-image: linear-gradient(to right, white, LightSkyBlue, LightCoral);
+}
+.colorWUG {
+	background-image: linear-gradient(to right, white, LightSkyBlue, DarkSeaGreen);
+}
+.colorWBR {
+	background-image: linear-gradient(to right, white, LightSlateGray, LightCoral);
+}
+.colorWBG {
+	background-image: linear-gradient(to right, white, LightSlateGray, DarkSeaGreen);
+}
+.colorWRG {
+	background-image: linear-gradient(to right, white, LightCoral, DarkSeaGreen);
+}
+.colorUBR {
+	background-image: linear-gradient(to right, LightSkyBlue, LightSlateGray, LightCoral);
+}
+.colorUBG {
+	background-image: linear-gradient(to right, LightSkyBlue, LightSlateGray, DarkSeaGreen);
+}
+.colorURG {
+	background-image: linear-gradient(to right, LightSkyBlue, LightCoral, DarkSeaGreen);
+}
+.colorBRG {
+	background-image: linear-gradient(to right, LightSlateGray, LightCoral, DarkSeaGreen);
+}
+.colorWUBR {
+	background-image: linear-gradient(to right, white, LightSkyBlue, LightSlateGray, LightCoral);
+}
+.colorWUBG {
+	background-image: linear-gradient(to right, white, LightSkyBlue, LightSlateGray, DarkSeaGreen);
+}
+.colorWURG {
+	background-image: linear-gradient(to right, white, LightSkyBlue, LightCoral, DarkSeaGreen);
+}
+.colorWBRG {
+	background-image: linear-gradient(to right, white, LightSlateGray, LightCoral, DarkSeaGreen);
+}
+.colorUBRG {
+	background-image: linear-gradient(to right, LightSkyBlue, LightSlateGray, LightCoral, DarkSeaGreen);
+}
+.colorWUBRG {
+	background-image: linear-gradient(to right, white, LightSkyBlue, LightSlateGray, LightCoral, DarkSeaGreen);
+}
+.colorC {
+	background-color: Tan;
+}

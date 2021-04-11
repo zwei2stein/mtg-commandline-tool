@@ -9,11 +9,11 @@ from decimal import *
 import random
 
 colorPairingNames = {
- 'W': ['White', 'Monowhite', 'Mono-white'],
- 'U': ['Blue', 'Monoblue', 'Mono-blue'],
- 'B': ['Black', 'Monoblack', 'Mono-black'],
- 'R': ['Red', 'Monored', 'Mono-red'],
- 'G': ['Green', 'Monogreen', 'Mono-green'],
+ 'W': ['White', 'Monowhite', 'Mono-white', 'W'],
+ 'U': ['Blue', 'Monoblue', 'Mono-blue', 'U'],
+ 'B': ['Black', 'Monoblack', 'Mono-black', 'B'],
+ 'R': ['Red', 'Monored', 'Mono-red', 'R'],
+ 'G': ['Green', 'Monogreen', 'Mono-green', 'G'],
  'WU': ['Azorius', 'White/Blue', 'White-Blue', 'WU'],
  'WB': ['Orzhov', 'White/Black', 'White-Black', 'WB'],
  'WR': ['Boros', 'White/Red', 'White-Red', 'WR'],

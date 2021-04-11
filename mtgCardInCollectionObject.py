@@ -5,9 +5,9 @@ import sets
 import util
 
 cardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType',
-             'rarity']
+             'rarity', 'age']
 
-globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'color', 'type', 'shortType', 'rarity']
+globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'color', 'type', 'shortType', 'rarity', 'age']
 
 rarityOrder = {
     'common': 0,
@@ -27,6 +27,8 @@ shortTypeOrder = {
 }
 
 globalCache = {}
+
+globalPriceCache = {}
 
 
 def getRarityOrder(rarity):
@@ -94,14 +96,20 @@ class CardInCollection:
 
         propValue = None
 
-        if (propName in globalCardProps):
-            if (self.name not in globalCache):
+        if propName == 'price':
+            if self.name not in globalPriceCache:
+                globalPriceCache[self.name] = {}
+            if self.context.currency not in globalPriceCache[self.name]:
+                globalPriceCache[self.name][self.context.currency] = self.getRawProp(propName)
+            propValue = globalPriceCache[self.name][self.context.currency]
+        elif propName in globalCardProps:
+            if self.name not in globalCache:
                 globalCache[self.name] = {}
-            if (propName not in globalCache[self.name]):
+            if propName not in globalCache[self.name]:
                 globalCache[self.name][propName] = self.getRawProp(propName)
             propValue = globalCache[self.name][propName]
         else:
-            if (propName not in self.propCache):
+            if propName not in self.propCache:
                 self.propCache[propName] = self.getRawProp(propName)
             propValue = self.propCache[propName]
 
@@ -143,6 +151,12 @@ class CardInCollection:
             return self.jsonData["rarity"]
         if (propName == 'commander'):
             return self.commander
+        if (propName == 'age'):
+            cardPrintings = scryfall.searchByCard(self)
+            printDates = []
+            for cardPrinting in cardPrintings:
+                printDates.append(sets.getSetDate(cardPrinting["set"]))
+            return min(printDates)
 
     def getFullOracleText(self):
         oracleText = self.jsonData.get('oracle_text', '')

@@ -6,41 +6,36 @@
 <head>
     <title>The Commander's Quarters - live prices</title>
     
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <link href="https://unpkg.com/@saeris/typeface-beleren-bold@latest/index.css" rel="stylesheet" type="text/css" />
 
-    <script>
-        $(document).ready(function() {
-            $.ajax({
-                url: "http://127.0.0.1:5000/usd/deckPrice.json"
-            }).then(function(data) {
-                data.forEach(function (item, index) {
-                  var commanders = ''
-                  item.commanders.forEach(function (item, index) {
-                    commanders = commanders + '<span class="commander">' + item + "</span>"
-                  });
-                  item.companions.forEach(function (item, index) {
-                    commanders = commanders + '<span class="commander">' + item + "</span>"
-                  });
-                  $('#deckTable>tbody').append("<tr><td>"+(index+1)+"</td><td>"+ commanders +'</td><td class="deckPrice">'+ item.deckPriceTotal +"</td><td>usd</td></tr>");
-                });
-            });
-        });
-    </script>
+    <script type="text/javascript" src="script.js"></script>
+
+    <link href="colors.css" rel="stylesheet" type="text/css" />
     
     <style type="text/css">
-        body { background-color: #a0a0a0; }
+        body { background-color: #a0a0a0; font-family: Beleren; }
         #deckTable {background-color: #f0f0f0; margin: 1em; border-collapse: collapse; }
 
-        .commander { background-color: #e0e0e0; margin: 4px; padding: 2px; border-radius: 4px; font-family: Beleren;}
+        .commander { margin: 0.25em; padding: 0.25em; border-radius: 0.5em;
+                text-shadow: 0 0 2px white;
+                    }
+
+        .companion {}
 
         .deckPrice {text-align: right;}
 
-        #deckTable td { padding: 4px; }
+        #error { color: #800000; }
+
+        #deckTableBorder { background-color: #f0f0f0; margin: 1em; padding: 1em; border-radius: 1em; border: 1px solid #000000; }
+
+        #deckTable tbody td { padding: 0.5em; }
 
         #deckTable tr {border-bottom: 1px solid #ffffff; }
+
+        #filter { background-color: #f0f0f0; margin: 1em; padding: 1em; border-radius: 1em; border: 1px solid #000000; }
 
     </style>
     
@@ -51,9 +46,43 @@
 
     <p>Prices are from scryfall. Caveat: shipping costs exist, local proces may vary and sometimes scryfall does not have card price at all.</p>
 
-    <table id="deckTable">
-        <tbody></tbody>
-    </table>
+    <div id="filter">
+
+        <label for="currency">Currency</label>
+        <select id="currency">
+            <option value="eur">Euro</option>
+            <option value="usd" selected="true">USD</option>
+            <option value="tix">Tix</option>
+            <option value="czk">Česká Koruna</option>
+        </select>
+
+        <label for="order">Order by</label>
+        <select id="order">
+            <option value="deckPriceTotal" selected="true">Deck price</option>
+            <option value="date">Deck age</option>
+            <option value="rank">Average EDHrec rank</option>
+            <option value="commanders">Commander names</option>
+        </select>
+
+        <button id="refresh">Refresh</button>
+
+    </div>
+
+    <div id="deckTableBorder">
+        <table id="deckTable">
+            <thead><tr id="header">
+                <th>#</th>
+                <th>Commander(s)</th>
+                <th>Deck age</th>
+                <th>Ø EDHrec rank</th>
+                <th colspan="2">Price</th>
+            </tr>
+            <tr id="loading"><th colspan="6">Loading ...</th></tr>
+            <tr id="error"><th colspan="6">Oops ... something is broken.</th></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
 </body>
 </html>
