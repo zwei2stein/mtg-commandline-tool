@@ -16,7 +16,7 @@ import mtgColors
 import priceSourceHandler
 from mtgDeckObject import Deck
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/')
 
 salt = "$!K;g.}yDdeg\"Q5J".encode('utf-8')
 
@@ -49,7 +49,7 @@ def basicCardList(deckCards):
 
 @app.route('/')
 def index():
-    abort(403)
+    return app.send_static_file('index.html')
 
 
 @app.route('/<deck>/deckList.json', methods=['GET'])
