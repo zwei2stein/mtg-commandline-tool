@@ -229,7 +229,21 @@ sets = {
 	'znc' : { 'code' : 'ZNC', 'date' : '2020-09', 'name' : 'Zendikar Rising Commander Decks', 'description' : 'Box set - Commander Decks set #1'},
 	'cmr' : { 'code' : 'CMR', 'date' : '2020-11', 'name' : 'Commander Legends', 'description' : 'Supplemental set'},
 	'cmc' : { 'code' : 'CMC', 'date' : '2020-11', 'name' : 'Commander Legends Commander Decks', 'description' : 'Box set - Commander Decks set #2'},
-	'cc1' : { 'code' : 'CC1', 'date' : '2020-12', 'name' : 'Commander Collection: Green - ', 'description' : 'Box set - Commander Collection #1'}
+	'cc1' : { 'code' : 'CC1', 'date' : '2020-12', 'name' : 'Commander Collection: Green', 'description' : 'Box set - Commander Collection #1'},
+	'sld' : { 'code' : 'SLD', 'date' : '2020-11', 'name' : "Secret Lair Drop Series: Extra Life 2020", 'description' : 'Box set - Secret Lair release #12' },
+	'sld' : { 'code' : 'SLD', 'date' : '2020-11', 'name' : "Secret Lair Drop Series: Secretversary", 'description' : 'Box set - Secret Lair release #13' },
+	'khm' : { 'code' : 'KHM', 'date' : '2021-02', 'name' : "Kaldheim", 'description' : 'Expansion set - 86th expansion' },
+	'khc' : { 'code' : 'KHC', 'date' : '2021-02', 'name' : "Kaldheim Commander Decks", 'description' : 'Box set - Commander Decks set #3' },
+	'sld' : { 'code' : 'SLD', 'date' : '2021-02', 'name' : "Secret Lair Drop Series: Smitten", 'description' : 'Box set - Secret Lair release #14' },
+	'sld' : { 'code' : 'SLD', 'date' : '2021-02', 'name' : "Secret Lair Drop Series: Black is Magic", 'description' : 'Box set - Secret Lair release #15' },
+	'tsr' : { 'code' : 'TSR', 'date' : '2021-03', 'name' : "Time Spiral Remastered", 'description' : 'Expansion set - Masters set #9' },
+	'q04' : { 'code' : 'Q04', 'date' : '2021-03', 'name' : "Challenger Decks 2021", 'description' : 'Box set - Challenger Decks set #4' },
+	'stx' : { 'code' : 'STX', 'date' : '2021-04', 'name' : "Strixhaven: School of Mages", 'description' : 'Expansion set - 87th expansion' },
+	'sta' : { 'code' : 'STA', 'date' : '2021-04', 'name' : "Mystical Archive", 'description' : 'Compilation set' },
+	'c21' : { 'code' : 'C21', 'date' : '2021-04', 'name' : "Commander 2021", 'description' : 'Expansion set - Commander set #12' },
+	'slu' : { 'code' : 'SLU', 'date' : '2021-05', 'name' : "Secret Lair: Ultimate Edition 2", 'description' : 'Box set - Secret Lair release #15' },
+	'mh2' : { 'code' : 'MH2', 'date' : '2021-06', 'name' : "Modern Horizons 2", 'description' : 'Supplemental set - Straight to Modern set #2' }
+
 }
 
 def getSetDate(set):
