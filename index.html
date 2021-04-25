@@ -5,25 +5,42 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
     <title>The Commander's Quarters - live prices</title>
-    
+
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-    <link href="https://unpkg.com/@saeris/typeface-beleren-bold@latest/index.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/mana-font@latest/css/mana.css" rel="stylesheet" type="text/css"/>
+
+    <link href="https://unpkg.com/@saeris/typeface-beleren-bold@latest/index.css" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript" src="script.js"></script>
 
-    <link href="colors.css" rel="stylesheet" type="text/css" />
-    
+    <link href="colors.css" rel="stylesheet" type="text/css"/>
+
     <style type="text/css">
         body { background-color: #a0a0a0; font-family: Beleren; }
         #deckTable {background-color: #f0f0f0; margin: 1em; border-collapse: collapse; }
 
-        .commander { margin: 0.25em; padding: 0.25em; border-radius: 0.5em;
-                text-shadow: 0 0 2px white;
-                    }
+        .commander {
+            margin: 0.25em;
+            padding: 0.25em;
+            border-radius: 0.5em;
+            text-shadow: 0 0 2px white;
+        }
 
-        .companion {}
+        .card {
+            margin: 0.25em;
+            padding: 0.25em;
+            border-radius: 0.25em;
+            text-shadow: 0 0 2px white;
+            border-width: 1px;
+        }
+
+        div.manaCost { float: right; }
+
+        .companion:before { content: "+\00A0";}
+
+        .rank {text-align: right;}
 
         .deckPrice {text-align: right;}
 
@@ -35,50 +52,143 @@
 
         #deckTable tr {border-bottom: 1px solid #ffffff; }
 
+        #deckTable #loading {border-bottom: 0px none #ffffff; }
+
         #filter { background-color: #f0f0f0; margin: 1em; padding: 1em; border-radius: 1em; border: 1px solid #000000; }
 
+        #cardPreview {
+            width: 488px;
+            height: 680px;
+            border-radius: 20px;
+            background-color: #000000;
+            position: fixed;
+            right: 2em;
+            top: 2em;
+            opacity: 0.1;
+        }
+
     </style>
-    
+
+    <style type="text/css">
+
+        .loaderW {
+            border: 10px solid White;
+            border-radius: 50%;
+            border-top: 10px solid Cornsilk;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 5s linear infinite; /* Safari */
+            animation: spin 5s linear infinite;
+        }
+        .loaderU {
+            border: 10px solid White;
+            border-radius: 50%;
+            border-top: 10px solid LightSkyBlue;
+            width: 100px;
+            height: 100px;
+            -webkit-animation: spin 5s linear infinite; /* Safari */
+            animation: spin 5s linear infinite;
+        }
+        .loaderB {
+            border: 10px solid White;
+            border-radius: 50%;
+            border-top: 10px solid LightSlateGray;
+            width: 80px;
+            height: 80px;
+            -webkit-animation: spin 5s linear infinite; /* Safari */
+            animation: spin 5s linear infinite;
+        }
+        .loaderR {
+            border: 10px solid White;
+            border-radius: 50%;
+            border-top: 10px solid LightCoral;
+            width: 60px;
+            height: 60px;
+            -webkit-animation: spin 5s linear infinite; /* Safari */
+            animation: spin 5s linear infinite;
+        }
+        .loaderG {
+            border: 10px solid White;
+            border-radius: 50%;
+            border-top: 10px solid DarkSeaGreen;
+            width: 40px;
+            height: 40px;
+            -webkit-animation: spin 5s linear infinite; /* Safari */
+            animation: spin 5s linear infinite;
+        }
+
+        /* Safari */
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+
 </head>
 <body>
 
+    <div id="cardPreview"></div>
+
     <h1>The Commander's Quarters - live prices</h1>
 
-    <p>Prices are from scryfall. Caveat: shipping costs exist, local proces may vary and sometimes scryfall does not have card price at all.</p>
+    <p>Prices are from scryfall. Caveat: shipping costs exist, local proces may vary and sometimes scryfall does not have
+        card price at all.</p>
 
     <div id="filter">
 
-        <label for="currency">Currency</label>
+        <label for="currency">My currency is </label>
         <select id="currency">
-            <option value="eur">Euro</option>
-            <option value="usd" selected="true">USD</option>
-            <option value="tix">Tix</option>
-            <option value="czk">Česká Koruna</option>
+            <option value="eur">&euro; &#128181;</option>
+            <option value="usd" selected="true">&dollar; &#128182;</option>
+            <option value="tix">tix</option>
+            <!--<option value="czk">Česká Koruna</option>-->
         </select>
-
-        <label for="order">Order by</label>
+        ,
+        <label for="order">I'm interested in </label>
         <select id="order">
-            <option value="deckPriceTotal" selected="true">Deck price</option>
-            <option value="date">Deck age</option>
-            <option value="rank">Average EDHrec rank</option>
-            <option value="commanders">Commander names</option>
-        </select>
+            <option value="deckPriceTotal" selected="true">cheapest</option>
+            <option value="date">newest</option>
+            <option value="rank">best card containing</option>
+            <option value="commanders_sort">alphabetical commander list of</option>
+        </select> decks.
 
-        <button id="refresh">Refresh</button>
+        <button id="refresh">Go!</button>
 
     </div>
 
     <div id="deckTableBorder">
         <table id="deckTable">
-            <thead><tr id="header">
+            <thead>
+            <tr id="header">
                 <th>#</th>
-                <th>Commander(s)</th>
-                <th>Deck age</th>
-                <th>Ø EDHrec rank</th>
-                <th colspan="2">Price</th>
+                <th></th>
+                <th id="commanders_sort">Commander(s)</th>
+                <th id="date_sort">Deck age</th>
+                <th id="rank_sort">Average EDHrec rank</th>
+                <th id="deckPriceTotal_sort" colspan="2">Price</th>
             </tr>
-            <tr id="loading"><th colspan="6">Loading ...</th></tr>
-            <tr id="error"><th colspan="6">Oops ... something is broken.</th></tr>
+            <tr id="loading">
+                <th colspan="7">
+                    <div class="loaderW">
+                        <div class="loaderU">
+                            <div class="loaderB">
+                                <div class="loaderR">
+                                    <div class="loaderG"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+            <tr id="error">
+                <th colspan="7">Oops ... something is broken.</th>
+            </tr>
             </thead>
             <tbody></tbody>
         </table>

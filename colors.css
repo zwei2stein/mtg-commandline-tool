@@ -1,96 +1,128 @@
+.color {
+    border: 3px ridge Tan;
+	background-color: Tan;
+}
 .colorW {
-	background-color: white;
+	border: 3px ridge white;
+	background-color: Cornsilk;
 }
 .colorU {
+	border: 3px ridge CornflowerBlue;
 	background-color: LightSkyBlue;
 }
 .colorB {
+	border: 3px ridge black;
 	background-color: LightSlateGray;
 }
 .colorR {
+	border: 3px ridge red;
 	background-color: LightCoral;
 }
 .colorG {
+	border: 3px ridge green;
 	background-color: DarkSeaGreen;
 }
 .colorWU {
-	background-image: linear-gradient(to right, white, LightSkyBlue);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSkyBlue);
 }
 .colorWB {
-	background-image: linear-gradient(to right, white, LightSlateGray);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSlateGray);
 }
 .colorWR {
-	background-image: linear-gradient(to right, white, LightCoral);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightCoral);
 }
 .colorWG {
-	background-image: linear-gradient(to right, white, DarkSeaGreen);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, DarkSeaGreen);
 }
 .colorUB {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSkyBlue, LightSlateGray);
 }
 .colorUR {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSkyBlue, LightCoral);
 }
 .colorUG {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSkyBlue, DarkSeaGreen);
 }
 .colorBR {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSlateGray, LightCoral);
 }
 .colorBG {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSlateGray, DarkSeaGreen);
 }
 .colorRG {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightCoral, DarkSeaGreen);
 }
 .colorWUB {
-	background-image: linear-gradient(to right, white, LightSkyBlue, LightSlateGray);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSkyBlue, LightSlateGray);
 }
 .colorWUR {
-	background-image: linear-gradient(to right, white, LightSkyBlue, LightCoral);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSkyBlue, LightCoral);
 }
 .colorWUG {
-	background-image: linear-gradient(to right, white, LightSkyBlue, DarkSeaGreen);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSkyBlue, DarkSeaGreen);
 }
 .colorWBR {
-	background-image: linear-gradient(to right, white, LightSlateGray, LightCoral);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSlateGray, LightCoral);
 }
 .colorWBG {
-	background-image: linear-gradient(to right, white, LightSlateGray, DarkSeaGreen);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSlateGray, DarkSeaGreen);
 }
 .colorWRG {
-	background-image: linear-gradient(to right, white, LightCoral, DarkSeaGreen);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightCoral, DarkSeaGreen);
 }
 .colorUBR {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSkyBlue, LightSlateGray, LightCoral);
 }
 .colorUBG {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSkyBlue, LightSlateGray, DarkSeaGreen);
 }
 .colorURG {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSkyBlue, LightCoral, DarkSeaGreen);
 }
 .colorBRG {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSlateGray, LightCoral, DarkSeaGreen);
 }
 .colorWUBR {
-	background-image: linear-gradient(to right, white, LightSkyBlue, LightSlateGray, LightCoral);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSkyBlue, LightSlateGray, LightCoral);
 }
 .colorWUBG {
-	background-image: linear-gradient(to right, white, LightSkyBlue, LightSlateGray, DarkSeaGreen);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSkyBlue, LightSlateGray, DarkSeaGreen);
 }
 .colorWURG {
-	background-image: linear-gradient(to right, white, LightSkyBlue, LightCoral, DarkSeaGreen);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSkyBlue, LightCoral, DarkSeaGreen);
 }
 .colorWBRG {
-	background-image: linear-gradient(to right, white, LightSlateGray, LightCoral, DarkSeaGreen);
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSlateGray, LightCoral, DarkSeaGreen);
 }
 .colorUBRG {
+	border: 3px ridge goldenrod;
 	background-image: linear-gradient(to right, LightSkyBlue, LightSlateGray, LightCoral, DarkSeaGreen);
 }
 .colorWUBRG {
-	background-image: linear-gradient(to right, white, LightSkyBlue, LightSlateGray, LightCoral, DarkSeaGreen);
-}
-.colorC {
-	background-color: Tan;
+	border: 3px ridge goldenrod;
+	background-image: linear-gradient(to right, Cornsilk, LightSkyBlue, LightSlateGray, LightCoral, DarkSeaGreen);
 }
