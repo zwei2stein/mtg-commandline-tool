@@ -249,6 +249,6 @@ def readDeckDirectory(path, decks, cardListfilePattern, context):
         sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\n')
         sys.stdout.flush()
     else:
-        print("'" + path + "' is not a file or directory.")
+        print("'" + os.path.abspath(path) + "' is not a file or directory.")
 
     return decks
