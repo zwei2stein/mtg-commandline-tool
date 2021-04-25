@@ -11,7 +11,7 @@ class ScryfallPriceSource(PriceSource):
         self.smartFlush = smartFlush
         self.sourceName = 'Scryfall'
         self.supportedCurrency = supportedCurrency
-        self.cacheDir = '.scyfallPriceCache' + self.supportedCurrency
+        self.cacheDir = '.scryfallPriceCache' + self.supportedCurrency
         self.priority = priority
 
     def fetchCardPrice(self, card, page=0, cheapestPrice=None):
