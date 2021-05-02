@@ -55,7 +55,7 @@ function showTokens(deckFile, index) {
             var deckList = '';
 
             if (data.tokens.length > 0) {
-                deckList = deckList + '<h3>Tokens:</h3>';
+                deckList = deckList + '<h3>Token(s):</h3>';
                 data.tokens.forEach(function (item, index) {
                     deckList = deckList + '<div class="token">' + item.token + '</div>';
                     deckList = deckList + '<div class="simpleCardList">';
@@ -67,7 +67,7 @@ function showTokens(deckFile, index) {
             }
 
             if (data.counters.length > 0) {
-                deckList = deckList + '<h3>Counter:</h3>';
+                deckList = deckList + '<h3>Counter(s):</h3>';
                 data.counters.forEach(function (item, index) {
                     deckList = deckList + '<div class="token">' + item.counter + '</div>';
                     deckList = deckList + '<div class="simpleCardList">';
