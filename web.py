@@ -10,6 +10,7 @@ from flask import abort
 from flask import jsonify
 
 import cardListFormater
+import mtgCardInCollectionObject
 
 import deckAge
 import deckPrice
@@ -73,7 +74,10 @@ def deckList(deck):
             deck = Deck(decks[file])
             jsonResponse["commanders"] = sorted(basicCardList(deck.getCommander()), key=lambda item: item.get("name"))
             jsonResponse["companions"] = sorted(basicCardList(deck.getSideboard()), key=lambda item: item.get("name"))
-            jsonResponse["deckList"] = sorted(basicCardList(deck.getMainboard()), key=lambda item: item.get("name"))
+            jsonResponse['deckList'] = []
+            for shortType in sorted(deck.getShortTypes(), key=lambda item: mtgCardInCollectionObject.getShortTypeOrder(item)):
+                jsonResponse['deckList'].append({'shortType': shortType.capitalize(), 'cards': sorted(basicCardList(deck.getByShortType(shortType)), key=lambda item: item.get("name"))})
+
             with open(file) as f:
                 first_line = f.readline()
                 if first_line.startswith("# source: "):

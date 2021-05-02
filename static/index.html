@@ -77,8 +77,14 @@
             margin-left: 1em;
         }
 
+        .deckCardList {
+            margin-left: 1em;
+        }
+
         .simpleCardList {
             margin-left: 3em;
+            display: flex;
+            flex-wrap: wrap;
         }
 
     </style>
@@ -153,8 +159,9 @@
 
     <h1>The Commander's Quarters - live prices</h1>
 
-    <p>Prices are from scryfall. Caveat: shipping costs exist, local proces may vary and sometimes scryfall does not have
-        card price at all.</p>
+    <p>Prices are from <a href="https://scryfall.com/">Scryfall</a>. <a href="https://thecommandersquarters.com/">Commander’s Quarters</a> generally tries to account more stuff.</p>
+
+    <p>&#128220; Shows decklist. &#127922; Shows list of tokens and such stuff.</p>
 
     <div id="filter">
 
@@ -175,7 +182,7 @@
             <option value="complexity">simplest</option>
         </select> decks.
 
-        <button id="refresh">Go!</button>
+        <button id="refresh">Update.</button>
 
     </div>
 

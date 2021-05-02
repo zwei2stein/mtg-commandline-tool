@@ -113,7 +113,11 @@ function showDeck(deckFile, index) {
               var deckList = '';
 
               data.deckList.forEach(function (item, index) {
-                    deckList = deckList + '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>"
+                    deckList = deckList + '<h3>' + item.shortType + '</h3><div class="deckCardList">'
+                    item.cards.forEach(function (item, index) {
+                        deckList = deckList + '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>"
+                    });
+                    deckList = deckList + '</div>';
               });
 
              $('#deckLine'+index+" .deck").html(deckList);

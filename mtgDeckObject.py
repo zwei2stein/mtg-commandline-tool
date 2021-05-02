@@ -16,6 +16,17 @@ class Deck:
     def getMainboard(self):
         return {k: v for (k, v) in self.cards.items() if (v.getProp('mainboard') and not v.getProp('commander'))}
 
+    def getByShortType(self, shortType):
+        return {k: v for (k, v) in self.cards.items() if (v.getProp('shortType') == shortType and v.getProp('mainboard') and not v.getProp('commander'))}
+
+    def getShortTypes(self):
+        shortTypes = set()
+
+        for key, card in self.cards.items():
+            shortTypes.add(card.getProp('shortType'))
+
+        return shortTypes
+
     def getAverageEDHrecRank(self):
         count = 0
         rankSum = 0
