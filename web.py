@@ -76,7 +76,11 @@ def deckList(deck):
             jsonResponse["companions"] = sorted(basicCardList(deck.getSideboard()), key=lambda item: item.get("name"))
             jsonResponse['deckList'] = []
             for shortType in sorted(deck.getShortTypes(), key=lambda item: mtgCardInCollectionObject.getShortTypeOrder(item)):
-                jsonResponse['deckList'].append({'shortType': shortType.capitalize(), 'cards': sorted(basicCardList(deck.getByShortType(shortType)), key=lambda item: item.get("name"))})
+                listOfType = basicCardList(deck.getByShortType(shortType))
+                count = 0
+                for item in listOfType:
+                    count = count + item['count']
+                jsonResponse['deckList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': sorted(listOfType, key=lambda item: item.get("name"))})
 
             with open(file) as f:
                 first_line = f.readline()
