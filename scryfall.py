@@ -108,11 +108,9 @@ def getCachedCardJson(card):
                     os.remove(jsonFile)
                     return fetchCardJson(card, jsonFile)
     else:
-        #		print("Loading online " + jsonFile)
+        #print("Loading online " + jsonFile)
         return fetchCardJson(card, jsonFile)
 
-
-#
 
 def searchByCard(card):
 
