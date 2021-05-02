@@ -1,5 +1,5 @@
 
-var apiHost = "http://127.0.0.1:5000/";
+var apiHost = "/";
 
 function reload() {
     $('#loading').show();
@@ -21,10 +21,13 @@ function reload() {
                 commanders = commanders + '<span class="commander companion color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
             });
             var indexTag = '<td class="rank">' + ( index + 1 ) + '</td>';
-            var deckListTag = '<td><a onClick="showDeck(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');">&#128220;</a></td>';
-            $('#deckTable>tbody').append('<tr>' + indexTag + deckListTag + '<td>'+ commanders +'</td><td>'+ item.age +'</td><td>'+ item.rank +'</td><td class="deckPrice">'+ item.deckPriceTotal +"</td><td>" + $('#currency').val() + "</td></tr>");
-            $('#deckTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="2"></td><td colspan="2" class="deck">Loading...</td><td colspan="3"></td></tr>');
+            var deckListTag = '<td><a onClick="showDeck(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Decklist">&#128220;</a></td>';
+            var tokensTag = '<td><a onClick="showTokens(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Tokens and counters">&#127922;</a></td>';
+            $('#deckTable>tbody').append('<tr>' + indexTag + deckListTag + tokensTag + '<td>'+ commanders +'</td><td>' + item.age + '</td><td>' + item.rank + '</td><td>' + item.complexity + '</td><td class="deckPrice">'+ item.deckPriceTotal +"</td><td>" + $('#currency').val() + "</td></tr>");
+            $('#deckTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
+            $('#deckTable>tbody').append('<tr id="tokenLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
             $('#deckLine'+ ( index + 1 )).hide();
+            $('#tokenLine'+ ( index + 1 )).hide();
         });
         $('#header').show();
     }).fail(function() {
@@ -37,8 +40,67 @@ function reload() {
     });
 }
 
+function showTokens(deckFile, index) {
+    var isVisible = $('#tokenLine'+index).is(':visible');
+    $('#deckLine'+index).hide();
+
+    if (isVisible) {
+        $('#tokenLine'+index).hide();
+    } else {
+        $('#tokenLine'+index).show();
+        $.ajax({
+            url: apiHost + deckFile + "/tokens.json"
+        }).done(function(data) {
+
+            var deckList = '';
+
+            if (data.tokens.length > 0) {
+                deckList = deckList + '<h3>Tokens:</h3>';
+                data.tokens.forEach(function (item, index) {
+                    deckList = deckList + '<div class="token">' + item.token + '</div>';
+                    deckList = deckList + '<div class="simpleCardList">';
+                    item.cards.forEach(function (item, index) {
+                        deckList = deckList + '<span class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>"
+                    });
+                    deckList = deckList + '</div>';
+                });
+            }
+
+            if (data.counters.length > 0) {
+                deckList = deckList + '<h3>Counter:</h3>';
+                data.counters.forEach(function (item, index) {
+                    deckList = deckList + '<div class="token">' + item.counter + '</div>';
+                    deckList = deckList + '<div class="simpleCardList">';
+                    item.cards.forEach(function (item, index) {
+                        deckList = deckList + '<span class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>"
+                    });
+                    deckList = deckList + '</div>';
+                });
+            }
+
+            if (data.other.length > 0) {
+                deckList = deckList + '<h3>Other stuff:</h3>';
+                data.other.forEach(function (item, index) {
+                    deckList = deckList + '<div class="token">' + item.other + '</div>';
+                    deckList = deckList + '<div class="simpleCardList">';
+                    item.cards.forEach(function (item, index) {
+                        deckList = deckList + '<span class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>"
+                    });
+                    deckList = deckList + '</div>';
+                });
+            }
+
+            $('#tokenLine'+index+" .deck").html(deckList);
+        }).fail(function() {
+            $('#tokenLine'+index).hide();
+        }).always(function() {
+        });
+    }
+}
+
 function showDeck(deckFile, index) {
     var isVisible = $('#deckLine'+index).is(':visible');
+    $('#tokenLine'+index).hide();
 
     if (isVisible) {
         $('#deckLine'+index).hide();

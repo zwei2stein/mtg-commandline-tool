@@ -9,11 +9,15 @@ from flask import Flask
 from flask import abort
 from flask import jsonify
 
+import cardListFormater
+
 import deckAge
 import deckPrice
 import mtgCardTextFileDao
 import mtgColors
 import priceSourceHandler
+import deckComplexity
+import listTokens
 from mtgDeckObject import Deck
 
 app = Flask(__name__, static_url_path='/')
@@ -86,6 +90,42 @@ def deckList(deck):
     return response
 
 
+@app.route('/<deck>/tokens.json', methods=['GET'])
+def tokens(deck):
+    print("tokens start", deck)
+    start = timer()
+
+    context = SimpleNamespace()
+
+    decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)
+
+    tokens = []
+    counters = []
+    others = []
+
+    for file in decks:
+        if deck == hashlib.sha256(file.encode() + salt).hexdigest():
+            print ('Serving deck', file)
+            response = listTokens.listTokens(decks[file])
+            for token in sorted(response['tokens']):
+                tokens.append({'token': token, 'cards': sorted(basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['tokens'][token])), key=lambda item: item.get("name"))})
+            for counter in sorted(response['counters']):
+                counters.append({'counter': counter, 'cards': sorted(basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['counters'][counter])), key=lambda item: item.get("name"))})
+            for other in sorted(response['other']):
+                others.append({'other': other, 'cards': sorted(basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['other'][other])), key=lambda item: item.get("name"))})
+
+    jsonResponse = {'tokens': tokens, 'counters': counters, 'other': others}
+
+    response = jsonify(jsonResponse)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Cache-Control', 'public, max-age=43200')
+
+    end = timer()
+    print("tokens end, elapsed time ", (end - start))
+
+    return response
+
+
 @app.route('/<currency>/<sort>/deckPrice.json', methods=['GET'])
 def deckPriceMethod(currency, sort):
     print("deckPriceMethod start", currency, sort)
@@ -93,7 +133,7 @@ def deckPriceMethod(currency, sort):
 
     if currency not in ['eur', 'usd', 'tix', 'czk']:
         abort(400, description="Currency invalid")
-    if sort not in ['deckPriceTotal', 'date', 'rank', 'commanders_sort']:
+    if sort not in ['deckPriceTotal', 'date', 'rank', 'commanders_sort', 'complexity']:
         abort(400, description="Sort invalid")
 
     context = SimpleNamespace()
@@ -118,6 +158,7 @@ def deckPriceMethod(currency, sort):
         deckInfo["date"] = datetime.now() - deckAges["deckDate"]
         deckInfo["age"] = humanize.naturaldelta(deckAges["deckDate"] - datetime.now(), months=True)
         deckInfo["rank"] = deck.getAverageEDHrecRank()
+        deckInfo["complexity"] = deckComplexity.deckComplexity(deckList)["complexity"]
         deckInfo["deckFile"] = hashlib.sha256(file.encode() + salt).hexdigest()
 
         response.append(deckInfo)

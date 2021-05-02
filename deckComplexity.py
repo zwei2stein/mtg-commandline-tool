@@ -4,11 +4,11 @@ def deckComplexity(deckCards):
 
     for deckCardName, deckCard in deckCards.items():
         oracleText = deckCard.getFullOracleText()
+        oracleText.replace(deckCardName, 'CARD_NAME')
         cardCount = cardCount + deckCard.count
-        print(oracleText.split())
         totalWordCount = totalWordCount + len(oracleText.split()) * deckCard.count
 
-    response = {"complexity": totalWordCount / cardCount}
+    response = {"complexity": int(totalWordCount / cardCount)}
 
     return response
 

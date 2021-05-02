@@ -48,6 +48,10 @@
 
         #deckTableBorder { background-color: #f0f0f0; margin: 1em; padding: 1em; border-radius: 1em; border: 1px solid #000000; }
 
+        #deckTable {
+            min-width: 50%;
+        }
+
         #deckTable tbody td { padding: 0.5em; }
 
         #deckTable tr {border-bottom: 1px solid #ffffff; }
@@ -67,11 +71,23 @@
             opacity: 0.1;
         }
 
+        .token {
+            margin: 0.25em;
+            padding: 0.25em;
+            margin-left: 1em;
+        }
+
+        .simpleCardList {
+            margin-left: 3em;
+        }
+
     </style>
 
     <style type="text/css">
 
         .loaderW {
+            margin: 0 auto;
+
             border: 10px solid White;
             border-radius: 50%;
             border-top: 10px solid Cornsilk;
@@ -156,6 +172,7 @@
             <option value="date">newest</option>
             <option value="rank">best card containing</option>
             <option value="commanders_sort">alphabetical commander list of</option>
+            <option value="complexity">simplest</option>
         </select> decks.
 
         <button id="refresh">Go!</button>
@@ -167,14 +184,15 @@
             <thead>
             <tr id="header">
                 <th>#</th>
-                <th></th>
+                <th colspan="2"></th>
                 <th id="commanders_sort">Commander(s)</th>
                 <th id="date_sort">Deck age</th>
-                <th id="rank_sort">Average EDHrec rank</th>
+                <th id="rank_sort">Average<br/>EDHrec rank</th>
+                <th id="complexity_sort">Complexity<br/>index</th>
                 <th id="deckPriceTotal_sort" colspan="2">Price</th>
             </tr>
             <tr id="loading">
-                <th colspan="7">
+                <th colspan="9">
                     <div class="loaderW">
                         <div class="loaderU">
                             <div class="loaderB">
@@ -187,7 +205,7 @@
                 </th>
             </tr>
             <tr id="error">
-                <th colspan="7">Oops ... something is broken.</th>
+                <th colspan="9">Oops ... something is broken.</th>
             </tr>
             </thead>
             <tbody></tbody>
