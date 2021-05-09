@@ -1,4 +1,5 @@
 import hashlib
+import io
 import json
 from datetime import datetime
 from timeit import default_timer as timer
@@ -8,6 +9,7 @@ import humanize
 from flask import Flask
 from flask import abort
 from flask import jsonify
+from flask import request
 
 import cardListFormater
 import mtgCardInCollectionObject
@@ -19,6 +21,7 @@ import mtgColors
 import priceSourceHandler
 import deckComplexity
 import listTokens
+import verifyDeck
 from mtgDeckObject import Deck
 
 app = Flask(__name__, static_url_path='/')
@@ -134,6 +137,87 @@ def tokens(deck):
     return response
 
 
+@app.route('/<currency>/possibleDecks.json', methods=['POST'])
+def possibleDecks(currency):
+    print("possibleDecks start")
+    start = timer()
+
+    context = SimpleNamespace()
+    context.currency = currency
+    context.sort = 'name'
+
+    collection = request.form['collection']
+
+    with io.StringIO(collection) as f:
+        collection = mtgCardTextFileDao.readCardFile(f, 'web_request', {}, False, context)
+
+    decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)
+
+    response = []
+
+    for file in decks:
+        deckList = decks[file]
+
+        missingCards = verifyDeck.missingCards(deckList, collection, context.currency)
+
+        deckInfo = {}
+
+        deckInfo["deckFile"] = hashlib.sha256(file.encode() + salt).hexdigest()
+
+        deck = Deck(deckList)
+
+        deckInfo["commanders"] = sorted(basicCardList(deck.getCommander()), key=lambda item: item.get("name"))
+        deckInfo["companions"] = sorted(basicCardList(deck.getSideboard()), key=lambda item: item.get("name"))
+
+        deckInfo['percentage'] = 100 * (missingCards['totalDeckCards'] - missingCards['totalCount']) / missingCards['totalDeckCards']
+        deckInfo['printPercentage'] = "{:3.2f}".format(deckInfo['percentage'] ) + "%"
+
+        deckInfo['haveList'] = []
+
+        haveList = Deck(cardListFormater.cardObjectCountMapToCardObjectMap(missingCards['haveList']))
+
+        totalCount = 0
+
+        for shortType in sorted(haveList.getShortTypes(), key=lambda item: mtgCardInCollectionObject.getShortTypeOrder(item)):
+            listOfType = basicCardList(haveList.getByShortType(shortType))
+            count = 0
+            for item in listOfType:
+                count = count + item['count']
+            totalCount = totalCount + count
+            deckInfo['haveList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': sorted(listOfType, key=lambda item: item.get("name"))})
+
+        deckInfo['haveListCount'] = totalCount
+
+        deckInfo['shoppingList'] = []
+
+        shoppingList = Deck(cardListFormater.cardObjectCountMapToCardObjectMap(missingCards['shoppingList']))
+
+        totalCount = 0
+
+        for shortType in sorted(shoppingList.getShortTypes(), key=lambda item: mtgCardInCollectionObject.getShortTypeOrder(item)):
+            listOfType = basicCardList(shoppingList.getByShortType(shortType))
+            count = 0
+            for item in listOfType:
+                count = count + item['count']
+            totalCount = totalCount + count
+            deckInfo['shoppingList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': sorted(listOfType, key=lambda item: item.get("name"))})
+
+        deckInfo['shoppingListCount'] = totalCount
+
+        deckInfo['shoppingListPrice'] = int(missingCards['totalPrice'])
+
+        response.append(deckInfo)
+
+    jsonResponse = sorted(response, key=lambda i: i['percentage'], reverse=True)
+
+    for line in jsonResponse:
+        del line["percentage"]
+
+    end = timer()
+    print("possibleDecks end, elapsed time ", (end - start))
+
+    return jsonify(jsonResponse)
+
 @app.route('/<currency>/<sort>/deckPrice.json', methods=['GET'])
 def deckPriceMethod(currency, sort):
     print("deckPriceMethod start", currency, sort)
@@ -161,7 +245,7 @@ def deckPriceMethod(currency, sort):
 
         deckInfo["deckPriceTotal"] = int(deckPrices["deckPrice"])
         deckInfo["commanders"] = sorted(basicCardList(deck.getCommander()), key=lambda item: item.get("name"))
-        deckInfo["commanders_sort"] = string = "_".join([item['name'] for item in deckInfo["commanders"]])
+        deckInfo["commanders_sort"] = "_".join([item['name'] for item in deckInfo["commanders"]])
         deckInfo["companions"] = sorted(basicCardList(deck.getSideboard()), key=lambda item: item.get("name"))
         deckInfo["date"] = datetime.now() - deckAges["deckDate"]
         deckInfo["age"] = humanize.naturaldelta(deckAges["deckDate"] - datetime.now(), months=True)

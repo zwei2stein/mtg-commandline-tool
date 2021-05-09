@@ -38,6 +38,16 @@
 
         div.manaCost { float: right; }
 
+        .folded:before {
+            content: "\229E ";
+            margin-right: 0.5em;
+        }
+
+        .unfolded:before {
+            content: "\229F ";
+            margin-right: 0.5em;
+        }
+
         .companion:before { content: "+\00A0";}
 
         .rank {text-align: right;}
@@ -58,7 +68,7 @@
 
         #deckTable #loading {border-bottom: 0px none #ffffff; }
 
-        #filter { background-color: #f0f0f0; margin: 1em; padding: 1em; border-radius: 1em; border: 1px solid #000000; }
+        .filter { background-color: #f0f0f0; margin: 1em; padding: 1em; border-radius: 1em; border: 1px solid #000000; }
 
         #cardPreview {
             width: 488px;
@@ -85,6 +95,12 @@
             margin-left: 3em;
             display: flex;
             flex-wrap: wrap;
+        }
+
+        #collection {
+            width: 100%;
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
         }
 
     </style>
@@ -163,7 +179,7 @@
 
     <p>&#128220; Shows decklist. &#127922; Shows list of tokens and such stuff.</p>
 
-    <div id="filter">
+    <div class="filter">
 
         <label for="currency">My currency is </label>
         <select id="currency">
@@ -183,6 +199,17 @@
         </select> decks.
 
         <button id="refresh">Update.</button>
+
+    </div>
+
+    <div class="filter">
+        <h2>What can I build?</h2>
+
+        <div>
+            <label for="collection">Your collection:</label>
+            <textarea id="collection" rows="10" placeholder="1 Sol Ring&#10;10 Mind Stone&#10;100 Plains"></textarea>
+            <button id="possibleDecks">Show me what I can build</button>
+        </div>
 
     </div>
 

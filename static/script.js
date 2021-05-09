@@ -1,5 +1,5 @@
 
-var apiHost = "/";
+var apiHost = "./";
 
 function reload() {
     $('#loading').show();
@@ -9,6 +9,8 @@ function reload() {
     $('#refresh').prop('disabled', true);
     $('#currency').prop('disabled', true);
     $('#order').prop('disabled', true);
+    $('#collection').prop('disabled', true);
+    $('#possibleDecks').prop('disabled', true);
     $.ajax({
         url: apiHost + $('#currency').val() + "/" + $('#order').val()  + "/deckPrice.json"
     }).done(function(data) {
@@ -37,6 +39,110 @@ function reload() {
         $('#refresh').prop('disabled', false);
         $('#currency').prop('disabled', false);
         $('#order').prop('disabled', false);
+        $('#collection').prop('disabled', false);
+        $('#possibleDecks').prop('disabled', false);
+    });
+}
+
+function possibleDecks() {
+    $('#loading').show();
+    $('#header').hide();
+    $('#error').hide();
+    $('#deckTable>tbody').empty();
+    $('#refresh').prop('disabled', true);
+    $('#currency').prop('disabled', true);
+    $('#order').prop('disabled', true);
+    $('#collection').prop('disabled', true);
+    $('#possibleDecks').prop('disabled', true);
+    $.ajax({
+        method: "POST",
+        url: apiHost + $('#currency').val() + "/possibleDecks.json",
+        data: { collection: $('#collection').val() }
+    }).done(function(data) {
+        data.forEach(function(item, index) {
+            var row = '<tr>';
+
+            row = row + '<td class="rank">' + ( index + 1 ) + '</td>';
+            row = row + '<td><a onClick="showDeck(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Decklist">&#128220;</a></td>';
+            row = row + '<td><a onClick="showTokens(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Tokens and counters">&#127922;</a></td>';
+            row = row + '<td>';
+            item.commanders.forEach(function (item, index) {
+                row = row + '<span class="commander color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
+            });
+            item.companions.forEach(function (item, index) {
+                row = row + '<span class="commander companion color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
+            });
+            row = row + '</td>';
+            row = row + '<td colspan="3">' + item.printPercentage + '</td>';
+            row = row + '<td class="deckPrice">' + item.shoppingListPrice + '</td>';
+            row = row + '<td>' + $('#currency').val() + '</td>'
+
+            row = row + '</tr>';
+
+            var deckList = '<h3 id="haveList' + ( index + 1 ) + '" class="folded">Have (' + item.haveListCount + '):</h3><div id="haveListContainer' + ( index + 1 ) + '">';
+
+            item.haveList.forEach(function (item, index) {
+                deckList = deckList + '<h3>' + item.shortType + ' (' + item.count + ')</h3><div class="deckCardList">';
+                item.cards.forEach(function (item, index) {
+                    deckList = deckList + '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>"
+                });
+                deckList = deckList + '</div>';
+            });
+            deckList = deckList + '</div>';
+
+            deckList = deckList + '<h3 id="needList' + ( index + 1 ) + '" class="folded">Need (' + item.shoppingListCount + '):</h3><div id="needListContainer' + ( index + 1 ) + '">';
+
+            item.shoppingList.forEach(function (item, index) {
+                deckList = deckList + '<h3>' + item.shortType + ' (' + item.count + ')</h3><div class="deckCardList">';
+                item.cards.forEach(function (item, index) {
+                    deckList = deckList + '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>"
+                });
+                deckList = deckList + '</div>';
+            });
+            deckList = deckList + '</div>';
+
+            $('#deckTable>tbody').append(row);
+            $('#deckTable>tbody').append('<tr id="shoppingListLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">' + deckList + '</td><td colspan="3"></td></tr>');
+            $('#deckTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
+            $('#deckTable>tbody').append('<tr id="tokenLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
+            $('#deckLine'+ ( index + 1 )).hide();
+            $('#tokenLine'+ ( index + 1 )).hide();
+
+            $('#haveList' + ( index + 1 )).click(function() {
+                $('#haveListContainer' + ( index + 1 )).toggle();
+                if ($('#haveListContainer' + ( index + 1 )).is(':visible')) {
+                    $('#haveList' + ( index + 1 )).addClass('unfolded');
+                    $('#haveList' + ( index + 1 )).removeClass('folded');
+                } else {
+                    $('#haveList' + ( index + 1 )).addClass('folded');
+                    $('#haveList' + ( index + 1 )).removeClass('unfolded');
+                }
+            });
+            $('#haveListContainer' + ( index + 1 )).hide();
+
+            $('#needList' + ( index + 1 )).click(function() {
+                $('#needListContainer' + ( index + 1 )).toggle();
+                if ($('#needListContainer' + ( index + 1 )).is(':visible')) {
+                    $('#needList' + ( index + 1 )).addClass('unfolded');
+                    $('#needList' + ( index + 1 )).removeClass('folded');
+                } else {
+                    $('#needList' + ( index + 1 )).addClass('folded');
+                    $('#needList' + ( index + 1 )).removeClass('unfolded');
+                }
+            });
+            $('#needListContainer' + ( index + 1 )).hide();
+
+        });
+        $('#header').show();
+    }).fail(function() {
+        $('#error').show();
+    }).always(function() {
+        $('#loading').hide();
+        $('#refresh').prop('disabled', false);
+        $('#currency').prop('disabled', false);
+        $('#order').prop('disabled', false);
+        $('#collection').prop('disabled', false);
+        $('#possibleDecks').prop('disabled', false);
     });
 }
 
@@ -167,4 +273,9 @@ $(document).ready(function() {
     $('#refresh').click(function() {
         reload();
     });
+
+    $('#possibleDecks').click(function() {
+        possibleDecks();
+    });
+
 });
