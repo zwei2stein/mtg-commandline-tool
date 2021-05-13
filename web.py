@@ -39,20 +39,22 @@ priceSourceHandler.initPriceSource('none', configuration["priceSources"])
 def basicCardList(deckCards):
     res = []
     for deckCardName, deckCard in deckCards.items():
-        imageUri = deckCard.jsonData.get("image_uris", {"normal": None})["normal"]
         manaCost = []
+        imageUris = []
         if deckCard.jsonData.get('mana_cost', None) is not None:
             manaCost = deckCard.jsonData.get('mana_cost', "")[1:-1].replace(' // ', '{=}').split("}{")
+            imageUris.append(deckCard.jsonData.get("image_uris", {"normal": None})["normal"])
         elif deckCard.jsonData.get('card_faces', None) is not None:
             for face in deckCard.jsonData.get('card_faces', []):
                 if len(manaCost) > 0 and len(face.get('mana_cost', "")) > 0:
                     manaCost.extend('=')
                 manaCost.extend(face.get('mana_cost', "")[1:-1].replace(' // ', '{=}').split("}{"))
+                imageUris.append(face.get("image_uris", {"normal": None})["normal"])
         manaCost = [cost.replace('/', '') for cost in manaCost if cost != ""]
         res.append({'count': deckCard.count, 'name': deckCardName,
                     'colors': mtgColors.colorIdentity2String(deckCard.getProp('color')), 'manaCost': manaCost,
-                    'imageUri': imageUri})
-    return res
+                    'imageUris': imageUris})
+    return  sorted(res, key=lambda item: item.get("name"))
 
 
 @app.route('/')
@@ -75,15 +77,15 @@ def deckList(deck):
         if deck == hashlib.sha256(file.encode() + salt).hexdigest():
             print ('Serving deck', file)
             deck = Deck(decks[file])
-            jsonResponse["commanders"] = sorted(basicCardList(deck.getCommander()), key=lambda item: item.get("name"))
-            jsonResponse["companions"] = sorted(basicCardList(deck.getSideboard()), key=lambda item: item.get("name"))
+            jsonResponse["commanders"] = basicCardList(deck.getCommander())
+            jsonResponse["companions"] = basicCardList(deck.getSideboard())
             jsonResponse['deckList'] = []
             for shortType in sorted(deck.getShortTypes(), key=lambda item: mtgCardInCollectionObject.getShortTypeOrder(item)):
                 listOfType = basicCardList(deck.getByShortType(shortType))
                 count = 0
                 for item in listOfType:
                     count = count + item['count']
-                jsonResponse['deckList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': sorted(listOfType, key=lambda item: item.get("name"))})
+                jsonResponse['deckList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': listOfType})
 
             with open(file) as f:
                 first_line = f.readline()
@@ -119,11 +121,11 @@ def tokens(deck):
             print ('Serving deck', file)
             response = listTokens.listTokens(decks[file])
             for token in sorted(response['tokens']):
-                tokens.append({'token': token, 'cards': sorted(basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['tokens'][token])), key=lambda item: item.get("name"))})
+                tokens.append({'token': token, 'cards': basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['tokens'][token]))})
             for counter in sorted(response['counters']):
-                counters.append({'counter': counter, 'cards': sorted(basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['counters'][counter])), key=lambda item: item.get("name"))})
+                counters.append({'counter': counter, 'cards': basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['counters'][counter]))})
             for other in sorted(response['other']):
-                others.append({'other': other, 'cards': sorted(basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['other'][other])), key=lambda item: item.get("name"))})
+                others.append({'other': other, 'cards': basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['other'][other]))})
 
     jsonResponse = {'tokens': tokens, 'counters': counters, 'other': others}
 
@@ -166,8 +168,8 @@ def possibleDecks(currency):
 
         deck = Deck(deckList)
 
-        deckInfo["commanders"] = sorted(basicCardList(deck.getCommander()), key=lambda item: item.get("name"))
-        deckInfo["companions"] = sorted(basicCardList(deck.getSideboard()), key=lambda item: item.get("name"))
+        deckInfo["commanders"] = basicCardList(deck.getCommander())
+        deckInfo["companions"] = basicCardList(deck.getSideboard())
 
         deckInfo['percentage'] = 100 * (missingCards['totalDeckCards'] - missingCards['totalCount']) / missingCards['totalDeckCards']
         deckInfo['printPercentage'] = "{:3.2f}".format(deckInfo['percentage'] ) + "%"
@@ -184,7 +186,7 @@ def possibleDecks(currency):
             for item in listOfType:
                 count = count + item['count']
             totalCount = totalCount + count
-            deckInfo['haveList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': sorted(listOfType, key=lambda item: item.get("name"))})
+            deckInfo['haveList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': listOfType})
 
         deckInfo['haveListCount'] = totalCount
 
@@ -200,7 +202,7 @@ def possibleDecks(currency):
             for item in listOfType:
                 count = count + item['count']
             totalCount = totalCount + count
-            deckInfo['shoppingList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': sorted(listOfType, key=lambda item: item.get("name"))})
+            deckInfo['shoppingList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': listOfType})
 
         deckInfo['shoppingListCount'] = totalCount
 
@@ -244,9 +246,9 @@ def deckPriceMethod(currency, sort):
         deckInfo = {}
 
         deckInfo["deckPriceTotal"] = int(deckPrices["deckPrice"])
-        deckInfo["commanders"] = sorted(basicCardList(deck.getCommander()), key=lambda item: item.get("name"))
+        deckInfo["commanders"] = basicCardList(deck.getCommander())
         deckInfo["commanders_sort"] = "_".join([item['name'] for item in deckInfo["commanders"]])
-        deckInfo["companions"] = sorted(basicCardList(deck.getSideboard()), key=lambda item: item.get("name"))
+        deckInfo["companions"] = basicCardList(deck.getSideboard())
         deckInfo["date"] = datetime.now() - deckAges["deckDate"]
         deckInfo["age"] = humanize.naturaldelta(deckAges["deckDate"] - datetime.now(), months=True)
         deckInfo["rank"] = deck.getAverageEDHrecRank()

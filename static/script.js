@@ -17,10 +17,10 @@ function reload() {
         data.forEach(function(item, index) {
             var commanders = '';
             item.commanders.forEach(function (item, index) {
-                commanders = commanders + '<span class="commander color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
+                commanders = commanders + commanderCardLine(item, '');
             });
             item.companions.forEach(function (item, index) {
-                commanders = commanders + '<span class="commander companion color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
+                commanders = commanders + commanderCardLine(item, 'companion');
             });
             var indexTag = '<td class="rank">' + ( index + 1 ) + '</td>';
             var deckListTag = '<td><a onClick="showDeck(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Decklist">&#128220;</a></td>';
@@ -84,7 +84,7 @@ function possibleDecks() {
             item.haveList.forEach(function (item, index) {
                 deckList = deckList + '<h3>' + item.shortType + ' (' + item.count + ')</h3><div class="deckCardList">';
                 item.cards.forEach(function (item, index) {
-                    deckList = deckList + '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>"
+                    deckList = deckList + cardLine(item);
                 });
                 deckList = deckList + '</div>';
             });
@@ -95,7 +95,7 @@ function possibleDecks() {
             item.shoppingList.forEach(function (item, index) {
                 deckList = deckList + '<h3>' + item.shortType + ' (' + item.count + ')</h3><div class="deckCardList">';
                 item.cards.forEach(function (item, index) {
-                    deckList = deckList + '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>"
+                    deckList = deckList + cardLine(item);
                 });
                 deckList = deckList + '</div>';
             });
@@ -146,6 +146,18 @@ function possibleDecks() {
     });
 }
 
+function commanderCardLine(item, aditionalCss) {
+    return '<span class="commander ' + aditionalCss +  'color' + item.colors + '"' + cardImageRollover(item.imageUris) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
+}
+
+function cardLine(item) {
+    return '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUris) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>";
+}
+
+function cardInline(item) {
+    return '<span class="card color' + item.colors + '"' + cardImageRollover(item.imageUris) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>";
+}
+
 function showTokens(deckFile, index) {
     var isVisible = $('#tokenLine'+index).is(':visible');
     $('#deckLine'+index).hide();
@@ -166,7 +178,7 @@ function showTokens(deckFile, index) {
                     deckList = deckList + '<div class="token">' + item.token + '</div>';
                     deckList = deckList + '<div class="simpleCardList">';
                     item.cards.forEach(function (item, index) {
-                        deckList = deckList + '<span class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>"
+                        deckList = deckList + cardInline(item);
                     });
                     deckList = deckList + '</div>';
                 });
@@ -178,7 +190,7 @@ function showTokens(deckFile, index) {
                     deckList = deckList + '<div class="token">' + item.counter + '</div>';
                     deckList = deckList + '<div class="simpleCardList">';
                     item.cards.forEach(function (item, index) {
-                        deckList = deckList + '<span class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>"
+                        deckList = deckList + cardInline(item);
                     });
                     deckList = deckList + '</div>';
                 });
@@ -190,7 +202,7 @@ function showTokens(deckFile, index) {
                     deckList = deckList + '<div class="token">' + item.other + '</div>';
                     deckList = deckList + '<div class="simpleCardList">';
                     item.cards.forEach(function (item, index) {
-                        deckList = deckList + '<span class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>"
+                        deckList = deckList + cardInline(item);
                     });
                     deckList = deckList + '</div>';
                 });
@@ -221,7 +233,7 @@ function showDeck(deckFile, index) {
               data.deckList.forEach(function (item, index) {
                     deckList = deckList + '<h3>' + item.shortType + ' (' + item.count + ')</h3><div class="deckCardList">';
                     item.cards.forEach(function (item, index) {
-                        deckList = deckList + '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUri) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>"
+                        deckList = deckList + cardLine(item)
                     });
                     deckList = deckList + '</div>';
               });
@@ -234,18 +246,22 @@ function showDeck(deckFile, index) {
     }
 }
 
-function showCardImage(imageUri) {
-    $("#cardPreview").css('opacity', '1');
-    $("#cardPreview").css('background-image', 'url(' + imageUri + ')');
+function showCardImage(imageUris) {
+    var previews = ''
+    imageUris.forEach(function (item, index) {
+        previews = previews + '<div class="cardPreview" style="background-image:url('+item+')"></div>';
+    });
+    $("#cardPreviewBox").html(previews);
+    $("#cardPreviewBox").css('opacity', '1');
 }
 
 function fadeCardImage() {
-    $("#cardPreview").css('opacity', '0.1');
+    $("#cardPreviewBox").css('opacity', '0.1');
 }
 
-function cardImageRollover(imageUri) {
-    if (imageUri) {
-        return ' onmouseover="showCardImage(\'' + imageUri + '\');" onmouseout="fadeCardImage();"';
+function cardImageRollover(imageUris) {
+    if (imageUris) {
+        return ' onmouseover="showCardImage([\'' + imageUris.join("','") + '\']);" onmouseout="fadeCardImage();"';
     } else {
         return '';
     }

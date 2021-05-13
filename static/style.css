@@ -1,0 +1,128 @@
+body {
+    background-color: #a0a0a0;
+    font-family: Beleren;
+}
+
+#deckTable {
+    background-color: #f0f0f0;
+    margin: 1em;
+    border-collapse: collapse;
+}
+
+.commander {
+    margin: 0.25em;
+    padding: 0.25em;
+    border-radius: 0.5em;
+    text-shadow: 0 0 2px white;
+    box-shadow: inset 0px 0px 0.25em 0px rgba(0, 0, 0, 1);
+}
+
+.card {
+    margin: 0.25em;
+    padding: 0.25em;
+    border-radius: 0.25em;
+    text-shadow: 0 0 2px white;
+    border-width: 1px;
+    box-shadow: inset 0px 0px 0.25em 0px rgba(0, 0, 0, 1);
+}
+
+div.manaCost {
+    float: right;
+}
+
+.folded:before {
+    content: "\229E ";
+    margin-right: 0.5em;
+}
+
+.unfolded:before {
+    content: "\229F ";
+    margin-right: 0.5em;
+}
+
+.companion:before {
+    content: "+\00A0";
+}
+
+.rank {
+    text-align: right;
+}
+
+.deckPrice {
+    text-align: right;
+}
+
+#error {
+    color: #800000;
+}
+
+#deckTableBorder {
+    background-color: #f0f0f0;
+    margin: 1em;
+    padding: 1em;
+    border-radius: 1em;
+    border: 1px solid #000000;
+}
+
+#deckTable {
+    min-width: 50%;
+}
+
+#deckTable tbody td {
+    padding: 0.5em;
+}
+
+#deckTable tr {
+    border-bottom: 1px solid #ffffff;
+}
+
+#deckTable #loading {
+    border-bottom: 0px none #ffffff;
+}
+
+.filter {
+    background-color: #f0f0f0;
+    margin: 1em;
+    padding: 1em;
+    border-radius: 1em;
+    border: 1px solid #000000;
+}
+
+#cardPreviewBox {
+    position: fixed;
+    right: 2em;
+    top: 2em;
+    display: flex;
+}
+
+.cardPreview {
+    width: 25vh;
+    height: 35vh;
+    border-radius: 1.25vh;
+    background-color: #000000;
+    background-size: 100% 100%;
+    box-shadow: inset 0px 0px 0.25em 0px rgba(0, 0, 0, 1);
+    margin-left: 1em;
+}
+
+.token {
+    margin: 0.25em;
+    padding: 0.25em;
+    margin-left: 1em;
+}
+
+.deckCardList {
+    margin-left: 1em;
+}
+
+.simpleCardList {
+    margin-left: 3em;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#collection {
+    width: 100%;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}

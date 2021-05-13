@@ -10,241 +10,95 @@
     <script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
     <link href="https://cdn.jsdelivr.net/npm/mana-font@latest/css/mana.css" rel="stylesheet" type="text/css"/>
-
     <link href="https://unpkg.com/@saeris/typeface-beleren-bold@latest/index.css" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript" src="script.js"></script>
 
     <link href="colors.css" rel="stylesheet" type="text/css"/>
-
-    <style type="text/css">
-        body { background-color: #a0a0a0; font-family: Beleren; }
-        #deckTable {background-color: #f0f0f0; margin: 1em; border-collapse: collapse; }
-
-        .commander {
-            margin: 0.25em;
-            padding: 0.25em;
-            border-radius: 0.5em;
-            text-shadow: 0 0 2px white;
-        }
-
-        .card {
-            margin: 0.25em;
-            padding: 0.25em;
-            border-radius: 0.25em;
-            text-shadow: 0 0 2px white;
-            border-width: 1px;
-        }
-
-        div.manaCost { float: right; }
-
-        .folded:before {
-            content: "\229E ";
-            margin-right: 0.5em;
-        }
-
-        .unfolded:before {
-            content: "\229F ";
-            margin-right: 0.5em;
-        }
-
-        .companion:before { content: "+\00A0";}
-
-        .rank {text-align: right;}
-
-        .deckPrice {text-align: right;}
-
-        #error { color: #800000; }
-
-        #deckTableBorder { background-color: #f0f0f0; margin: 1em; padding: 1em; border-radius: 1em; border: 1px solid #000000; }
-
-        #deckTable {
-            min-width: 50%;
-        }
-
-        #deckTable tbody td { padding: 0.5em; }
-
-        #deckTable tr {border-bottom: 1px solid #ffffff; }
-
-        #deckTable #loading {border-bottom: 0px none #ffffff; }
-
-        .filter { background-color: #f0f0f0; margin: 1em; padding: 1em; border-radius: 1em; border: 1px solid #000000; }
-
-        #cardPreview {
-            width: 488px;
-            height: 680px;
-            border-radius: 20px;
-            background-color: #000000;
-            position: fixed;
-            right: 2em;
-            top: 2em;
-            opacity: 0.1;
-        }
-
-        .token {
-            margin: 0.25em;
-            padding: 0.25em;
-            margin-left: 1em;
-        }
-
-        .deckCardList {
-            margin-left: 1em;
-        }
-
-        .simpleCardList {
-            margin-left: 3em;
-            display: flex;
-            flex-wrap: wrap;
-        }
-
-        #collection {
-            width: 100%;
-            margin-top: 0.5em;
-            margin-bottom: 0.5em;
-        }
-
-    </style>
-
-    <style type="text/css">
-
-        .loaderW {
-            margin: 0 auto;
-
-            border: 10px solid White;
-            border-radius: 50%;
-            border-top: 10px solid Cornsilk;
-            width: 120px;
-            height: 120px;
-            -webkit-animation: spin 5s linear infinite; /* Safari */
-            animation: spin 5s linear infinite;
-        }
-        .loaderU {
-            border: 10px solid White;
-            border-radius: 50%;
-            border-top: 10px solid LightSkyBlue;
-            width: 100px;
-            height: 100px;
-            -webkit-animation: spin 5s linear infinite; /* Safari */
-            animation: spin 5s linear infinite;
-        }
-        .loaderB {
-            border: 10px solid White;
-            border-radius: 50%;
-            border-top: 10px solid LightSlateGray;
-            width: 80px;
-            height: 80px;
-            -webkit-animation: spin 5s linear infinite; /* Safari */
-            animation: spin 5s linear infinite;
-        }
-        .loaderR {
-            border: 10px solid White;
-            border-radius: 50%;
-            border-top: 10px solid LightCoral;
-            width: 60px;
-            height: 60px;
-            -webkit-animation: spin 5s linear infinite; /* Safari */
-            animation: spin 5s linear infinite;
-        }
-        .loaderG {
-            border: 10px solid White;
-            border-radius: 50%;
-            border-top: 10px solid DarkSeaGreen;
-            width: 40px;
-            height: 40px;
-            -webkit-animation: spin 5s linear infinite; /* Safari */
-            animation: spin 5s linear infinite;
-        }
-
-        /* Safari */
-        @-webkit-keyframes spin {
-            0% { -webkit-transform: rotate(0deg); }
-            100% { -webkit-transform: rotate(360deg); }
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-    </style>
+    <link href="style.css" rel="stylesheet" type="text/css"/>
+    <link href="loader.css" rel="stylesheet" type="text/css"/>
 
 </head>
 <body>
 
-    <div id="cardPreview"></div>
+<div id="cardPreviewBox"><div class="cardPreview"></div></div>
 
-    <h1>The Commander's Quarters - live prices</h1>
+<h1>The Commander's Quarters - live prices</h1>
 
-    <p>Prices are from <a href="https://scryfall.com/">Scryfall</a>. <a href="https://thecommandersquarters.com/">Commander’s Quarters</a> generally tries to account more stuff.</p>
+<p>Prices are from <a href="https://scryfall.com/">Scryfall</a>. <a href="https://thecommandersquarters.com/">Commander’s
+    Quarters</a> generally tries to account for more stuff.</p>
 
-    <p>&#128220; Shows decklist. &#127922; Shows list of tokens and such stuff.</p>
+<p>&#128220; Shows decklist. &#127922; Shows list of tokens and such stuff.</p>
 
-    <div class="filter">
+<div class="filter">
 
-        <label for="currency">My currency is </label>
-        <select id="currency">
-            <option value="eur">&euro; &#128181;</option>
-            <option value="usd" selected="true">&dollar; &#128182;</option>
-            <option value="tix">tix</option>
-            <!--<option value="czk">Česká Koruna</option>-->
-        </select>
-        ,
-        <label for="order">I'm interested in </label>
-        <select id="order">
-            <option value="deckPriceTotal" selected="true">cheapest</option>
-            <option value="date">newest</option>
-            <option value="rank">best card containing</option>
-            <option value="commanders_sort">alphabetical commander list of</option>
-            <option value="complexity">simplest</option>
-        </select> decks.
+    <label for="currency">My currency is </label>
+    <select id="currency">
+        <option value="eur">&euro; &#128181;</option>
+        <option value="usd" selected="true">&dollar; &#128182;</option>
+        <option value="tix">tix</option>
+        <!--<option value="czk">Česká Koruna</option>-->
+    </select>
+    ,
+    <label for="order">I'm interested in </label>
+    <select id="order">
+        <option value="deckPriceTotal" selected="true">cheapest</option>
+        <option value="date">newest</option>
+        <option value="rank">best card containing</option>
+        <option value="commanders_sort">alphabetical commander list of</option>
+        <option value="complexity">simplest</option>
+    </select> decks.
 
-        <button id="refresh">Update.</button>
+    <button id="refresh">Update.</button>
 
+</div>
+
+<div class="filter">
+    <h2>What can I build?</h2>
+
+    <div>
+        <label for="collection">Your collection:</label>
+        <textarea id="collection" rows="10" placeholder="1 Sol Ring&#10;10 Mind Stone&#10;100 Plains"></textarea>
+        <button id="possibleDecks">Show me what I can build</button>
     </div>
 
-    <div class="filter">
-        <h2>What can I build?</h2>
+</div>
 
-        <div>
-            <label for="collection">Your collection:</label>
-            <textarea id="collection" rows="10" placeholder="1 Sol Ring&#10;10 Mind Stone&#10;100 Plains"></textarea>
-            <button id="possibleDecks">Show me what I can build</button>
-        </div>
-
-    </div>
-
-    <div id="deckTableBorder">
-        <table id="deckTable">
-            <thead>
-            <tr id="header">
-                <th>#</th>
-                <th colspan="2"></th>
-                <th id="commanders_sort">Commander(s)</th>
-                <th id="date_sort">Deck age</th>
-                <th id="rank_sort">Average<br/>EDHrec rank</th>
-                <th id="complexity_sort">Complexity<br/>index</th>
-                <th id="deckPriceTotal_sort" colspan="2">Price</th>
-            </tr>
-            <tr id="loading">
-                <th colspan="9">
-                    <div class="loaderW">
-                        <div class="loaderU">
-                            <div class="loaderB">
-                                <div class="loaderR">
-                                    <div class="loaderG"></div>
-                                </div>
+<div id="deckTableBorder">
+    <table id="deckTable">
+        <thead>
+        <tr id="header">
+            <th>#</th>
+            <th colspan="2"></th>
+            <th id="commanders_sort">Commander(s)</th>
+            <th id="date_sort">Deck age</th>
+            <th id="rank_sort">Average<br/>EDHrec rank</th>
+            <th id="complexity_sort">Complexity<br/>index</th>
+            <th id="deckPriceTotal_sort" colspan="2">Price</th>
+        </tr>
+        <tr id="loading">
+            <th colspan="9">
+                <div class="loaderW">
+                    <div class="loaderU">
+                        <div class="loaderB">
+                            <div class="loaderR">
+                                <div class="loaderG"></div>
                             </div>
                         </div>
                     </div>
-                </th>
-            </tr>
-            <tr id="error">
-                <th colspan="9">Oops ... something is broken.</th>
-            </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
+                </div>
+            </th>
+        </tr>
+        <tr id="error">
+            <th colspan="9">
+                <h3>Oops ... something is broken.</h3>
+                <p>You can try Ctrl+F5 to really, really load fresh stuff. You can also try to complain to zweis2steiín#7269 @ discord.com.</p>
+            </th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
 </body>
 </html>
