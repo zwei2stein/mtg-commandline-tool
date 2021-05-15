@@ -67,10 +67,10 @@ function possibleDecks() {
             row = row + '<td><a onClick="showTokens(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Tokens and counters">&#127922;</a></td>';
             row = row + '<td>';
             item.commanders.forEach(function (item, index) {
-                row = row + '<span class="commander color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
+                row = row + commanderCardLine(item, '');
             });
             item.companions.forEach(function (item, index) {
-                row = row + '<span class="commander companion color' + item.colors + '"' + cardImageRollover(item.imageUri) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
+                row = row + commanderCardLine(item, 'companion');
             });
             row = row + '</td>';
             row = row + '<td colspan="3">' + item.printPercentage + '</td>';
@@ -146,16 +146,32 @@ function possibleDecks() {
     });
 }
 
+function cardImageRollover(imageUris) {
+    if (imageUris) {
+        return ' onmouseover="showCardImage([\'' + imageUris.join("','") + '\']);" onmouseout="fadeCardImage();"';
+    } else {
+        return '';
+    }
+}
+
+function cardLink(scryfallUri) {
+    if (scryfallUri) {
+        return ' onclick="window.open(\'' + scryfallUri + '\', \'_blank\')"';
+    } else {
+        return '';
+    }
+}
+
 function commanderCardLine(item, aditionalCss) {
-    return '<span class="commander ' + aditionalCss +  'color' + item.colors + '"' + cardImageRollover(item.imageUris) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
+    return '<span class="card commander ' + aditionalCss + ' color' + item.colors + '"' + cardLink(item.scryfallUri) + cardImageRollover(item.imageUris) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
 }
 
 function cardLine(item) {
-    return '<div class="card color' + item.colors + '"' + cardImageRollover(item.imageUris) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><div>" + item.count + ' ' + item.name + "</div></div>";
+    return '<div class="card color' + item.colors + '"' + cardLink(item.scryfallUri) + cardImageRollover(item.imageUris) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><span>" + item.count + ' ' + item.name + "</span></div>";
 }
 
 function cardInline(item) {
-    return '<span class="card color' + item.colors + '"' + cardImageRollover(item.imageUris) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>";
+    return '<span class="card color' + item.colors + '"' + cardLink(item.scryfallUri) + cardImageRollover(item.imageUris) + '>' + item.name + ' ' + manaCostHtml(item.manaCost) + "</span>";
 }
 
 function showTokens(deckFile, index) {
@@ -257,14 +273,6 @@ function showCardImage(imageUris) {
 
 function fadeCardImage() {
     $("#cardPreviewBox").css('opacity', '0.1');
-}
-
-function cardImageRollover(imageUris) {
-    if (imageUris) {
-        return ' onmouseover="showCardImage([\'' + imageUris.join("','") + '\']);" onmouseout="fadeCardImage();"';
-    } else {
-        return '';
-    }
 }
 
 function manaCostHtml(manaCostJson) {

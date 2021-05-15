@@ -53,7 +53,7 @@ def basicCardList(deckCards):
         manaCost = [cost.replace('/', '') for cost in manaCost if cost != ""]
         res.append({'count': deckCard.count, 'name': deckCardName,
                     'colors': mtgColors.colorIdentity2String(deckCard.getProp('color')), 'manaCost': manaCost,
-                    'imageUris': imageUris})
+                    'imageUris': imageUris, "scryfallUri": deckCard.jsonData.get("scryfall_uri", None)})
     return  sorted(res, key=lambda item: item.get("name"))
 
 

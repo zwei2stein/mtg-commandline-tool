@@ -1,5 +1,5 @@
 body {
-    background-color: #a0a0a0;
+    background-color: Cornsilk;
     font-family: Beleren;
 }
 
@@ -9,21 +9,26 @@ body {
     border-collapse: collapse;
 }
 
-.commander {
-    margin: 0.25em;
-    padding: 0.25em;
-    border-radius: 0.5em;
-    text-shadow: 0 0 2px white;
-    box-shadow: inset 0px 0px 0.25em 0px rgba(0, 0, 0, 1);
-}
-
 .card {
     margin: 0.25em;
-    padding: 0.25em;
-    border-radius: 0.25em;
+    padding: 0.33em;
+    border-radius: 0.33em;
     text-shadow: 0 0 2px white;
     border-width: 1px;
     box-shadow: inset 0px 0px 0.25em 0px rgba(0, 0, 0, 1);
+}
+
+.card:hover:after {
+    content: "\00A0\2197";
+}
+
+.commander {
+    border-radius: 0.5em;
+    border-width: 3px;
+}
+
+.companion:before {
+    content: "+\00A0";
 }
 
 div.manaCost {
@@ -38,10 +43,6 @@ div.manaCost {
 .unfolded:before {
     content: "\229F ";
     margin-right: 0.5em;
-}
-
-.companion:before {
-    content: "+\00A0";
 }
 
 .rank {
@@ -61,7 +62,7 @@ div.manaCost {
     margin: 1em;
     padding: 1em;
     border-radius: 1em;
-    border: 1px solid #000000;
+    border: 2px solid LightSlateGray;
 }
 
 #deckTable {
@@ -85,7 +86,8 @@ div.manaCost {
     margin: 1em;
     padding: 1em;
     border-radius: 1em;
-    border: 1px solid #000000;
+    border: 2px solid LightSlateGray;
+    box-shadow: inset 0px 0px 0.25em 0px rgba(0, 0, 0, 1);
 }
 
 #cardPreviewBox {
