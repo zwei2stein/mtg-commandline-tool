@@ -1,16 +1,34 @@
 
 var apiHost = "./";
 
-function reload() {
+function inProgress() {
+    $('#deckTableTech').show();
     $('#loading').show();
-    $('#header').hide();
     $('#error').hide();
+    $('#deckTable').hide();
     $('#deckTable>tbody').empty();
+    $('#possibleDecksTable').hide();
+    $('#possibleDecksTable>tbody').empty();
+
     $('#refresh').prop('disabled', true);
     $('#currency').prop('disabled', true);
     $('#order').prop('disabled', true);
     $('#collection').prop('disabled', true);
     $('#possibleDecks').prop('disabled', true);
+}
+
+function cleanUp() {
+    $('#loading').hide();
+
+    $('#refresh').prop('disabled', false);
+    $('#currency').prop('disabled', false);
+    $('#order').prop('disabled', false);
+    $('#collection').prop('disabled', false);
+    $('#possibleDecks').prop('disabled', false);
+}
+
+function reload() {
+    inProgress();
     $.ajax({
         url: apiHost + $('#currency').val() + "/" + $('#order').val()  + "/deckPrice.json"
     }).done(function(data) {
@@ -31,29 +49,16 @@ function reload() {
             $('#deckLine'+ ( index + 1 )).hide();
             $('#tokenLine'+ ( index + 1 )).hide();
         });
-        $('#header').show();
+        $('#deckTable').show();
     }).fail(function() {
         $('#error').show();
     }).always(function() {
-        $('#loading').hide();
-        $('#refresh').prop('disabled', false);
-        $('#currency').prop('disabled', false);
-        $('#order').prop('disabled', false);
-        $('#collection').prop('disabled', false);
-        $('#possibleDecks').prop('disabled', false);
+        cleanUp();
     });
 }
 
 function possibleDecks() {
-    $('#loading').show();
-    $('#header').hide();
-    $('#error').hide();
-    $('#deckTable>tbody').empty();
-    $('#refresh').prop('disabled', true);
-    $('#currency').prop('disabled', true);
-    $('#order').prop('disabled', true);
-    $('#collection').prop('disabled', true);
-    $('#possibleDecks').prop('disabled', true);
+    inProgress();
     $.ajax({
         method: "POST",
         url: apiHost + $('#currency').val() + "/possibleDecks.json",
@@ -73,7 +78,7 @@ function possibleDecks() {
                 row = row + commanderCardLine(item, 'companion');
             });
             row = row + '</td>';
-            row = row + '<td colspan="3">' + item.printPercentage + '</td>';
+            row = row + '<td>' + item.printPercentage + '</td>';
             row = row + '<td class="deckPrice">' + item.shoppingListPrice + '</td>';
             row = row + '<td>' + $('#currency').val() + '</td>'
 
@@ -101,10 +106,10 @@ function possibleDecks() {
             });
             deckList = deckList + '</div>';
 
-            $('#deckTable>tbody').append(row);
-            $('#deckTable>tbody').append('<tr id="shoppingListLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">' + deckList + '</td><td colspan="3"></td></tr>');
-            $('#deckTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
-            $('#deckTable>tbody').append('<tr id="tokenLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
+            $('#possibleDecksTable>tbody').append(row);
+            $('#possibleDecksTable>tbody').append('<tr id="shoppingListLine' + ( index + 1 ) + '"><td colspan="2"></td><td colspan="3" class="deck">' + deckList + '</td><td colspan="2"></td></tr>');
+            $('#possibleDecksTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="2"></td><td colspan="3" class="deck">Loading...</td><td colspan="2"></td></tr>');
+            $('#possibleDecksTable>tbody').append('<tr id="tokenLine' + ( index + 1 ) + '"><td colspan="2"></td><td colspan="3" class="deck">Loading...</td><td colspan="2"></td></tr>');
             $('#deckLine'+ ( index + 1 )).hide();
             $('#tokenLine'+ ( index + 1 )).hide();
 
@@ -133,16 +138,11 @@ function possibleDecks() {
             $('#needListContainer' + ( index + 1 )).hide();
 
         });
-        $('#header').show();
+        $('#possibleDecksTable').show();
     }).fail(function() {
         $('#error').show();
     }).always(function() {
-        $('#loading').hide();
-        $('#refresh').prop('disabled', false);
-        $('#currency').prop('disabled', false);
-        $('#order').prop('disabled', false);
-        $('#collection').prop('disabled', false);
-        $('#possibleDecks').prop('disabled', false);
+        cleanUp();
     });
 }
 

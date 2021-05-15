@@ -21,14 +21,18 @@
 </head>
 <body>
 
-<div id="cardPreviewBox"><div class="cardPreview"></div></div>
+<div id="cardPreviewBox"></div>
 
-<h1>The Commander's Quarters - live prices</h1>
+<div id="pageHeader">
 
-<p>Prices are from <a href="https://scryfall.com/">Scryfall</a>. <a href="https://thecommandersquarters.com/">Commander’s
-    Quarters</a> generally tries to account for more stuff.</p>
+    <h1>The Commander's Quarters - live prices</h1>
 
-<p>&#128220; Shows decklist. &#127922; Shows list of tokens and such stuff.</p>
+    <p>Prices are from <a href="https://scryfall.com/">Scryfall</a>. <a href="https://thecommandersquarters.com/">Commander’s
+        Quarters</a> generally tries to account for more stuff.</p>
+
+    <p>&#128220; Shows decklist. &#127922; Shows list of tokens and such stuff.</p>
+
+</div>
 
 <div class="filter">
 
@@ -64,10 +68,30 @@
 
 </div>
 
-<div id="deckTableBorder">
-    <table id="deckTable">
+<div id="deckTableBorder" class="filter">
+    <div id="deckTableTech">
+        <div id="loading">
+            <div class="loaderW">
+                <div class="loaderU">
+                    <div class="loaderB">
+                        <div class="loaderR">
+                            <div class="loaderG"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="error">
+            <th colspan="9">
+                <h3>Oops ... something is broken.</h3>
+                <p>You can try Ctrl+F5 to really, really load fresh stuff. You can also try to complain to zweis2steiín#7269 @ discord.com.</p>
+            </th>
+        </div>
+    </div>
+
+    <table id="deckTable" class="decksList">
         <thead>
-        <tr id="header">
+        <tr class="header">
             <th>#</th>
             <th colspan="2"></th>
             <th id="commanders_sort">Commander(s)</th>
@@ -76,28 +100,23 @@
             <th id="complexity_sort">Complexity<br/>index</th>
             <th id="deckPriceTotal_sort" colspan="2">Price</th>
         </tr>
-        <tr id="loading">
-            <th colspan="9">
-                <div class="loaderW">
-                    <div class="loaderU">
-                        <div class="loaderB">
-                            <div class="loaderR">
-                                <div class="loaderG"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </th>
-        </tr>
-        <tr id="error">
-            <th colspan="9">
-                <h3>Oops ... something is broken.</h3>
-                <p>You can try Ctrl+F5 to really, really load fresh stuff. You can also try to complain to zweis2steiín#7269 @ discord.com.</p>
-            </th>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <table id="possibleDecksTable" class="decksList">
+        <thead>
+        <tr class="header">
+            <th>#</th>
+            <th colspan="2"></th>
+            <th>Commander(s)</th>
+            <th>%<br/>Complete</th>
+            <th colspan="2">Price</th>
         </tr>
         </thead>
         <tbody></tbody>
     </table>
+
 </div>
 
 </body>
