@@ -40,12 +40,14 @@ function reload() {
             item.companions.forEach(function (item, index) {
                 commanders = commanders + commanderCardLine(item, 'companion');
             });
-            var indexTag = '<td class="rank">' + ( index + 1 ) + '</td>';
-            var deckListTag = '<td><a onClick="showDeck(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Decklist">&#128220;</a></td>';
-            var tokensTag = '<td><a onClick="showTokens(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Tokens and counters">&#127922;</a></td>';
-            $('#deckTable>tbody').append('<tr>' + indexTag + deckListTag + tokensTag + '<td>'+ commanders +'</td><td>' + item.age + '</td><td>' + item.rank + '</td><td>' + item.complexity + '</td><td class="deckPrice">'+ item.deckPriceTotal +"</td><td>" + $('#currency').val() + "</td></tr>");
-            $('#deckTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
-            $('#deckTable>tbody').append('<tr id="tokenLine' + ( index + 1 ) + '"><td colspan="3"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
+            var row = ''
+            row = row + '<td class="rank">' + ( index + 1 ) + '</td>';
+            row = row + '<td><a onClick="showDeck(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Decklist">&#128220;</a></td>';
+            row = row + '<td><a onClick="showTokens(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Tokens and counters">&#127922;</a></td>';
+            row = row + '<td><a href="/' + item.deckFile + '/deckList.txt" title="Download decklist" target="_blank">&#128190;</a></td>';
+            $('#deckTable>tbody').append('<tr>' + row + '<td>'+ commanders +'</td><td>' + item.age + '</td><td>' + item.rank + '</td><td>' + item.complexity + '</td><td class="deckPrice">'+ item.deckPriceTotal +"</td><td>" + $('#currency').val() + "</td></tr>");
+            $('#deckTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="4"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
+            $('#deckTable>tbody').append('<tr id="tokenLine' + ( index + 1 ) + '"><td colspan="4"></td><td colspan="3" class="deck">Loading...</td><td colspan="3"></td></tr>');
             $('#deckLine'+ ( index + 1 )).hide();
             $('#tokenLine'+ ( index + 1 )).hide();
         });
@@ -70,6 +72,7 @@ function possibleDecks() {
             row = row + '<td class="rank">' + ( index + 1 ) + '</td>';
             row = row + '<td><a onClick="showDeck(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Decklist">&#128220;</a></td>';
             row = row + '<td><a onClick="showTokens(\'' + item.deckFile + '\', ' + ( index + 1 ) + ');" title="Tokens and counters">&#127922;</a></td>';
+            row = row + '<td><a href="/' + item.deckFile + '/deckList.txt" title="Download decklist" target="_blank">&#128190;</a></td>';
             row = row + '<td>';
             item.commanders.forEach(function (item, index) {
                 row = row + commanderCardLine(item, '');
@@ -107,9 +110,9 @@ function possibleDecks() {
             deckList = deckList + '</div>';
 
             $('#possibleDecksTable>tbody').append(row);
-            $('#possibleDecksTable>tbody').append('<tr id="shoppingListLine' + ( index + 1 ) + '"><td colspan="2"></td><td colspan="3" class="deck">' + deckList + '</td><td colspan="2"></td></tr>');
-            $('#possibleDecksTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="2"></td><td colspan="3" class="deck">Loading...</td><td colspan="2"></td></tr>');
-            $('#possibleDecksTable>tbody').append('<tr id="tokenLine' + ( index + 1 ) + '"><td colspan="2"></td><td colspan="3" class="deck">Loading...</td><td colspan="2"></td></tr>');
+            $('#possibleDecksTable>tbody').append('<tr id="shoppingListLine' + ( index + 1 ) + '"><td colspan="4"></td><td colspan="3" class="deck">' + deckList + '</td><td colspan="2"></td></tr>');
+            $('#possibleDecksTable>tbody').append('<tr id="deckLine' + ( index + 1 ) + '"><td colspan="4"></td><td colspan="3" class="deck">Loading...</td><td colspan="2"></td></tr>');
+            $('#possibleDecksTable>tbody').append('<tr id="tokenLine' + ( index + 1 ) + '"><td colspan="4"></td><td colspan="3" class="deck">Loading...</td><td colspan="2"></td></tr>');
             $('#deckLine'+ ( index + 1 )).hide();
             $('#tokenLine'+ ( index + 1 )).hide();
 

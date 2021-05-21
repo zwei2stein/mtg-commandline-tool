@@ -6,7 +6,7 @@ from timeit import default_timer as timer
 from types import SimpleNamespace
 
 import humanize
-from flask import Flask
+from flask import Flask, make_response
 from flask import abort
 from flask import jsonify
 from flask import request
@@ -61,6 +61,55 @@ def basicCardList(deckCards):
 def index():
     return app.send_static_file('index.html')
 
+@app.route('/<deck>/deckList.txt', methods=['GET'])
+def deckListDownload(deck):
+    print("deckList start", deck)
+    start = timer()
+
+    context = SimpleNamespace()
+    context.filterLegality = None
+    context.filterType = None
+    context.print = None
+    context.sort = ['shortType', 'name']
+
+    decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)
+
+    fileResponse = ''
+    fileName = ''
+
+    for file in decks:
+        if deck == hashlib.sha256(file.encode() + salt).hexdigest():
+            print ('Serving deck', file)
+
+            formatedFile = io.StringIO()
+            mtgCardTextFileDao.saveCardFile(formatedFile, decks[file], ['shortType'], context)
+            formatedFile.seek(0)
+
+            first = True
+            for deckCardName, deckCard in Deck(decks[file]).getCommander().items():
+                fileName = fileName + deckCardName
+                if not first:
+                    fileName = fileName + '+'
+                else:
+                    first = False
+
+            fileName = fileName + "_" + deck[-5:] + '.txt'
+
+            fileResponse = formatedFile.getvalue()
+            formatedFile.close()
+
+    response = make_response(fileResponse, 200)
+
+    response.headers.add('Content-Type', 'text/plain; charset=utf-8')
+    response.headers.add('Content-Disposition', 'attachment;filename="' + fileName + '"')
+
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Cache-Control', 'public, max-age=43200')
+
+    end = timer()
+    print("deckPriceMethod end, elapsed time ", (end - start))
+
+    return response
 
 @app.route('/<deck>/deckList.json', methods=['GET'])
 def deckList(deck):
