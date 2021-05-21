@@ -9,12 +9,15 @@ function inProgress() {
     $('#deckTable>tbody').empty();
     $('#possibleDecksTable').hide();
     $('#possibleDecksTable>tbody').empty();
+    $('#staplesTable').hide();
+    $('#staplesTable>tbody').empty();
 
     $('#refresh').prop('disabled', true);
     $('#currency').prop('disabled', true);
     $('#order').prop('disabled', true);
     $('#collection').prop('disabled', true);
     $('#possibleDecks').prop('disabled', true);
+    $('#staples').prop('disabled', true);
 }
 
 function cleanUp() {
@@ -25,6 +28,29 @@ function cleanUp() {
     $('#order').prop('disabled', false);
     $('#collection').prop('disabled', false);
     $('#possibleDecks').prop('disabled', false);
+    $('#staples').prop('disabled', false);
+}
+
+function showStaples() {
+    inProgress();
+    $.ajax({
+        url: apiHost + "100/staples.json"
+    }).done(function(data) {
+          data.cards.forEach(function (item, index) {
+                var row = '<tr>';
+                row = row + '<td class="rank">' + ( index + 1 ) + '</td>';
+                row = row + '<td>' + cardLine(item, false) + '</td>';
+                row = row + '<td>(' + item.count + ')</td>';
+                row = row + '</tr>';
+                $('#staplesTable>tbody').append(row);
+          });
+          window.location.hash = '#staples';
+        $('#staplesTable').show();
+    }).fail(function() {
+        $('#error').show();
+    }).always(function() {
+        cleanUp();
+    });
 }
 
 function reload() {
@@ -52,6 +78,7 @@ function reload() {
             $('#tokenLine'+ ( index + 1 )).hide();
         });
         $('#deckTable').show();
+        window.location.hash = '#deckRanks';
     }).fail(function() {
         $('#error').show();
     }).always(function() {
@@ -142,6 +169,7 @@ function possibleDecks() {
 
         });
         $('#possibleDecksTable').show();
+        window.location.hash = '';
     }).fail(function() {
         $('#error').show();
     }).always(function() {
@@ -170,7 +198,16 @@ function commanderCardLine(item, aditionalCss) {
 }
 
 function cardLine(item) {
-    return '<div class="card color' + item.colors + '"' + cardLink(item.scryfallUri) + cardImageRollover(item.imageUris) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><span>" + item.count + ' ' + item.name + "</span></div>";
+    return cardLine(item, true);
+}
+
+function cardLine(item, showCounts) {
+    var cardLine = '<div class="card color' + item.colors + '"' + cardLink(item.scryfallUri) + cardImageRollover(item.imageUris) + '><div class="manaCost">' + manaCostHtml(item.manaCost) + "</div><span>";
+    if (showCounts) {
+        cardLine = cardLine + item.count + ' ';
+    }
+    cardLine = cardLine + item.name + "</span></div>";
+    return cardLine;
 }
 
 function cardInline(item) {
@@ -295,7 +332,7 @@ function manaCostHtml(manaCostJson) {
 }
 
 $(document).ready(function() {
-    reload();
+
 
     $('#refresh').click(function() {
         reload();
@@ -304,5 +341,20 @@ $(document).ready(function() {
     $('#possibleDecks').click(function() {
         possibleDecks();
     });
+
+    $('#staples').click(function() {
+        showStaples();
+    });
+
+    var hash = window.location.hash;
+
+    if (hash == '#staples') {
+        showStaples();
+    } else if (hash == '#deckRanks') {
+        reload();
+    } else {
+        inProgress();
+        cleanUp();
+    }
 
 });

@@ -54,16 +54,39 @@ def basicCardList(deckCards):
         res.append({'count': deckCard.count, 'name': deckCardName,
                     'colors': mtgColors.colorIdentity2String(deckCard.getProp('color')), 'manaCost': manaCost,
                     'imageUris': imageUris, "scryfallUri": deckCard.jsonData.get("scryfall_uri", None)})
-    return  sorted(res, key=lambda item: item.get("name"))
+    return sorted(res, key=lambda item: item.get("name"))
 
 
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
 
+@app.route('/<count>/staples.json', methods=['GET'])
+def staples(count):
+    print("staples start", count)
+    start = timer()
+
+    context = SimpleNamespace()
+
+    cardCollection = mtgCardTextFileDao.readCardDirectory(deckHome, {}, None, configuration["filePattern"], context)
+
+    cardCollection = sorted(basicCardList(cardCollection), key=lambda item: item.get("count"), reverse=True)
+
+    jsonResponse = {"cards": cardCollection[:int(count)]}
+
+    response = jsonify(jsonResponse)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Cache-Control', 'public, max-age=43200')
+
+    end = timer()
+    print("deckListDownload end, elapsed time ", (end - start))
+
+    return response
+
+
 @app.route('/<deck>/deckList.txt', methods=['GET'])
 def deckListDownload(deck):
-    print("deckList start", deck)
+    print("deckListDownload start", deck)
     start = timer()
 
     context = SimpleNamespace()
@@ -107,7 +130,7 @@ def deckListDownload(deck):
     response.headers.add('Cache-Control', 'public, max-age=43200')
 
     end = timer()
-    print("deckPriceMethod end, elapsed time ", (end - start))
+    print("deckListDownload end, elapsed time ", (end - start))
 
     return response
 
