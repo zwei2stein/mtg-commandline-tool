@@ -2,6 +2,10 @@ import re
 
 import console
 
+from scryfall import getTokenByUrl
+
+from mtgColors import colorIdentity2NiceString
+
 
 def appendListInMap(map, key, item):
     key = key.capitalize()
@@ -31,11 +35,11 @@ def listTokens(deckCards):
         oracleText = oracleText.replace('nontoken', '~')
         oracleTextWithoutCardName = oracleText.replace(deckCardName, 'CARD_NAME')
 
-        nonTokenCards = {'Intangible Virtue', 'Anointed Procession'}
+        nonTokenCards = {'Intangible Virtue', 'Anointed Procession', 'Outlaws\' Merriment', 'Mascot Exhibition'}
 
-        if (deckCardName not in nonTokenCards):
+        foundToken = False
 
-            foundToken = False
+        if deckCardName not in nonTokenCards:
 
             match = re.search("(Fabricate [0-9]+)", oracleText)
             if (match):
@@ -200,10 +204,40 @@ def listTokens(deckCards):
             for match in re.finditer('(You get an emblem with .+)', oracleText):
                 appendListInMap(other, match.string[match.start(1):match.end(1)], deckCard)
 
-            if (not foundToken):
-                match = re.search("(token)", oracleText)
-                if (match):
-                    tokenCandidates[deckCardName] = oracleText
+            for match in re.finditer('([Rr]oll ([a-zX ]+) (d[0-9]+))', oracleText):
+                appendListInMap(other, "Dice: " + match.string[match.start(3):match.end(3)], deckCard)
+
+            for match in re.finditer('([Vv]enture into the dungeon)', oracleText):
+                appendListInMap(other, "Dungeon maps", deckCard)
+
+            for match in re.finditer('([Vv]enture into the dungeon)', oracleText):
+                appendListInMap(other, "Dungeon maps", deckCard)
+
+            for match in re.finditer('(completed a dungeon)', oracleText):
+                appendListInMap(other, "Dungeon completed marker", deckCard)
+
+            match = re.search('(Enchantment \u2014 Class)', typeLine)
+            if (match):
+                appendListInMap(other, "Class level marker", deckCard)
+
+        if (not foundToken):
+            match = re.search("(token)", oracleText)
+            if (match):
+                for part in deckCard.jsonData['all_parts']:
+                    if part['component'] == 'token':
+                        tokenJson = getTokenByUrl(part['uri'])
+                        if tokenJson is not None:
+                            # 1/1 colorless Servo artifact creature token
+                            tokenString = tokenJson['power'] + '/' + tokenJson[
+                                'toughness'] + ' ' + colorIdentity2NiceString(tokenJson['color_identity']) + ' ' + \
+                                          tokenJson[
+                                              'name'] + ' ' + re.sub(" \u2014 .+", '',
+                                                                     tokenJson['type_line'].replace('Token ',
+                                                                                                    '')) + ' token'
+                            if tokenJson['oracle_text']:
+                                tokenString = tokenString + ' with \'' + tokenJson['oracle_text'].replace('\n',
+                                                                                                          ' ') + '\''
+                            appendListInMap(tokens, tokenString, deckCard)
 
     response = {}
 

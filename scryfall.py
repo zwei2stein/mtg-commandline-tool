@@ -98,7 +98,7 @@ def getCachedCardJson(card):
                 clearCache == 'price' and fileAge.days > 1)):
             return fetchCardJson(card, jsonFile)
         else:
-            #print("Loading cached " + jsonFile)
+            # print("Loading cached " + jsonFile)
             with open(jsonFile, encoding='utf-8') as json_data:
                 try:
                     return json.load(json_data)
@@ -108,12 +108,11 @@ def getCachedCardJson(card):
                     os.remove(jsonFile)
                     return fetchCardJson(card, jsonFile)
     else:
-        #print("Loading online " + jsonFile)
+        # print("Loading online " + jsonFile)
         return fetchCardJson(card, jsonFile)
 
 
 def searchByCard(card):
-
     url = card.jsonData['prints_search_uri']
 
     jsonFile = os.path.join(getCacheDir(), card.jsonData["oracle_id"] + ".prints.json")
@@ -124,7 +123,7 @@ def searchByCard(card):
                 clearCache == 'price' and fileAge.days > 1)):
             return fetchCardJson(card, jsonFile)
         else:
-            #print("Loading cached " + jsonFile)
+            # print("Loading cached " + jsonFile)
             with open(jsonFile, encoding='utf-8') as json_data:
                 try:
                     return json.load(json_data)
@@ -155,8 +154,8 @@ def searchByCard(card):
 
     return foundCardsJson
 
-def search(query):
 
+def search(query):
     response = requests.get('https://api.scryfall.com/cards/search', params={'q': query}, proxies=proxies, auth=auth)
 
     foundCardNames = []
@@ -174,3 +173,11 @@ def search(query):
             response = None
 
     return foundCardNames
+
+
+def getTokenByUrl(url):
+    response = requests.get(url, proxies=proxies, auth=auth)
+    if response is not None and response.status_code == 200:
+        return response.json()
+    else:
+        return None
