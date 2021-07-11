@@ -7,7 +7,8 @@ import util
 cardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType',
              'rarity', 'age']
 
-globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'color', 'type', 'shortType', 'rarity', 'age']
+globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'color', 'type', 'shortType', 'rarity',
+                   'age']
 
 rarityOrder = {
     'common': 0,
@@ -117,41 +118,41 @@ class CardInCollection:
 
     def getRawProp(self, propName):
 
-        if (propName == 'cmc'):
+        if propName == 'cmc':
             return self.jsonData["cmc"]
-        if (propName == 'price'):
+        elif propName == 'price':
             return float(priceSourceHandler.getCardPrice(self.context.currency, self))
-        if (propName == 'fullPrices'):
+        elif propName == 'fullPrices':
             return priceSourceHandler.stringApparise(priceSourceHandler.apparise(self.context.currency, self))
-        if (propName == 'cheapestPriceSource'):
+        elif propName == 'cheapestPriceSource':
             return priceSourceHandler.stringMinPrices(priceSourceHandler.apparise(self.context.currency, self))
-        if (propName == 'count'):
+        elif propName == 'count':
             return self.count
-        if (propName == 'name'):
+        elif propName == 'name':
             if (self.jsonData.get('card_faces', None) is not None):
                 return self.jsonData['card_faces'][0]['name']
             else:
                 return self.jsonData['name']
-        if (propName == 'color'):
+        elif propName == 'color':
             return mtgColors.colorIdentity2String(self.jsonData['color_identity'])
-        if (propName == 'set'):
+        elif propName == 'set':
             if (len(self.setName) > 0):
                 return max(self.setName, key=self.setName.get)
             else:
                 return self.jsonData.get('set', '')
-        if (propName == 'sideboard'):
+        elif propName == 'sideboard':
             return self.sideboard > 0
-        if (propName == 'mainboard'):
+        elif propName == 'mainboard':
             return (self.count - self.sideboard) > 0
-        if (propName == 'type'):
+        elif propName == 'type':
             return self.jsonData.get('type_line', '').split("\u2014", 1)[0].strip()
-        if (propName == 'shortType'):
+        elif propName == 'shortType':
             return self.jsonData.get('type_line', '').split("\u2014", 1)[0].strip().split(" ")[-1]
-        if (propName == 'rarity'):
+        elif propName == 'rarity':
             return self.jsonData["rarity"]
-        if (propName == 'commander'):
+        elif propName == 'commander':
             return self.commander
-        if (propName == 'age'):
+        elif propName == 'age':
             cardPrintings = scryfall.searchByCard(self)
             printDates = []
             for cardPrinting in cardPrintings:
@@ -175,21 +176,21 @@ class CardInCollection:
     def __gt__(self, cardInCollection):
 
         for sort in self.context.sort:
-            if (sort == 'color'):
+            if sort == 'color':
                 if (self.jsonData['color_identity'] != cardInCollection.jsonData['color_identity']):
                     return mtgColors.compareColors(self.jsonData['color_identity'],
                                                    cardInCollection.jsonData['color_identity'])
 
-            if (sort == 'rarity'):
+            elif sort == 'rarity':
                 if (self.jsonData["rarity"] != cardInCollection.jsonData["rarity"]):
                     return getRarityOrder(self.jsonData["rarity"]) > getRarityOrder(cardInCollection.jsonData["rarity"])
 
-            if (sort == 'shortType'):
+            elif sort == 'shortType':
                 if (self.getProp('shortType') != cardInCollection.getProp('shortType')):
                     return getShortTypeOrder(self.getProp('shortType')) > getShortTypeOrder(
                         cardInCollection.getProp('shortType'))
 
-            if (sort == 'set'):
+            elif sort == 'set':
                 if (self.jsonData["set"] != cardInCollection.jsonData["set"]):
                     return sets.getSetOrder(self.jsonData["set"]) > sets.getSetOrder(cardInCollection.jsonData["set"])
 
