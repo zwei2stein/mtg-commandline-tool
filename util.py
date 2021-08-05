@@ -12,9 +12,15 @@ def printProgress(progress):
 	sys.stdout.write(progressAnimation[progress % len(progressAnimation)])
 	sys.stdout.flush()
 
+def absolutePaths(pathList):
+	result = '['
+	for path in pathList:
+		result = result + os.path.abspath(path) + ','
+	return result[:-1] + ']'
+
 def cleanFilename(card, whitelist=valid_filename_chars, replace=' '):
 
-	filename = card.name
+	filename = card.techName
 	# replace spaces
 	for r in replace:
 		filename = filename.replace(r, '_')

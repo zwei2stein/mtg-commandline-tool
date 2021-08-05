@@ -39,18 +39,18 @@ def readCardFile(f, cardFile, cards, asDeck, context):
                 try:
                     count = int(re.sub("[x]\Z", "", splitLine[0], 1))  # acceptable 1 and 1x
                 except ValueError:
-                    if (errorCount == 0):
+                    if errorCount == 0:
                         print()
                     errorCount += 1
                     print("Card list format error " + str(errorCount) + " in file '" + cardFile + "', line " + str(
                         lineCounter) + ", ignoring '" + line + "'")
                     continue
                 name = splitLine[1]
-                if ('#' in name):
+                if '#' in name:
                     commentedName = name.split('#')
                     name = commentedName[0]
                 # print ("comment", commentedName[1:])
-                if (' / ' in name):
+                if ' / ' in name:
                     name = re.sub(' / ', ' // ', name, 1)
 
                 setName = None
@@ -66,13 +66,20 @@ def readCardFile(f, cardFile, cards, asDeck, context):
                 name = re.sub(" \([0-9A-Za-z ]+\)\Z", "", name,
                               1)  # strip showcase marker, artist marker, other markers
                 name = name.strip()
+                # Normalize name from scryfall data.
+                # Multifaced cards that are here normalized to name of first face.
+                # In case there are mixed namings in files (common for pathways)
+                temporaryCard = mtgCardInCollectionObject.CardInCollection(name, count, cardFile)
+                name = temporaryCard.getJsonName()
+
                 sideboardCount = 0
                 if (isSideboard):
                     sideboardCount = count
                 if (name in cards):
                     cards[name].add(count, cardFile, sideboardCount, isCommander, setName)
                 else:
-                    cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile, None,
+                    cards[name] = mtgCardInCollectionObject.CardInCollection(name, count, cardFile,
+                                                                             temporaryCard.jsonData,
                                                                              sideboardCount, isCommander, setName, {},
                                                                              context)
                 isCommander = False
@@ -172,7 +179,7 @@ def printCardLine(file, count, card, color=None):
     file.write(" ")
     if (color is not None):
         file.write(color)
-    file.write(card.name)
+    file.write(card.getProp('fullName'))
     if (color is not None):
         file.write(console.CEND)
     file.write(card.getDisplaySuffix())

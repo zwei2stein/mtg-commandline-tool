@@ -4,10 +4,10 @@ import scryfall
 import sets
 import util
 
-cardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'count', 'color', 'set', 'type', 'shortType',
+cardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'fullName', 'count', 'color', 'set', 'type', 'shortType',
              'rarity', 'age']
 
-globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'color', 'type', 'shortType', 'rarity',
+globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'fullName','color', 'type', 'shortType', 'rarity',
                    'age']
 
 rarityOrder = {
@@ -44,7 +44,7 @@ class CardInCollection:
 
     def __init__(self, name, count, sourceFile, jsonData=None, sideboard=0, commander=False, setName=None,
                  propCache=None, context=None):
-        self.name = name
+        self.techName = name
         self.count = count
         self.sideboard = sideboard
         self.commander = commander
@@ -78,6 +78,16 @@ class CardInCollection:
         if self._jsonData is None:
             self._jsonData = scryfall.getCachedCardJson(self)
         return self._jsonData
+
+    @property
+    def name(self):
+        return self.getJsonName()
+
+    def getJsonName(self):
+        if self.jsonData.get('card_faces', None) is not None:
+            return self.jsonData['card_faces'][0]['name']
+        else:
+            return self.jsonData['name']
 
     def getDisplaySuffix(self):
         if (self.context.print):
@@ -129,10 +139,9 @@ class CardInCollection:
         elif propName == 'count':
             return self.count
         elif propName == 'name':
-            if (self.jsonData.get('card_faces', None) is not None):
-                return self.jsonData['card_faces'][0]['name']
-            else:
-                return self.jsonData['name']
+            self.getJsonName()
+        elif propName == 'fullName':
+            return self.jsonData["name"]
         elif propName == 'color':
             return mtgColors.colorIdentity2String(self.jsonData['color_identity'])
         elif propName == 'set':

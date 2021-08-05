@@ -64,25 +64,26 @@ def initCache(collection):
 
 
 def fetchCardJson(card, jsonFile, retryTimes=3):
-    response = requests.get("http://api.scryfall.com/cards/named", params={'exact': card.name}, proxies=proxies,
+    response = requests.get("http://api.scryfall.com/cards/named", params={'exact': card.techName}, proxies=proxies,
                             auth=auth)
     fuzzyResult = False
     if response.status_code == 404:
         print()
-        print(console.CRED + "Card '" + card.name + "' (" + str(
+        print(console.CRED + "Card '" + card.techName + "' (" + util.absolutePaths(
             card.sourceFile) + ") Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
-        response = requests.get("http://api.scryfall.com/cards/named", params={'fuzzy': card.name}, proxies=proxies,
+        response = requests.get("http://api.scryfall.com/cards/named", params={'fuzzy': card.techName}, proxies=proxies,
                                 auth=auth)
         fuzzyResult = True
         if response.status_code < 400:
-            print("\'" + card.name + "\' found as \'" + response.json()[
-                "name"] + "\'. " + console.CRED + "Fix files " + str(card.sourceFile) + console.CEND)
+            print("\'" + card.techName + "\' found as \'" + response.json()[
+                "name"] + "\'. " + console.CRED + "Fix files " + util.absolutePaths(card.sourceFile) + console.CEND)
     if (response.status_code == 503 or response.status_code == 504) and retryTimes > 0:
         sys.stderr.write('Retrying ' + response.url)
         fetchCardJson(card, jsonFile, retryTimes - 1)
     elif response.status_code >= 400 or retryTimes == 0:
-        raise CardRetrievalError('Bad response ' + str(response.status_code) + ' for ' + card.name, card.name,
-                                 response.status_code)
+        raise CardRetrievalError(
+            'Bad response ' + str(response.status_code) + ' for ' + card.techName + "' (" + util.absolutePaths(card.sourceFile) + ")",
+            card.techName, response.status_code)
     if not fuzzyResult:
         with open(jsonFile, 'w') as f:
             json.dump(response.json(), f)
