@@ -243,4 +243,6 @@ optional arguments:
 
  * ommit cards with zero count from prints
 
- * deck age (latest set, date when deck was possible to assemble in paper)
+ * deck age (latest set, date when deck was possible to assemble in paper) ?
+
+ * some czk stuff not working 
