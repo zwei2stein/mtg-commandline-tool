@@ -73,6 +73,14 @@ def listTokens(deckCards):
                 appendListInMap(other, "Eternalize marker", deckCard)
                 foundToken = True
 
+            match = re.search("(Encore)", oracleText)
+            if (match):
+                subtype = typeLine.split("\u2014", 1)[1].strip()
+                appendListInMap(tokens, deckCard.jsonData.get('power', '?') + '/' + deckCard.jsonData.get('toughness',
+                                                                                                          '?') + " " + deckCardName + " " + subtype + " token",
+                                deckCard)
+                foundToken = True
+
             match = re.search('([Mm]orph)', oracleTextWithoutCardName)
             if (match):
                 appendListInMap(tokens, "2/2 colorless creature (morph)", deckCard)
@@ -234,8 +242,8 @@ def listTokens(deckCards):
                             tokenJson = getTokenByUrl(part['uri'])
                             if tokenJson is not None:
                                 # 1/1 colorless Servo artifact creature token
-                                tokenString = tokenJson['power'] + '/' + tokenJson[
-                                    'toughness'] + ' ' + colorIdentity2NiceString(tokenJson['color_identity']) + ' ' + \
+                                tokenString = tokenJson.get('power', '?') + '/' + tokenJson.get(
+                                    'toughness', '?') + ' ' + colorIdentity2NiceString(tokenJson['color_identity']) + ' ' + \
                                               tokenJson[
                                                   'name'] + ' ' + re.sub(" \u2014 .+", '',
                                                                          tokenJson['type_line'].replace('Token ',
