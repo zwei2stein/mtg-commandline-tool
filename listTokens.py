@@ -223,21 +223,27 @@ def listTokens(deckCards):
         if (not foundToken):
             match = re.search("(token)", oracleText)
             if (match):
-                for part in deckCard.jsonData['all_parts']:
-                    if part['component'] == 'token':
-                        tokenJson = getTokenByUrl(part['uri'])
-                        if tokenJson is not None:
-                            # 1/1 colorless Servo artifact creature token
-                            tokenString = tokenJson['power'] + '/' + tokenJson[
-                                'toughness'] + ' ' + colorIdentity2NiceString(tokenJson['color_identity']) + ' ' + \
-                                          tokenJson[
-                                              'name'] + ' ' + re.sub(" \u2014 .+", '',
-                                                                     tokenJson['type_line'].replace('Token ',
-                                                                                                    '')) + ' token'
-                            if tokenJson['oracle_text']:
-                                tokenString = tokenString + ' with \'' + tokenJson['oracle_text'].replace('\n',
-                                                                                                          ' ') + '\''
-                            appendListInMap(tokens, tokenString, deckCard)
+                all_parts = deckCard.jsonData.get('all_parts', [])
+                if len(all_parts) == 0:
+                    match = re.search("(copy)", oracleText)
+                    if (match):
+                        appendListInMap(tokens, "Copy token", deckCard)
+                else:
+                    for part in all_parts:
+                        if part['component'] == 'token':
+                            tokenJson = getTokenByUrl(part['uri'])
+                            if tokenJson is not None:
+                                # 1/1 colorless Servo artifact creature token
+                                tokenString = tokenJson['power'] + '/' + tokenJson[
+                                    'toughness'] + ' ' + colorIdentity2NiceString(tokenJson['color_identity']) + ' ' + \
+                                              tokenJson[
+                                                  'name'] + ' ' + re.sub(" \u2014 .+", '',
+                                                                         tokenJson['type_line'].replace('Token ',
+                                                                                                        '')) + ' token'
+                                if tokenJson['oracle_text']:
+                                    tokenString = tokenString + ' with \'' + tokenJson['oracle_text'].replace('\n',
+                                                                                                              ' ') + '\''
+                                appendListInMap(tokens, tokenString, deckCard)
 
     response = {}
 
