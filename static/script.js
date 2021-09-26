@@ -119,7 +119,7 @@ function possibleDecks() {
             item.haveList.forEach(function (item, index) {
                 deckList = deckList + '<h3>' + item.shortType + ' (' + item.count + ')</h3><div class="deckCardList">';
                 item.cards.forEach(function (item, index) {
-                    deckList = deckList + cardLine(item);
+                    deckList = deckList + cardLine(item, true);
                 });
                 deckList = deckList + '</div>';
             });
@@ -130,7 +130,7 @@ function possibleDecks() {
             item.shoppingList.forEach(function (item, index) {
                 deckList = deckList + '<h3>' + item.shortType + ' (' + item.count + ')</h3><div class="deckCardList">';
                 item.cards.forEach(function (item, index) {
-                    deckList = deckList + cardLine(item);
+                    deckList = deckList + cardLine(item, true);
                 });
                 deckList = deckList + '</div>';
             });
@@ -195,10 +195,6 @@ function cardLink(scryfallUri) {
 
 function commanderCardLine(item, aditionalCss) {
     return '<span class="card commander ' + aditionalCss + ' color' + item.colors + '"' + cardLink(item.scryfallUri) + cardImageRollover(item.imageUris) + '>' + item.name + " " +  manaCostHtml(item.manaCost) + "</span>";
-}
-
-function cardLine(item) {
-    return cardLine(item, true);
 }
 
 function cardLine(item, showCounts) {
@@ -289,7 +285,7 @@ function showDeck(deckFile, index) {
               data.deckList.forEach(function (item, index) {
                     deckList = deckList + '<h3>' + item.shortType + ' (' + item.count + ')</h3><div class="deckCardList">';
                     item.cards.forEach(function (item, index) {
-                        deckList = deckList + cardLine(item)
+                        deckList = deckList + cardLine(item, true)
                     });
                     deckList = deckList + '</div>';
               });
