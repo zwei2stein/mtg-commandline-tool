@@ -1,62 +1,44 @@
-import re
 import requests
 
 from priceSource import PriceSource
 
+
 class Najada(PriceSource):
 
-	def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
-		self.clearCache = clearCache
-		self.cacheTimeout = cacheTimeout
-		self.smartFlush = smartFlush
-		self.sourceName = 'Najada'
-		self.supportedCurrency = 'czk'
-		self.cacheDir = '.najadaCache'
-		self.priority = priority
-		self.baseUrl = "https://www.najada.cz/cz/kusovky-mtg/omezit-500"
+    def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
+        self.clearCache = clearCache
+        self.cacheTimeout = cacheTimeout
+        self.smartFlush = smartFlush
+        self.sourceName = 'Najada'
+        self.supportedCurrency = 'czk'
+        self.cacheDir = '.najadaCache'
+        self.priority = priority
+        self.baseUrl = "https://najada.games/api/v1/najada2/catalog/mtg-singles/"
 
-	def fetchCardPrice(self, card, page = 0, cheapestPrice = None):
+    def fetchCardPrice(self, card, page=0, cheapest_price=None):
 
-		name = card.name
+        name = card.name
 
-		response = requests.post(self.baseUrl, data={
-			'Anchor': 'EShopSearchArticles', 
-			'RedirUrl': self.baseUrl, 
-			'Search': name, 
-			'Sender': 'Submit',
-			'MagicCardSet': '-1' }, params={
-			'Anchor': 'EShopSearchArticles', 
-			'RedirUrl': self.baseUrl, 
-			'Search': name, 
-			'Sender': 'Submit',
-			'MagicCardSet': '-1' })
+        response = requests.get(self.baseUrl,
+                                params={
+                                    'o': '-price',
+                                    'offset': 0,
+                                    'q': name,
+                                    'Sender': 'Submit',
+                                    'in_stock': 'true',
+                                    'limit': 100,
+                                    'category': 4,
+                                    'article_price_min': 0,
+                                    'article_price_max': 10000000})
 
-		regexPrice = '<span class="v">([0-9]+)</span>'
+        json = response.json()
 
-		regexName = '<td class="tdTitle">(.*?)</td>'
+        for result in json.get('results', []):
+            name = result.get('name', result.get('localized_name', ''))
+            if name.lower() == card.name.lower():
+                for article in result.get('articles', []):
+                    price = int(article.get('regular_price_czk', article.get('effective_price_czk', 0.0)))
+                    if (cheapest_price == None or cheapest_price > price) and name.lower() == card.name.lower():
+                        cheapest_price = price
 
-		prices = re.findall(regexPrice, response.text)
-
-		names = re.findall(regexName, response.text, flags=re.DOTALL) 
-
-		prevName = None
-
-		cleanHtml = re.compile('<.*?>')
-
-		for name, price in zip(names, prices):
-
-			name = re.sub(cleanHtml, '', name).strip()
-
-			name = re.sub( '\\('+str(card.getProp('name'))+'\\)', '', name).strip()
-
-			if (name == '&nbsp;'):
-				name = prevName
-			else:
-				prevName = name
-
-			price = int(price)
-
-			if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.name.lower()):
-				cheapestPrice = price
-
-		return cheapestPrice
+        return cheapest_price
