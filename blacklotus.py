@@ -52,7 +52,7 @@ class BlackLotus(PriceSource):
 
             price = float(price)
 
-            if cheapestPrice is None or cheapestPrice > price and name.lower() == card.name.lower():
+            if (cheapestPrice is None or cheapestPrice > price) and name.lower() == card.name.lower():
                 cheapestPrice = price
 
         return cheapestPrice
