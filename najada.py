@@ -22,7 +22,7 @@ class Najada(PriceSource):
         response = requests.get(self.baseUrl,
                                 params={
                                     'o': '-price',
-                                    'offset': 0,
+                                    'offset': page,
                                     'q': name,
                                     'Sender': 'Submit',
                                     'in_stock': 'true',
@@ -38,7 +38,7 @@ class Najada(PriceSource):
             if name.lower() == card.name.lower():
                 for article in result.get('articles', []):
                     price = int(article.get('regular_price_czk', article.get('effective_price_czk', 0.0)))
-                    if (cheapest_price == None or cheapest_price > price) and name.lower() == card.name.lower():
+                    if (cheapest_price is None or cheapest_price > price) and name.lower() == card.name.lower():
                         cheapest_price = price
 
         return cheapest_price
