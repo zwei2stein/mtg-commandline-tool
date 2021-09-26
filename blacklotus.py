@@ -1,65 +1,58 @@
-import base64
 import re
-import requests
 
-import util
+import requests
 
 from priceSource import PriceSource
 
+
 class BlackLotus(PriceSource):
 
-	def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
-		self.clearCache = clearCache
-		self.cacheTimeout = cacheTimeout
-		self.smartFlush = smartFlush
-		self.sourceName = 'Black Lotus'
-		self.supportedCurrency = 'czk'
-		self.cacheDir = '.blackLotusCache'
-		self.priority = priority
-		self.baseUrl = "http://www.blacklotus.cz/magic-vyhledavani/"
+    def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
+        self.clearCache = clearCache
+        self.cacheTimeout = cacheTimeout
+        self.smartFlush = smartFlush
+        self.sourceName = 'Black Lotus'
+        self.supportedCurrency = 'czk'
+        self.cacheDir = '.blackLotusCache'
+        self.priority = priority
+        self.baseUrl = "https://www.blacklotus.cz/vyhledavani/"
 
-	def fetchCardPrice(self, card, page = 0, cheapestPrice = None):
+    def fetchCardPrice(self, card, page=0, cheapestPrice=None):
 
-		search = base64.b64encode(bytes('nazev;' + card.name + ';popis;;15;0;4;0;7;0;from13;;to13;;from14;;to14;;from12;;to12;;pricemin;;pricemax;;6;0', encoding = 'utf-8'))
+        name = card.name
 
-		response = requests.get(self.baseUrl, params={
-			'page': 'search', 
-			'search': search, 
-			'catid': 3,
-			'sortmode': 7,
-			'depmode': 1,
-			'pageno': page + 1})
+        response = requests.get(self.baseUrl, params={
+            'string': name})
 
-		start = response.text.find('<tbody>')
-		end = response.text.find('</tbody>', start + 1)
-		
-		regexRow = 'title="(.+?)">.+?</a></h2></td><td class="cenasdph">([0-9,]+)&nbsp;'
+        start = response.text.find('<div id="products-found" class="search-results">')
+        end = response.text.find('<footer id="footer">', start + 1)
 
-		names = re.findall(regexRow, response.text[start:end]) 
+        regex_row = '<span data-micro="name">\n(.+?)</span>'
 
-		for name, price in names:
+        regex_prices = 'data-micro-price="([0-9.]+)"'
 
-			name = name.split(' // ')[0]
-			name = name.strip()
+        names = re.findall(regex_row, response.text[start:end], re.MULTILINE)
 
-			ends = [' - RELEASE FOIL SP', ' - RELEASE FOIL', ' - NON ENG ITA', ' - NON ENG SPA', ' - FOIL ZENDIKAR EXPEDITIONS', ' - FTV FOIL', ' - NON ENG RUS', ' - NON ENG JAP', ' - NON ENG GER SP', ' - NON ENG GER', ' - NON ENG CHI SP', ' - NON ENG CHI', ' - FOIL NON-ENG CHI', ' - FOIL', ' - HP', ' - SP',
-				' - PRERELEASE FOIL', ' - PRERELEASE PROMO', ' - PRERELEASE PROMO FOIL', ' - PROMO FOIL', ' - GAMEDAY FOIL', ' - FNM FOIL', 'PDS FOIL', ' FOIL']
- 
-			for end in ends:
-				name = name[::-1].replace(end[::-1], '', 1)[::-1]
+        prices = re.findall(regex_prices, response.text[start:end], re.MULTILINE)
 
-			price = float(price.replace(',', '.'))
+        for name, price in zip(names, prices):
 
-			if ((cheapestPrice == None or cheapestPrice > price) and name.lower() == card.getProp('name').lower()):
-				cheapestPrice = price
+            name = name.split(' // ')[0]
+            name = name.strip()
 
-		start = response.text.find('<div class="paging">')
-		end = response.text.find('</div>', start + 1)
-		hasNextPage = 'http://www.blacklotus.cz/img/design/arrow.gif' in response.text[start:end]
+            ends = [' - RELEASE FOIL SP', ' - RELEASE FOIL', ' - NON ENG ITA', ' - NON ENG SPA',
+                    ' - FOIL ZENDIKAR EXPEDITIONS', ' - FTV FOIL', ' - NON ENG RUS', ' - NON ENG JAP',
+                    ' - NON ENG GER SP', ' - NON ENG GER', ' - NON ENG CHI SP', ' - NON ENG CHI', ' - FOIL NON-ENG CHI',
+                    ' - FOIL', ' - HP', ' - SP',
+                    ' - PRERELEASE FOIL', ' - PRERELEASE PROMO', ' - PRERELEASE PROMO FOIL', ' - PROMO FOIL',
+                    ' - GAMEDAY FOIL', ' - FNM FOIL', 'PDS FOIL', ' FOIL']
 
-		if hasNextPage and page < 5:
-			util.printProgress(page)
-			return self.fetchCardPrice(card, page = page + 1, cheapestPrice = cheapestPrice)
+            for end in ends:
+                name = name[::-1].replace(end[::-1], '', 1)[::-1]
 
-		else:
-			return cheapestPrice
+            price = float(price)
+
+            if cheapestPrice is None or cheapestPrice > price and name.lower() == card.name.lower():
+                cheapestPrice = price
+
+        return cheapestPrice
