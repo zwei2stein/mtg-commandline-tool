@@ -238,15 +238,17 @@ def readDeckDirectory(path, decks, cardListfilePattern, context):
                 cardFile = os.path.join(root, file)
                 match = re.search(cardListfilePattern, cardFile)
                 if (match):
-                    statusLine = "Reading file #" + str(count) + " '" + cardFile + "'..."
 
-                    currentLength = len(statusLine)
-                    if (currentLength < lastLength):
-                        statusLine = statusLine + (lastLength - currentLength) * ' '
-                    lastLength = currentLength
+                    if sys.stdin and sys.stdin.isatty():
+                        statusLine = "Reading file #" + str(count) + " '" + cardFile + "'..."
 
-                    sys.stdout.write('\r' + statusLine)
-                    sys.stdout.flush()
+                        currentLength = len(statusLine)
+                        if (currentLength < lastLength):
+                            statusLine = statusLine + (lastLength - currentLength) * ' '
+                        lastLength = currentLength
+
+                        sys.stdout.write('\r' + statusLine)
+                        sys.stdout.flush()
 
                     decks[cardFile] = readCardFileFromPath(cardFile, {}, asDeck=True, context=context)
                 else:
