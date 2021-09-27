@@ -1,4 +1,3 @@
-import hashlib
 import io
 import json
 from datetime import datetime
@@ -12,54 +11,56 @@ from flask import jsonify
 from flask import request
 
 import cardListFormater
-import mtgCardInCollectionObject
-
 import deckAge
+import deckComplexity
 import deckPrice
+import listTokens
+import mtgCardInCollectionObject
 import mtgCardTextFileDao
 import mtgColors
 import priceSourceHandler
-import deckComplexity
-import listTokens
 import verifyDeck
+from web_infra.database import DeckDao
 from mtgDeckObject import Deck
+from web_infra.deck_manager import DeckManager
 
 app = Flask(__name__, static_url_path='/')
 
-salt = "$!K;g.}yDdeg\"Q5J".encode('utf-8')
-
-deckHome = '../decklists/comanders_quaters'
-
-configuration = {}
 with open('./config.json') as json_data_file:
     configuration = json.load(json_data_file)
 
+deck_manager = DeckManager(DeckDao(), '../decklists/comanders_quaters', configuration)
+
 priceSourceHandler.initPriceSource('none', configuration["priceSources"])
 
-def basicCardList(deckCards):
+deck_manager.init_decks(SimpleNamespace())
+
+
+def basicCardList(deck_cards):
     res = []
-    for deckCardName, deckCard in deckCards.items():
-        manaCost = []
-        imageUris = []
+    for deckCardName, deckCard in deck_cards.items():
+        mana_cost = []
+        image_uris = []
         if deckCard.jsonData.get('mana_cost', None) is not None:
-            manaCost = deckCard.jsonData.get('mana_cost', "")[1:-1].replace(' // ', '{=}').split("}{")
-            imageUris.append(deckCard.jsonData.get("image_uris", {"normal": None})["normal"])
+            mana_cost = deckCard.jsonData.get('mana_cost', "")[1:-1].replace(' // ', '{=}').split("}{")
+            image_uris.append(deckCard.jsonData.get("image_uris", {"normal": None})["normal"])
         elif deckCard.jsonData.get('card_faces', None) is not None:
             for face in deckCard.jsonData.get('card_faces', []):
-                if len(manaCost) > 0 and len(face.get('mana_cost', "")) > 0:
-                    manaCost.extend('=')
-                manaCost.extend(face.get('mana_cost', "")[1:-1].replace(' // ', '{=}').split("}{"))
-                imageUris.append(face.get("image_uris", {"normal": None})["normal"])
-        manaCost = [cost.replace('/', '') for cost in manaCost if cost != ""]
+                if len(mana_cost) > 0 and len(face.get('mana_cost', "")) > 0:
+                    mana_cost.extend('=')
+                mana_cost.extend(face.get('mana_cost', "")[1:-1].replace(' // ', '{=}').split("}{"))
+                image_uris.append(face.get("image_uris", {"normal": None})["normal"])
+        mana_cost = [cost.replace('/', '') for cost in mana_cost if cost != ""]
         res.append({'count': deckCard.count, 'name': deckCardName,
-                    'colors': mtgColors.colorIdentity2String(deckCard.getProp('color')), 'manaCost': manaCost,
-                    'imageUris': imageUris, "scryfallUri": deckCard.jsonData.get("scryfall_uri", None)})
+                    'colors': mtgColors.colorIdentity2String(deckCard.getProp('color')), 'manaCost': mana_cost,
+                    'imageUris': image_uris, "scryfallUri": deckCard.jsonData.get("scryfall_uri", None)})
     return sorted(res, key=lambda item: item.get("name"))
 
 
 @app.route('/')
 def index():
     return app.send_static_file('index.html')
+
 
 @app.route('/<count>/staples.json', methods=['GET'])
 def staples(count):
@@ -68,13 +69,12 @@ def staples(count):
 
     context = SimpleNamespace()
 
-    cardCollection = mtgCardTextFileDao.readCardDirectory(deckHome, {}, None, configuration["filePattern"], context)
+    card_collection = sorted(basicCardList(deck_manager.get_all_cards(context)), key=lambda item: item.get("count"),
+                             reverse=True)
 
-    cardCollection = sorted(basicCardList(cardCollection), key=lambda item: item.get("count"), reverse=True)
+    json_response = {"cards": card_collection[:int(count)]}
 
-    jsonResponse = {"cards": cardCollection[:int(count)]}
-
-    response = jsonify(jsonResponse)
+    response = jsonify(json_response)
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Cache-Control', 'public, max-age=43200')
 
@@ -84,9 +84,9 @@ def staples(count):
     return response
 
 
-@app.route('/<deck>/deckList.txt', methods=['GET'])
-def deckListDownload(deck):
-    print("deckListDownload start", deck)
+@app.route('/<deck_hash>/deckList.txt', methods=['GET'])
+def deckListDownload(deck_hash):
+    print("deckListDownload start", deck_hash)
     start = timer()
 
     context = SimpleNamespace()
@@ -95,120 +95,128 @@ def deckListDownload(deck):
     context.print = None
     context.sort = ['shortType', 'name']
 
-    decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)
+    deck = deck_manager.get_deck(deck_hash, context)
 
-    fileResponse = ''
-    fileName = ''
+    if deck is None:
+        abort(404, 'deck not found')
+    else:
 
-    for file in decks:
-        if deck == hashlib.sha256(file.encode() + salt).hexdigest():
-            print ('Serving deck', file)
+        print('Serving deck', deck.file)
 
-            formatedFile = io.StringIO()
-            mtgCardTextFileDao.saveCardFile(formatedFile, decks[file], ['shortType'], context)
-            formatedFile.seek(0)
+        formated_file = io.StringIO()
+        mtgCardTextFileDao.saveCardFile(formated_file, deck.cards, ['shortType'], context)
+        formated_file.seek(0)
 
-            first = True
-            for deckCardName, deckCard in Deck(decks[file]).getCommander().items():
-                fileName = fileName + deckCardName
-                if not first:
-                    fileName = fileName + '+'
-                else:
-                    first = False
+        file_name = ''
+        first = True
+        for deckCardName, deckCard in deck.getCommander().items():
+            file_name = file_name + deckCardName
+            if not first:
+                file_name = file_name + '+'
+            else:
+                first = False
 
-            fileName = fileName + "_" + deck[-5:] + '.txt'
+        file_name = file_name + "_" + deck_hash[-5:] + '.txt'
 
-            fileResponse = formatedFile.getvalue()
-            formatedFile.close()
+        file_response = formated_file.getvalue()
+        formated_file.close()
 
-    response = make_response(fileResponse, 200)
+        response = make_response(file_response, 200)
 
-    response.headers.add('Content-Type', 'text/plain; charset=utf-8')
-    response.headers.add('Content-Disposition', 'attachment;filename="' + fileName + '"')
+        response.headers.add('Content-Type', 'text/plain; charset=utf-8')
+        response.headers.add('Content-Disposition', 'attachment;filename="' + file_name + '"')
 
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Cache-Control', 'public, max-age=43200')
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Cache-Control', 'public, max-age=43200')
 
-    end = timer()
-    print("deckListDownload end, elapsed time ", (end - start))
+        end = timer()
+        print("deckListDownload end, elapsed time ", (end - start))
 
-    return response
+        return response
 
-@app.route('/<deck>/deckList.json', methods=['GET'])
-def deckList(deck):
-    print("deckList start", deck)
+
+@app.route('/<deck_hash>/deckList.json', methods=['GET'])
+def deckList(deck_hash):
+    print("deckList start", deck_hash)
     start = timer()
 
     context = SimpleNamespace()
 
-    decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)
+    deck = deck_manager.get_deck(deck_hash, context)
 
-    jsonResponse = {}
+    if deck is None:
+        abort(404, 'deck not found')
+    else:
 
-    for file in decks:
-        if deck == hashlib.sha256(file.encode() + salt).hexdigest():
-            print ('Serving deck', file)
-            deck = Deck(decks[file])
-            jsonResponse["commanders"] = basicCardList(deck.getCommander())
-            jsonResponse["companions"] = basicCardList(deck.getSideboard())
-            jsonResponse['deckList'] = []
-            for shortType in sorted(deck.getShortTypes(), key=lambda item: mtgCardInCollectionObject.getShortTypeOrder(item)):
-                listOfType = basicCardList(deck.getByShortType(shortType))
-                count = 0
-                for item in listOfType:
-                    count = count + item['count']
-                jsonResponse['deckList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': listOfType})
+        json_response = {}
 
-            with open(file) as f:
-                first_line = f.readline()
-                if first_line.startswith("# source: "):
-                    jsonResponse["url"] = first_line[len("# source: "):]
-            break
+        print('Serving deck', deck.file)
+        json_response["commanders"] = basicCardList(deck.getCommander())
+        json_response["companions"] = basicCardList(deck.getSideboard())
+        json_response['deckList'] = []
+        for shortType in sorted(deck.getShortTypes(),
+                                key=lambda type_item: mtgCardInCollectionObject.getShortTypeOrder(type_item)):
+            list_of_type = basicCardList(deck.getByShortType(shortType))
+            count = 0
+            for item in list_of_type:
+                count = count + item['count']
+            json_response['deckList'].append(
+                {'shortType': shortType.capitalize(), 'count': count, 'cards': list_of_type})
 
-    response = jsonify(jsonResponse)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Cache-Control', 'public, max-age=43200')
+        with open(deck.file) as f:
+            first_line = f.readline()
+            if first_line.startswith("# source: "):
+                json_response["url"] = first_line[len("# source: "):]
 
-    end = timer()
-    print("deckPriceMethod end, elapsed time ", (end - start))
+        response = jsonify(json_response)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Cache-Control', 'public, max-age=43200')
 
-    return response
+        end = timer()
+        print("deckList end, elapsed time ", (end - start))
+
+        return response
 
 
-@app.route('/<deck>/tokens.json', methods=['GET'])
-def tokens(deck):
-    print("tokens start", deck)
+@app.route('/<deck_hash>/tokens.json', methods=['GET'])
+def list_tokens(deck_hash):
+    print("tokens start", deck_hash)
     start = timer()
 
     context = SimpleNamespace()
 
-    decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)
+    deck = deck_manager.get_deck(deck_hash, context)
 
-    tokens = []
-    counters = []
-    others = []
+    if deck is None:
+        abort(404, 'deck not found')
+    else:
 
-    for file in decks:
-        if deck == hashlib.sha256(file.encode() + salt).hexdigest():
-            print ('Serving deck', file)
-            response = listTokens.listTokens(decks[file])
-            for token in sorted(response['tokens']):
-                tokens.append({'token': token, 'cards': basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['tokens'][token]))})
-            for counter in sorted(response['counters']):
-                counters.append({'counter': counter, 'cards': basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['counters'][counter]))})
-            for other in sorted(response['other']):
-                others.append({'other': other, 'cards': basicCardList(cardListFormater.cardObjectListToCardObjectMap(response['other'][other]))})
+        tokens = []
+        counters = []
+        others = []
 
-    jsonResponse = {'tokens': tokens, 'counters': counters, 'other': others}
+        print('Serving deck', deck.file)
+        response = listTokens.listTokens(deck)
+        for token in sorted(response['tokens']):
+            tokens.append({'token': token, 'cards': basicCardList(
+                cardListFormater.cardObjectListToCardObjectMap(response['tokens'][token]))})
+        for counter in sorted(response['counters']):
+            counters.append({'counter': counter, 'cards': basicCardList(
+                cardListFormater.cardObjectListToCardObjectMap(response['counters'][counter]))})
+        for other in sorted(response['other']):
+            others.append({'other': other, 'cards': basicCardList(
+                cardListFormater.cardObjectListToCardObjectMap(response['other'][other]))})
 
-    response = jsonify(jsonResponse)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Cache-Control', 'public, max-age=43200')
+        json_response = {'tokens': tokens, 'counters': counters, 'other': others}
 
-    end = timer()
-    print("tokens end, elapsed time ", (end - start))
+        response = jsonify(json_response)
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Cache-Control', 'public, max-age=43200')
 
-    return response
+        end = timer()
+        print("tokens end, elapsed time ", (end - start))
+
+        return response
 
 
 @app.route('/<currency>/possibleDecks.json', methods=['POST'])
@@ -225,72 +233,75 @@ def possibleDecks(currency):
     with io.StringIO(collection) as f:
         collection = mtgCardTextFileDao.readCardFile(f, 'web_request', {}, False, context)
 
-    decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)
+    decks = deck_manager.get_decks(context)
 
     response = []
 
-    for file in decks:
-        deckList = decks[file]
+    for deck in decks:
 
-        missingCards = verifyDeck.missingCards(deckList, collection, context.currency)
+        missing_cards = verifyDeck.missingCards(deck.cards, collection, context.currency)
 
-        deckInfo = {}
+        deck_info = dict()
 
-        deckInfo["deckFile"] = hashlib.sha256(file.encode() + salt).hexdigest()
+        deck_info["deckFile"] = deck_manager.hash_deck(deck)
 
-        deck = Deck(deckList)
+        deck_info["commanders"] = basicCardList(deck.getCommander())
+        deck_info["companions"] = basicCardList(deck.getSideboard())
 
-        deckInfo["commanders"] = basicCardList(deck.getCommander())
-        deckInfo["companions"] = basicCardList(deck.getSideboard())
+        deck_info['percentage'] = 100 * (missing_cards['totalDeckCards'] - missing_cards['totalCount']) / missing_cards[
+            'totalDeckCards']
+        deck_info['printPercentage'] = "{:3.2f}".format(deck_info['percentage']) + "%"
 
-        deckInfo['percentage'] = 100 * (missingCards['totalDeckCards'] - missingCards['totalCount']) / missingCards['totalDeckCards']
-        deckInfo['printPercentage'] = "{:3.2f}".format(deckInfo['percentage'] ) + "%"
+        deck_info['haveList'] = []
 
-        deckInfo['haveList'] = []
+        have_list = Deck(cardListFormater.cardObjectCountMapToCardObjectMap(missing_cards['haveList']), deck.file)
 
-        haveList = Deck(cardListFormater.cardObjectCountMapToCardObjectMap(missingCards['haveList']))
+        total_count = 0
 
-        totalCount = 0
-
-        for shortType in sorted(haveList.getShortTypes(), key=lambda item: mtgCardInCollectionObject.getShortTypeOrder(item)):
-            listOfType = basicCardList(haveList.getByShortType(shortType))
+        for shortType in sorted(have_list.getShortTypes(),
+                                key=lambda type_item: mtgCardInCollectionObject.getShortTypeOrder(type_item)):
+            list_of_type = basicCardList(have_list.getByShortType(shortType))
             count = 0
-            for item in listOfType:
+            for item in list_of_type:
                 count = count + item['count']
-            totalCount = totalCount + count
-            deckInfo['haveList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': listOfType})
+            total_count = total_count + count
+            deck_info['haveList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': list_of_type})
 
-        deckInfo['haveListCount'] = totalCount
+        deck_info['haveListCount'] = total_count
 
-        deckInfo['shoppingList'] = []
+        deck_info['shoppingList'] = []
 
-        shoppingList = Deck(cardListFormater.cardObjectCountMapToCardObjectMap(missingCards['shoppingList']))
+        shopping_list = Deck(cardListFormater.cardObjectCountMapToCardObjectMap(missing_cards['shoppingList']),
+                             deck.file)
 
-        totalCount = 0
+        total_count = 0
 
-        for shortType in sorted(shoppingList.getShortTypes(), key=lambda item: mtgCardInCollectionObject.getShortTypeOrder(item)):
-            listOfType = basicCardList(shoppingList.getByShortType(shortType))
+        for shortType in sorted(shopping_list.getShortTypes(),
+                                key=lambda type_item: mtgCardInCollectionObject.getShortTypeOrder(type_item)):
+            list_of_type = basicCardList(shopping_list.getByShortType(shortType))
             count = 0
-            for item in listOfType:
+            for item in list_of_type:
                 count = count + item['count']
-            totalCount = totalCount + count
-            deckInfo['shoppingList'].append({'shortType': shortType.capitalize(), 'count': count, 'cards': listOfType})
+            total_count = total_count + count
+            deck_info['shoppingList'].append(
+                {'shortType': shortType.capitalize(), 'count': count, 'cards': list_of_type})
 
-        deckInfo['shoppingListCount'] = totalCount
+        deck_info['shoppingListCount'] = total_count
 
-        deckInfo['shoppingListPrice'] = int(missingCards['totalPrice'])
+        deck_info['shoppingListPrice'] = int(missing_cards['totalPrice'])
 
-        response.append(deckInfo)
+        response.append(deck_info)
 
-    jsonResponse = sorted(response, key=lambda i: i['percentage'], reverse=True)
+    json_response = sorted(response, key=lambda i: i['percentage'], reverse=True)
 
-    for line in jsonResponse:
+    for line in json_response:
         del line["percentage"]
 
     end = timer()
     print("possibleDecks end, elapsed time ", (end - start))
 
-    return jsonify(jsonResponse)
+    return jsonify(json_response)
+
 
 @app.route('/<currency>/<sort>/deckPrice.json', methods=['GET'])
 def deckPriceMethod(currency, sort):
@@ -305,37 +316,34 @@ def deckPriceMethod(currency, sort):
     context = SimpleNamespace()
     context.currency = currency
 
-    decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)
-
+    decks = deck_manager.get_decks(context)
     response = []
 
-    for file in decks:
-        deckList = decks[file]
-        deckPrices = deckPrice.deckPrice(deckList, currency)
-        deckAges = deckAge.deckAge(deckList)
-        deck = Deck(deckList)
+    for deck in decks:
+        deck_prices = deckPrice.deckPrice(deck.cards, currency)
+        deck_ages = deckAge.deckAge(deck.cards)
 
-        deckInfo = {}
+        deck_info = dict()
 
-        deckInfo["deckPriceTotal"] = int(deckPrices["deckPrice"])
-        deckInfo["commanders"] = basicCardList(deck.getCommander())
-        deckInfo["commanders_sort"] = "_".join([item['name'] for item in deckInfo["commanders"]])
-        deckInfo["companions"] = basicCardList(deck.getSideboard())
-        deckInfo["date"] = datetime.now() - deckAges["deckDate"]
-        deckInfo["age"] = humanize.naturaldelta(deckAges["deckDate"] - datetime.now(), months=True)
-        deckInfo["rank"] = deck.getAverageEDHrecRank()
-        deckInfo["complexity"] = deckComplexity.deckComplexity(deckList)["complexity"]
-        deckInfo["deckFile"] = hashlib.sha256(file.encode() + salt).hexdigest()
+        deck_info["deckPriceTotal"] = int(deck_prices["deckPrice"])
+        deck_info["commanders"] = basicCardList(deck.getCommander())
+        deck_info["commanders_sort"] = "_".join([item['name'] for item in deck_info["commanders"]])
+        deck_info["companions"] = basicCardList(deck.getSideboard())
+        deck_info["date"] = datetime.now() - deck_ages["deckDate"]
+        deck_info["age"] = humanize.naturaldelta(deck_ages["deckDate"] - datetime.now(), months=True)
+        deck_info["rank"] = deck.getAverageEDHrecRank()
+        deck_info["complexity"] = deckComplexity.deckComplexity(deck.cards)["complexity"]
+        deck_info["deckFile"] = deck_manager.hash_deck(deck)
 
-        response.append(deckInfo)
+        response.append(deck_info)
 
-    jsonResponse = sorted(response, key=lambda i: i[sort])
+    json_response = sorted(response, key=lambda i: i[sort])
 
-    for line in jsonResponse:
+    for line in json_response:
         del line["date"]
         del line["commanders_sort"]
 
-    response = jsonify(jsonResponse)
+    response = jsonify(json_response)
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Cache-Control', 'public, max-age=43200')
 

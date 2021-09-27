@@ -239,10 +239,8 @@ optional arguments:
 
  * token with "ability"
 
- * make Deck object with accessors (commander, deck, sideboard, statistics, etc ... move utility methods there)
-
  * ommit cards with zero count from prints
 
- * deck age (latest set, date when deck was possible to assemble in paper) ?
+ * Store json data in database.
 
- * some czk stuff not working 
+ * make Deck object with accessors (commander, deck, sideboard, statistics, etc ... move utility methods there)

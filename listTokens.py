@@ -1,45 +1,43 @@
 import re
 
 import console
-
+from mtgColors import colorIdentity2NiceString
+from mtgDeckObject import Deck
 from scryfall import getTokenByUrl
 
-from mtgColors import colorIdentity2NiceString
 
-
-def appendListInMap(map, key, item):
+def appendListInMap(map_with_lists, key, item):
     key = key.capitalize()
-    if (key not in map):
-        map[key] = set([])
-    map[key].add(item)
+    if key not in map_with_lists:
+        map_with_lists[key] = set([])
+    map_with_lists[key].add(item)
 
 
-def addCounter(counterType, keyWords, list, oracleText, deckCard):
+def addCounter(counterType, keyWords, map_with_lists, oracleText, deckCard):
     for keyWord in keyWords:
         match = re.search('(' + keyWord + ')', oracleText)
-        if (match):
-            appendListInMap(list, counterType, deckCard)
+        if match:
+            appendListInMap(map_with_lists, counterType, deckCard)
 
 
-def listTokens(deckCards):
+def listTokens(deck: Deck):
     tokens = {}
     counters = {}
     other = {}
     tokenCandidates = {}
 
-    for deckCardName in deckCards:
-        deckCard = deckCards[deckCardName]
+    for deckCard in deck.simple_card_list():
         oracleText = deckCard.getFullOracleText()
         typeLine = deckCard.getFullTypeLine()
 
         oracleText = oracleText.replace('nontoken', '~')
-        oracleTextWithoutCardName = oracleText.replace(deckCardName, 'CARD_NAME')
+        oracleTextWithoutCardName = oracleText.replace(deckCard.getJsonName(), 'CARD_NAME')
 
         nonTokenCards = {'Intangible Virtue', 'Anointed Procession', 'Outlaws\' Merriment', 'Mascot Exhibition'}
 
         foundToken = False
 
-        if deckCardName not in nonTokenCards:
+        if deckCard.getJsonName() not in nonTokenCards:
 
             match = re.search("(Fabricate [0-9]+)", oracleText)
             if (match):
@@ -62,14 +60,14 @@ def listTokens(deckCards):
             if (match):
                 subtype = typeLine.split("\u2014", 1)[1].strip()
                 appendListInMap(tokens, deckCard.jsonData.get('power', '?') + '/' + deckCard.jsonData.get('toughness',
-                                                                                                          '?') + " white " + deckCardName + " " + subtype + " Zombie token",
+                                                                                                          '?') + " white " + deckCard.getJsonName() + " " + subtype + " Zombie token",
                                 deckCard)
                 appendListInMap(other, "Embalm marker", deckCard)
                 foundToken = True
 
             match = re.search('(Eternalize)', oracleText)
             if (match):
-                appendListInMap(tokens, "4/4 black " + deckCardName + " Zombie token", deckCard)
+                appendListInMap(tokens, "4/4 black " + deckCard.getJsonName() + " Zombie token", deckCard)
                 appendListInMap(other, "Eternalize marker", deckCard)
                 foundToken = True
 
@@ -77,7 +75,7 @@ def listTokens(deckCards):
             if (match):
                 subtype = typeLine.split("\u2014", 1)[1].strip()
                 appendListInMap(tokens, deckCard.jsonData.get('power', '?') + '/' + deckCard.jsonData.get('toughness',
-                                                                                                          '?') + " " + deckCardName + " " + subtype + " token",
+                                                                                                          '?') + " " + deckCard.getJsonName() + " " + subtype + " token",
                                 deckCard)
                 foundToken = True
 
@@ -243,7 +241,8 @@ def listTokens(deckCards):
                             if tokenJson is not None:
                                 # 1/1 colorless Servo artifact creature token
                                 tokenString = tokenJson.get('power', '?') + '/' + tokenJson.get(
-                                    'toughness', '?') + ' ' + colorIdentity2NiceString(tokenJson['color_identity']) + ' ' + \
+                                    'toughness', '?') + ' ' + colorIdentity2NiceString(
+                                    tokenJson['color_identity']) + ' ' + \
                                               tokenJson[
                                                   'name'] + ' ' + re.sub(" \u2014 .+", '',
                                                                          tokenJson['type_line'].replace('Token ',
@@ -253,7 +252,7 @@ def listTokens(deckCards):
                                                                                                               ' ') + '\''
                                 appendListInMap(tokens, tokenString, deckCard)
 
-    response = {}
+    response = dict()
 
     response['tokens'] = tokens
     response['counters'] = counters

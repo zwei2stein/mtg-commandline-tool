@@ -145,7 +145,7 @@ def main():
 				deck2 = mtgCardTextFileDao.readCardFileFromPath(args.update, {}, True, args)
 				verifyDeck.printMissingCardsToConsole(verifyDeck.missingCards(deck, cardCollection, args.currency, deck2, args.priceThreshold), args)
 			if (args.listTokens):
-				listTokens.printTokensToConsole(listTokens.listTokens(deck))
+				listTokens.printTokensToConsole(listTokens.listTokens(mtgDeckObject.Deck(deck, file)))
 			if (args.manaCurve):
 				manaCurve.printManaCurveToConsole(manaCurve.manaCurve(deck))
 			if (args.manaSymbols):

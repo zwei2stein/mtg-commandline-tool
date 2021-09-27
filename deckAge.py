@@ -14,4 +14,4 @@ def deckAge(deckCards):
 
 
 def printDeckAgeConsole(response):
-    print('Latest deck card:', humanize.naturaldelta(response["deckDate"] - datetime.now(), months=True))
+    print('Newest card in deck:', humanize.naturaldelta(response["deckDate"] - datetime.now(), months=True))

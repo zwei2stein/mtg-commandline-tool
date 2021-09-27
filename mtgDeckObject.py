@@ -4,8 +4,10 @@ prettyPrintSort = ['shortType', 'name']
 
 class Deck:
 
-    def __init__(self, cards):
+    def __init__(self, cards, file):
         self.cards = cards
+        self.file = file
+        self.deck_hash = None
 
     def getCommander(self):
         return {k: v for (k, v) in self.cards.items() if v.getProp('commander')}
@@ -26,6 +28,9 @@ class Deck:
             shortTypes.add(card.getProp('shortType'))
 
         return shortTypes
+
+    def simple_card_list(self):
+        return self.cards.values()
 
     def getAverageEDHrecRank(self):
         count = 0
