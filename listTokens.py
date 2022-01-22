@@ -223,8 +223,12 @@ def listTokens(deck: Deck):
                 appendListInMap(other, "Dungeon completed marker", deckCard)
 
             match = re.search('(Enchantment \u2014 Class)', typeLine)
-            if (match):
+            if match:
                 appendListInMap(other, "Class level marker", deckCard)
+
+            match = re.search('((becomes day)|(Daybound))', oracleText)
+            if match:
+                appendListInMap(other, "Day/Night marker", deckCard)
 
         if (not foundToken):
             match = re.search("(token)", oracleText)

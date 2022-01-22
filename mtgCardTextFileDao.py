@@ -238,7 +238,6 @@ def readDeckDirectory(path, decks, cardListfilePattern, context):
                 cardFile = os.path.join(root, file)
                 match = re.search(cardListfilePattern, cardFile)
                 if (match):
-
                     if sys.stdin and sys.stdin.isatty():
                         statusLine = "Reading file #" + str(count) + " '" + cardFile + "'..."
 
