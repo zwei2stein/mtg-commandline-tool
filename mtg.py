@@ -91,7 +91,7 @@ def main():
 		else:
 			args.sort = args.group
 
-	scryfall.clearCache = args.clearCache
+	scryfall.clear_cache = args.clearCache
 	scryfall.cacheTimeout = configuration["scryfall"]["cacheTimeout"]
 
 	priceSourceHandler.initPriceSource(args.clearCache, configuration["priceSources"])

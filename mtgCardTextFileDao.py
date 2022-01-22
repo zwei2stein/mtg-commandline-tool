@@ -135,7 +135,7 @@ def saveCardFileSlice(file, cards, sorts, diffFormat, context, sideboard=False, 
                     file.write(sort.capitalize())
                     file.write(" - ")
                 if (sort == 'set'):
-                    file.write(sets.getSetName(cards[card].getProp(sort)))
+                    file.write(sets.get_set_name(cards[card].getProp(sort)))
                 else:
                     file.write(str(cards[card].getProp(sort)))
                 file.write(':\n')

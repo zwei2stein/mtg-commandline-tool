@@ -13,22 +13,22 @@ import util
 proxies = None
 auth = None
 
-clearCache = 'none'
+clear_cache = 'none'
 cacheTimeout = 365
 
 
 class CardRetrievalError(Exception):
-    def __init__(self, message, cardName, errorCode):
+    def __init__(self, message, card_name, error_code):
         super(CardRetrievalError, self).__init__(message)
-        self.cardName = cardName
-        self.errorCode = errorCode
+        self.cardName = card_name
+        self.errorCode = error_code
 
 
 def getCacheDir():
-    baseDir = os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
-    if not os.path.exists(baseDir):
-        os.makedirs(baseDir)
-    return baseDir
+    base_dir = os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
+    if not os.path.exists(base_dir):
+        os.makedirs(base_dir)
+    return base_dir
 
 
 def flushCache():
@@ -39,53 +39,54 @@ def flushCache():
 
 
 def initCache(collection):
-    lastLength = 0
+    last_length = 0
     count = 1
 
     for card in collection:
 
-        statusLine = 'Fetching card info (' + str(count) + '/' + str(len(collection)) + ', ...' + str(
+        status_line = 'Fetching card info (' + str(count) + '/' + str(len(collection)) + ', ...' + str(
             collection[card].sourceFile)[-50:-2] + '): ' + card + " ..."
 
         count += 1
-        currentLength = len(statusLine)
-        if currentLength < lastLength:
-            statusLine = statusLine + (lastLength - currentLength) * ' '
+        currentLength = len(status_line)
+        if currentLength < last_length:
+            status_line = status_line + (last_length - currentLength) * ' '
         # newline before doing "status"
-        if lastLength == 0:
+        if last_length == 0:
             sys.stdout.write('\n')
-        lastLength = currentLength
+        last_length = currentLength
 
-        sys.stdout.write('\r' + statusLine)
+        sys.stdout.write('\r' + status_line)
         sys.stdout.flush()
     doneMessage = ''
-    sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\r')
+    sys.stdout.write('\r' + doneMessage + (last_length - len(doneMessage)) * " " + '\r')
     sys.stdout.flush()
 
 
-def fetchCardJson(card, jsonFile, retryTimes=3):
+def fetchCardJson(card, json_file, retry_times=3):
     response = requests.get("http://api.scryfall.com/cards/named", params={'exact': card.techName}, proxies=proxies,
                             auth=auth)
-    fuzzyResult = False
+    fuzzy_result = False
     if response.status_code == 404:
         print()
         print(console.CRED + "Card '" + card.techName + "' (" + util.absolutePaths(
             card.sourceFile) + ") Was not found in scryfall using exact search." + console.CEND + " Trying fuzzy search.")
         response = requests.get("http://api.scryfall.com/cards/named", params={'fuzzy': card.techName}, proxies=proxies,
                                 auth=auth)
-        fuzzyResult = True
+        fuzzy_result = True
         if response.status_code < 400:
             print("\'" + card.techName + "\' found as \'" + response.json()[
                 "name"] + "\'. " + console.CRED + "Fix files " + util.absolutePaths(card.sourceFile) + console.CEND)
-    if (response.status_code == 503 or response.status_code == 504) and retryTimes > 0:
+    if (response.status_code == 503 or response.status_code == 504) and retry_times > 0:
         sys.stderr.write('Retrying ' + response.url)
-        fetchCardJson(card, jsonFile, retryTimes - 1)
-    elif response.status_code >= 400 or retryTimes == 0:
+        fetchCardJson(card, json_file, retry_times - 1)
+    elif response.status_code >= 400 or retry_times == 0:
         raise CardRetrievalError(
-            'Bad response ' + str(response.status_code) + ' for ' + card.techName + "' (" + util.absolutePaths(card.sourceFile) + ")",
+            'Bad response ' + str(response.status_code) + ' for ' + card.techName + "' (" + util.absolutePaths(
+                card.sourceFile) + ")",
             card.techName, response.status_code)
-    if not fuzzyResult:
-        with open(jsonFile, 'w') as f:
+    if not fuzzy_result:
+        with open(json_file, 'w') as f:
             json.dump(response.json(), f)
     return response.json()
 
@@ -95,8 +96,8 @@ def getCachedCardJson(card):
     if os.path.exists(jsonFile):
         fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
 
-        if (clearCache == 'always' or (clearCache == 'timeout' and fileAge.days > cacheTimeout) or (
-                clearCache == 'price' and fileAge.days > 1)):
+        if (clear_cache == 'always' or (clear_cache == 'timeout' and fileAge.days > cacheTimeout) or (
+                clear_cache == 'price' and fileAge.days > 1)):
             return fetchCardJson(card, jsonFile)
         else:
             # print("Loading cached " + jsonFile)
@@ -116,22 +117,22 @@ def getCachedCardJson(card):
 def searchByCard(card):
     url = card.jsonData['prints_search_uri']
 
-    jsonFile = os.path.join(getCacheDir(), card.jsonData["oracle_id"] + ".prints.json")
-    if os.path.exists(jsonFile):
-        fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
+    json_file = os.path.join(getCacheDir(), card.jsonData["oracle_id"] + ".prints.json")
+    if os.path.exists(json_file):
+        file_age = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(json_file))
 
-        if (clearCache == 'always' or (clearCache == 'timeout' and fileAge.days > cacheTimeout) or (
-                clearCache == 'price' and fileAge.days > 1)):
-            return fetchCardJson(card, jsonFile)
+        if (clear_cache == 'always' or (clear_cache == 'timeout' and file_age.days > cacheTimeout) or (
+                clear_cache == 'price' and file_age.days > 1)):
+            return fetchCardJson(card, json_file)
         else:
             # print("Loading cached " + jsonFile)
-            with open(jsonFile, encoding='utf-8') as json_data:
+            with open(json_file, encoding='utf-8') as json_data:
                 try:
                     return json.load(json_data)
                 except JSONDecodeError:
-                    print("Deleting and retrying invalid " + jsonFile)
+                    print("Deleting and retrying invalid " + json_file)
                     json_data.close()
-                    os.remove(jsonFile)
+                    os.remove(json_file)
                     return searchByCard(card)
 
     response = requests.get(url, proxies=proxies, auth=auth)
@@ -150,7 +151,7 @@ def searchByCard(card):
         else:
             response = None
 
-    with open(jsonFile, 'w') as f:
+    with open(json_file, 'w') as f:
         json.dump(foundCardsJson, f)
 
     return foundCardsJson
@@ -182,3 +183,24 @@ def getTokenByUrl(url):
         return response.json()
     else:
         return None
+
+
+def get_set_data(set_code):
+    json_file = os.path.join(getCacheDir(), set_code + "_set.json")
+    if os.path.exists(json_file):
+        with open(json_file, encoding='utf-8') as json_data:
+            try:
+                return json.load(json_data)
+            except JSONDecodeError:
+                print("Deleting and retrying invalid " + json_file)
+                json_data.close()
+                os.remove(json_file)
+                return get_set_data(set_code)
+    else:
+        response = requests.get('https://api.scryfall.com/sets/' + set_code, proxies=proxies, auth=auth)
+        if response.status_code == 200:
+            with open(json_file, 'w') as f:
+                json.dump(response.json(), f)
+            return response.json()
+        else:
+            return dict()

@@ -165,7 +165,7 @@ class CardInCollection:
             cardPrintings = scryfall.searchByCard(self)
             printDates = []
             for cardPrinting in cardPrintings:
-                printDates.append(sets.getSetDate(cardPrinting["set"]))
+                printDates.append(sets.get_set_date(cardPrinting["set"]))
             return min(printDates)
 
     def getFullOracleText(self):
@@ -201,7 +201,7 @@ class CardInCollection:
 
             elif sort == 'set':
                 if (self.jsonData["set"] != cardInCollection.jsonData["set"]):
-                    return sets.getSetOrder(self.jsonData["set"]) > sets.getSetOrder(cardInCollection.jsonData["set"])
+                    return sets.get_set_order(self.jsonData["set"]) > sets.get_set_order(cardInCollection.jsonData["set"])
 
             if (self.getProp(sort) != cardInCollection.getProp(sort)):
                 return self.getProp(sort) > cardInCollection.getProp(sort)
