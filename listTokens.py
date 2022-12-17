@@ -1,6 +1,7 @@
 import re
 
 import console
+import mtgCardInCollectionObject
 from mtgColors import colorIdentity2NiceString
 from mtgDeckObject import Deck
 from scryfall import getTokenByUrl
@@ -18,6 +19,16 @@ def addCounter(counterType, keyWords, map_with_lists, oracleText, deckCard):
         match = re.search('(' + keyWord + ')', oracleText)
         if match:
             appendListInMap(map_with_lists, counterType, deckCard)
+
+
+pseudo_card_cache = {}
+
+
+def pseudo_card(card_name, template):
+    if card_name not in pseudo_card_cache:
+        pseudo_card_cache[card_name] = mtgCardInCollectionObject.CardInCollection(card_name, 1, None,
+                                                                                  context=template.context)
+    return pseudo_card_cache[card_name]
 
 
 def listTokens(deck: Deck):
@@ -94,21 +105,35 @@ def listTokens(deck: Deck):
                                 deckCard)
                 foundToken = True
 
-            for match in re.finditer(
-                    '[Cc]reate(s)? ([a-zX ]+) (([0-9X]+)/([0-9X]+) ([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?( with [A-Za-z ]+)?)',
-                    oracleText):
-                tokenString = match.string[match.start(3):match.end(3)]
-                tokenString = re.sub("tokens", "token", tokenString, 1)
-                appendListInMap(tokens, tokenString, deckCard)
-                foundToken = True
+            # 1, define list of regexes that return tokens
 
-            for match in re.finditer(
-                    '[Cc]reate(s)? ([a-zX ]+) (([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?(\\. It has \"[A-Za-z\\\'\\. ]+\")?)',
-                    oracleText):
-                tokenString = match.string[match.start(3):match.end(3)]
-                tokenString = re.sub("tokens", "token", tokenString, 1)
-                appendListInMap(tokens, tokenString, deckCard)
-                foundToken = True
+            # Create a 2/2 white Astartes Warrior creature token with vigilance
+            freeform_token_regex = {
+                '[Cc]reate(s)? ([a-zX ]+) (([0-9X]+)/([0-9X]+) ([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?( named [A-Za-z ]+ with ["{},:A-Za-z0-9 .]+)?( with ["{},:A-Za-z0-9 .]+ named [A-Za-z ]+)?)',
+                '[Cc]reate(s)? ([a-zX ]+) (([0-9X]+)/([0-9X]+) ([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?( named [A-Za-z ]+)?)',
+                '[Cc]reate(s)? ([a-zX ]+) (([0-9X]+)/([0-9X]+) ([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?( with ["{},:A-Za-z0-9 .]+)?)',
+                '[Cc]reate(s)? ([a-zX ]+) (([a-z ]+) ([A-Za-z ]+) ([a-z ]+) token(s)?( named [A-Za-z ]+ with ["{},:A-Za-z .]+)?(\\. It has \"[,A-Za-z\\\'\\. ]+\")?)',
+                '[Cc]reate(s)? ([a-zX ]+) (([A-Za-z ]+) ([a-z ]+) token(s)?( named [A-Za-z ]+ with ["{}:,A-Za-z0-9 .]+)?)',
+                '[Cc]reate(s)? ([a-zX ]+) (([A-Za-z ]+) ([a-z ]+) token(s)?( named [A-Za-z ]+)?)'
+            }
+
+            # 2, find for each in oracle text
+
+            freeform_token_candidates = []
+
+            for regex in freeform_token_regex:
+                for match in re.finditer(regex, oracleText):
+                    tokenString = match.string[match.start(3):match.end(3)]
+                    tokenString = re.sub("tokens", "token", tokenString, 1)
+                    freeform_token_candidates.append(tokenString)
+                    foundToken = True
+
+            # 3, if one of candidates is substring of another, ignore it.
+            #    correct result will only have one substring - itself.
+
+            for candidate in freeform_token_candidates:
+                if len(list(filter(lambda x: candidate in x, freeform_token_candidates))) == 1:
+                    appendListInMap(tokens, candidate, deckCard)
 
             match = re.search('[Cc]reate(s)? [a-zX ]+ Food token(s)?', oracleText)
             if (match):
@@ -189,7 +214,7 @@ def listTokens(deck: Deck):
                 appendListInMap(tokens, "0/0 black Germ creature token", deckCard)
 
             match = re.search('(Storm)', oracleTextWithoutCardName)
-            if (match):
+            if match and deckCard.getJsonName() not in ["Attempted Murder"]:
                 appendListInMap(other, "Storm count marker", deckCard)
 
             for match in re.finditer('([\+\-]\d/[\+\-]\d [Cc]ounter)', oracleText):
@@ -213,11 +238,42 @@ def listTokens(deck: Deck):
             for match in re.finditer('([Rr]oll ([a-zX ]+) (d[0-9]+))', oracleText):
                 appendListInMap(other, "Dice: " + match.string[match.start(3):match.end(3)], deckCard)
 
-            for match in re.finditer('([Vv]enture into the dungeon)', oracleText):
-                appendListInMap(other, "Dungeon maps", deckCard)
+            for match in re.finditer('(Roll a six-sided die)', oracleText):
+                appendListInMap(other, "Dice: d6", deckCard)
 
             for match in re.finditer('([Vv]enture into the dungeon)', oracleText):
-                appendListInMap(other, "Dungeon maps", deckCard)
+                appendListInMap(other, "Dungeon of the Mad Mage,", deckCard)
+                appendListInMap(other, "Lost Mine of Phandelver", deckCard)
+                appendListInMap(other, "Tomb of Annihilation", deckCard)
+                # implied by the dungeons:
+                appendListInMap(tokens,
+                                "colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color to your mana pool.\"",
+                                pseudo_card("Dungeon of the Mad Mage", deckCard))
+                appendListInMap(tokens,
+                                "1/1 black Skeleton creature token",
+                                pseudo_card("Dungeon of the Mad Mage", deckCard))
+                appendListInMap(tokens,
+                                "1/1 red Goblin creature token",
+                                pseudo_card("Lost Mine of Phandelver", deckCard))
+                appendListInMap(tokens,
+                                "colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color to your mana pool.\"",
+                                pseudo_card("Lost Mine of Phandelver", deckCard))
+                appendListInMap(counters, "+1/+1 counter",
+                                pseudo_card("Lost Mine of Phandelver", deckCard))
+                appendListInMap(tokens,
+                                "The Atropal, a legendary 4/4 black God Horror creature token with deathtouch",
+                                pseudo_card("Tomb of Annihilation", deckCard))
+
+            for match in re.finditer('([Yy]ou take the initiative)', oracleText):
+                appendListInMap(other, "The Initiative marker ", deckCard)
+                appendListInMap(other, "Undercity", deckCard)
+                # implied by the dungeon:
+                appendListInMap(counters, "+1/+1 counter", pseudo_card("Undercity", deckCard))
+                appendListInMap(tokens,
+                                "colorless Treasure artifact token with \"{T}, Sacrifice this artifact: Add one mana of any color to your mana pool.\"",
+                                pseudo_card("Undercity", deckCard))
+                appendListInMap(tokens, "4/1 black Skeleton creature token with menace",
+                                pseudo_card("Undercity", deckCard))
 
             for match in re.finditer('(completed a dungeon)', oracleText):
                 appendListInMap(other, "Dungeon completed marker", deckCard)
@@ -229,6 +285,19 @@ def listTokens(deck: Deck):
             match = re.search('((becomes day)|(Daybound))', oracleText)
             if match:
                 appendListInMap(other, "Day/Night marker", deckCard)
+
+            match = re.search('{TK}', oracleText)
+            if match:
+                appendListInMap(other, "Ticket Bucket-Bot", deckCard)
+
+            match = re.search('(may put ([a-z ]+)?( (ability)|(name)|(art))? sticker(s)? on)', oracleText)
+            if match:
+                appendListInMap(other, "Sticker sheet side deck", deckCard)
+
+            match = re.search('[Oo]pen [a-z]+ Attraction(s)?', oracleText)
+            if match:
+                appendListInMap(other, "Attraction side deck", deckCard)
+                appendListInMap(other, "Dice: d6", deckCard)
 
         if (not foundToken):
             match = re.search("(token)", oracleText)
