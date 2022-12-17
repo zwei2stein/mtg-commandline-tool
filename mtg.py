@@ -26,7 +26,8 @@ import deckAge
 
 import scryfall
 
-import priceSourceHandler
+from price_source import priceSourceHandler
+
 
 def main():
 
@@ -93,8 +94,9 @@ def main():
 
 	scryfall.clear_cache = args.clearCache
 	scryfall.cacheTimeout = configuration["scryfall"]["cacheTimeout"]
+	scryfall.base_cache_dir = configuration["cacheRootDirectory"]
 
-	priceSourceHandler.initPriceSource(args.clearCache, configuration["priceSources"])
+	priceSourceHandler.initPriceSource(args.clearCache, configuration["cacheRootDirectory"], configuration["priceSources"])
 
 	cardCollection = {}
 	if ((args.missingCards is not None or args.update is not None or args.saveList is not None or args.search is not None) or args.cache == 'init'):

@@ -1,21 +1,21 @@
 import requests
 
-from priceSource import PriceSource
+from price_source.priceSource import PriceSource
 
 
 class Najada(PriceSource):
 
-    def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
+    def __init__(self, base_cache_dir, clearCache, cacheTimeout, smartFlush, priority):
+        super().__init__(base_cache_dir, '.najadaCache')
         self.clearCache = clearCache
         self.cacheTimeout = cacheTimeout
         self.smartFlush = smartFlush
         self.sourceName = 'Najada'
         self.supportedCurrency = 'czk'
-        self.cacheDir = '.najadaCache'
         self.priority = priority
         self.baseUrl = "https://najada.games/api/v1/najada2/catalog/mtg-singles/"
 
-    def fetchCardPrice(self, card, page=0, cheapest_price=None):
+    def fetch_card_price(self, card, page=0, cheapest_price=None):
 
         name = card.name
 

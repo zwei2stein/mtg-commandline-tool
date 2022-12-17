@@ -7,7 +7,7 @@ import sys
 from timeit import default_timer as timer
 import humanize
 
-import priceSourceHandler
+from price_source import priceSourceHandler
 
 deckHome = './decklists/comanders_quaters'
 
@@ -19,7 +19,7 @@ def main():
 
     configuration["scryfall"]["cacheTimeout"] = 1
 
-    priceSourceHandler.initPriceSource('none', configuration["priceSources"])
+    priceSourceHandler.initPriceSource('none', configuration["cacheRootDirectory"], configuration["priceSources"])
 
     context = SimpleNamespace()
     decks = mtgCardTextFileDao.readDeckDirectory(deckHome, {}, configuration["filePattern"], context)

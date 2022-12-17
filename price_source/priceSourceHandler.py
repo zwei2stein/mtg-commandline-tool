@@ -2,48 +2,55 @@ from decimal import *
 
 import console
 import util
-from blacklotus import BlackLotus
-from cernyrytir import CernyRytir
-from mysticshop import MysticShop
-from najada import Najada
-from priceSource import PriceNotFoundException
-from priceSource import SourceUnreachableException
-from scryfallPriceSource import ScryfallPriceSource
-from tolarie import Tolarie
+from price_source.blacklotus import BlackLotus
+from price_source.cernyrytir import CernyRytir
+from price_source.mysticshop import MysticShop
+from price_source.najada import Najada
+from price_source.priceSource import PriceNotFoundException
+from price_source.priceSource import SourceUnreachableException
+from price_source.scryfallPriceSource import ScryfallPriceSource
+from price_source.tolarie import Tolarie
 
 handlers = []
 
 errors = []
 
 
-def initPriceSource(clearCache, configuration):
+def initPriceSource(clearCache, base_cache_dir, configuration):
     global handlers
     handlers = []
     if configuration["najada"]["enabled"]:
-        handlers.append(
-            Najada(clearCache, configuration["najada"]["cacheTimeout"], configuration["najada"]["smartFlush"],
-                   configuration["najada"]["priority"]))
+        handlers.append(Najada(base_cache_dir, clearCache, configuration["najada"]["cacheTimeout"],
+                               configuration["najada"]["smartFlush"],
+                               configuration["najada"]["priority"]))
     if configuration["cernyrytir"]["enabled"]:
-        handlers.append(CernyRytir(clearCache, configuration["cernyrytir"]["cacheTimeout"],
-                                   configuration["cernyrytir"]["smartFlush"], configuration["cernyrytir"]["priority"]))
+        handlers.append(
+            CernyRytir(base_cache_dir, clearCache, configuration["cernyrytir"]["cacheTimeout"],
+                       configuration["cernyrytir"]["smartFlush"], configuration["cernyrytir"]["priority"]))
     if configuration["blacklotus"]["enabled"]:
-        handlers.append(BlackLotus(clearCache, configuration["blacklotus"]["cacheTimeout"],
-                                   configuration["blacklotus"]["smartFlush"], configuration["blacklotus"]["priority"]))
+        handlers.append(
+            BlackLotus(base_cache_dir, clearCache, configuration["blacklotus"]["cacheTimeout"],
+                       configuration["blacklotus"]["smartFlush"], configuration["blacklotus"]["priority"]))
     if configuration["tolarie"]["enabled"]:
         handlers.append(
-            Tolarie(clearCache, configuration["tolarie"]["cacheTimeout"], configuration["tolarie"]["smartFlush"],
+            Tolarie(base_cache_dir, clearCache, configuration["tolarie"]["cacheTimeout"],
+                    configuration["tolarie"]["smartFlush"],
                     configuration["tolarie"]["priority"]))
     if configuration["mysticshop"]["enabled"]:
-        handlers.append(MysticShop(clearCache, configuration["mysticshop"]["cacheTimeout"],
-                                   configuration["mysticshop"]["smartFlush"], configuration["mysticshop"]["priority"]))
+        handlers.append(
+            MysticShop(base_cache_dir, clearCache, configuration["mysticshop"]["cacheTimeout"],
+                       configuration["mysticshop"]["smartFlush"], configuration["mysticshop"]["priority"]))
     if configuration["scryfall"]["enabled"]:
-        handlers.append(ScryfallPriceSource('tix', clearCache, configuration["scryfall"]["cacheTimeout"],
+        handlers.append(ScryfallPriceSource(base_cache_dir, 'tix', clearCache,
+                                            configuration["scryfall"]["cacheTimeout"],
                                             configuration["scryfall"]["smartFlush"],
                                             configuration["scryfall"]["priority"]))
-        handlers.append(ScryfallPriceSource('usd', clearCache, configuration["scryfall"]["cacheTimeout"],
+        handlers.append(ScryfallPriceSource(base_cache_dir, 'usd', clearCache,
+                                            configuration["scryfall"]["cacheTimeout"],
                                             configuration["scryfall"]["smartFlush"],
                                             configuration["scryfall"]["priority"]))
-        handlers.append(ScryfallPriceSource('eur', clearCache, configuration["scryfall"]["cacheTimeout"],
+        handlers.append(ScryfallPriceSource(base_cache_dir, 'eur', clearCache,
+                                            configuration["scryfall"]["cacheTimeout"],
                                             configuration["scryfall"]["smartFlush"],
                                             configuration["scryfall"]["priority"]))
 
@@ -82,8 +89,8 @@ def getCardPrice(currency, cardObject):
                 errors.append('Price for ' + cardObject.name + ' not found at ' + handler.sourceName)
             except SourceUnreachableException as e:
                 errors.append(handler.sourceName + ' is unreachable')
-#    if len(errors) > 0:
-#        print(errors)
+    #    if len(errors) > 0:
+    #        print(errors)
     if priceSourceCount > 0:
         return Decimal(price / priceSourceCount).quantize(Decimal('.01'), rounding=ROUND_UP)
     else:

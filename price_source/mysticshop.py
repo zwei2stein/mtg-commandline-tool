@@ -1,23 +1,21 @@
 import re
 import requests
 
-import util
-
-from priceSource import PriceSource
+from price_source.priceSource import PriceSource
 
 class MysticShop(PriceSource):
 
-	def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
+	def __init__(self, base_cache_dir, clearCache, cacheTimeout, smartFlush, priority):
+		super().__init__(base_cache_dir, '.mysticShopCache')
 		self.clearCache = clearCache
 		self.cacheTimeout = cacheTimeout
 		self.smartFlush = smartFlush
 		self.sourceName = 'Mystic Shop'
 		self.supportedCurrency = 'czk'
-		self.cacheDir = '.mysticShopCache'
 		self.priority = priority
 		self.baseUrl = "http://mysticshop.cz/mtgshop.php"
 
-	def fetchCardPrice(self, card, page = 0, cheapestPrice = None):
+	def fetch_card_price(self, card, page = 0, cheapestPrice = None):
 
 		response = requests.post(self.baseUrl, params={
 			'name': card.name,

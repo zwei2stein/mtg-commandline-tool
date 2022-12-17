@@ -18,7 +18,7 @@ import listTokens
 import mtgCardInCollectionObject
 import mtgCardTextFileDao
 import mtgColors
-import priceSourceHandler
+from price_source import priceSourceHandler
 import verifyDeck
 from web_infra.database import DeckDao
 from mtgDeckObject import Deck
@@ -31,7 +31,7 @@ with open('./config.json') as json_data_file:
 
 deck_manager = DeckManager(DeckDao(), '../decklists/comanders_quaters', configuration)
 
-priceSourceHandler.initPriceSource('none', configuration["priceSources"])
+priceSourceHandler.initPriceSource('none', configuration["cacheRootDirectory"], configuration["priceSources"])
 
 deck_manager.init_decks(SimpleNamespace())
 

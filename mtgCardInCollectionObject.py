@@ -1,5 +1,5 @@
 import mtgColors
-import priceSourceHandler
+from price_source import priceSourceHandler
 import scryfall
 import sets
 import util

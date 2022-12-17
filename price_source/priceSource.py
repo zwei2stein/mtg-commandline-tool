@@ -7,7 +7,6 @@ import sys
 from requests.exceptions import ProxyError
 from requests.exceptions import ConnectionError
 
-import console
 import util
 
 class PriceNotFoundException(Exception):
@@ -17,6 +16,10 @@ class SourceUnreachableException(Exception):
 	pass
 
 class PriceSource:
+
+	def __init__(self, base_cache_dir, cache_dir):
+		self.base_cache_dir = base_cache_dir
+		self.cache_dir = cache_dir
 
 	def getPriority(self):
 		return self.priority
@@ -32,7 +35,7 @@ class PriceSource:
 
 
 	def getCacheDir(self):
-		baseDir = os.path.join(os.path.dirname(sys.argv[0]), self.cacheDir)
+		baseDir = os.path.join(os.path.dirname(sys.argv[0]), self.base_cache_dir, self.cache_dir)
 		if (not os.path.exists(baseDir)):
 			os.makedirs(baseDir)
 		return baseDir
@@ -105,33 +108,31 @@ class PriceSource:
 			fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
 
 			if (self.clearCache == 'always' or (self.clearCache == 'timeout' and fileAge.days > self.cacheTimeout) or (self.clearCache == 'price' and fileAge.days > 1)):
-				price = self.fetchCardPriceMark(card, jsonFile)
+				price = self.fetch_card_price_try(card, jsonFile)
 			else:
 				with open(jsonFile, encoding='utf-8') as json_data:
 					price = json.load(json_data)["price"]
 
 		else:
-			price = self.fetchCardPriceMark(card, jsonFile)
+			price = self.fetch_card_price_try(card, jsonFile)
 
 		if (price is None):
 			raise PriceNotFoundException()
 		else:
 			return price
 
-	def fetchCardPriceMark(self, card, jsonFile):
+	def fetch_card_price_try(self, card, jsonFile):
 
-		response = None
+		price = None
 		try:
-			response = self.fetchCardPrice(card)
+			price = self.fetch_card_price(card)
 		except ProxyError as e:
 			raise SourceUnreachableException() from None
 		except ConnectionError as e:
 			raise SourceUnreachableException() from None
 
-		if (response is not None):
+		if price is not None:
 			with open(jsonFile, 'w') as f:
-				json.dump({"price": response, "name": card.name}, f)
-
-		price = response
+				json.dump({"price": price, "name": card.name}, f)
 
 		return price

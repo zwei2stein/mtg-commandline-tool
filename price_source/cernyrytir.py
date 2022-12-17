@@ -3,21 +3,21 @@ import requests
 
 import util
 
-from priceSource import PriceSource
+from price_source.priceSource import PriceSource
 
 class CernyRytir(PriceSource):
 
-	def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
+	def __init__(self, base_cache_dir, clearCache, cacheTimeout, smartFlush, priority):
+		super().__init__(base_cache_dir, '.cernyRytirCache')
 		self.clearCache = clearCache
 		self.cacheTimeout = cacheTimeout
 		self.smartFlush = smartFlush
 		self.sourceName = 'Cerny Rytir'
 		self.supportedCurrency = 'czk'
-		self.cacheDir = '.cernyRytirCache'
 		self.priority = priority
 		self.baseUrl = "http://cernyrytir.cz/index.php3"
 
-	def fetchCardPrice(self, card, page = 0, cheapestPrice = None):
+	def fetch_card_price(self, card, page = 0, cheapestPrice = None):
 		pageSize = 30
 
 		# URL will not accept encoded ', it needs non-UTF8 ´
@@ -53,7 +53,7 @@ class CernyRytir(PriceSource):
 
 		if (len(names) == pageSize and 'Nalezeno' in response.text):
 			util.printProgress(page)
-			return self.fetchCardPrice(card, page = page + 1, cheapestPrice = cheapestPrice)
+			return self.fetch_card_price(card, page =page + 1, cheapestPrice = cheapestPrice)
 		else:
 
 			return cheapestPrice

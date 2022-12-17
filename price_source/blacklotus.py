@@ -2,22 +2,22 @@ import re
 
 import requests
 
-from priceSource import PriceSource
+from price_source.priceSource import PriceSource
 
 
 class BlackLotus(PriceSource):
 
-    def __init__(self, clearCache, cacheTimeout, smartFlush, priority):
+    def __init__(self, base_cache_dir, clearCache, cacheTimeout, smartFlush, priority):
+        super().__init__(base_cache_dir, '.cernyRytirCache')
         self.clearCache = clearCache
         self.cacheTimeout = cacheTimeout
         self.smartFlush = smartFlush
         self.sourceName = 'Black Lotus'
         self.supportedCurrency = 'czk'
-        self.cacheDir = '.blackLotusCache'
         self.priority = priority
         self.baseUrl = "https://www.blacklotus.cz/vyhledavani/"
 
-    def fetchCardPrice(self, card, page=0, cheapestPrice=None):
+    def fetch_card_price(self, card, page=0, cheapestPrice=None):
 
         name = card.name
 

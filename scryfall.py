@@ -13,6 +13,7 @@ import util
 proxies = None
 auth = None
 
+base_cache_dir = './checkConfig'
 clear_cache = 'none'
 cacheTimeout = 365
 
@@ -24,8 +25,13 @@ class CardRetrievalError(Exception):
         self.errorCode = error_code
 
 
-def getCacheDir():
-    base_dir = os.path.join(os.path.dirname(sys.argv[0]), ".scryfallCache")
+class ConfigurationError(Exception):
+    def __init__(self, message):
+        super(ConfigurationError, self).__init__(message)
+
+
+def get_cache_dir():
+    base_dir = os.path.join(os.path.dirname(sys.argv[0]), base_cache_dir, ".scryfallCache")
     if not os.path.exists(base_dir):
         os.makedirs(base_dir)
     return base_dir
@@ -33,9 +39,9 @@ def getCacheDir():
 
 def flushCache():
     try:
-        shutil.rmtree(getCacheDir())
+        shutil.rmtree(get_cache_dir())
     except OSError as e:
-        print("Error where clearing cache directory at " + getCacheDir() + ": %s - %s." % (e.filename, e.strerror))
+        print("Error where clearing cache directory at " + get_cache_dir() + ": %s - %s." % (e.filename, e.strerror))
 
 
 def initCache(collection):
@@ -92,7 +98,7 @@ def fetchCardJson(card, json_file, retry_times=3):
 
 
 def getCachedCardJson(card):
-    jsonFile = os.path.join(getCacheDir(), util.cleanFilename(card) + ".json")
+    jsonFile = os.path.join(get_cache_dir(), util.cleanFilename(card) + ".json")
     if os.path.exists(jsonFile):
         fileAge = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(jsonFile))
 
@@ -117,7 +123,7 @@ def getCachedCardJson(card):
 def searchByCard(card):
     url = card.jsonData['prints_search_uri']
 
-    json_file = os.path.join(getCacheDir(), card.jsonData["oracle_id"] + ".prints.json")
+    json_file = os.path.join(get_cache_dir(), card.jsonData["oracle_id"] + ".prints.json")
     if os.path.exists(json_file):
         file_age = datetime.date.today() - datetime.date.fromtimestamp(os.path.getmtime(json_file))
 
@@ -186,7 +192,7 @@ def getTokenByUrl(url):
 
 
 def get_set_data(set_code):
-    json_file = os.path.join(getCacheDir(), set_code + "_set.json")
+    json_file = os.path.join(get_cache_dir(), set_code + "_set.json")
     if os.path.exists(json_file):
         with open(json_file, encoding='utf-8') as json_data:
             try:

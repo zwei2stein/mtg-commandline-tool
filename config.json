@@ -2,6 +2,7 @@
 	"defaultCurrency": "eur",
 	"defaultCache": "auto",
 	"collectionDirectory": "./collection",
+	"cacheRootDirectory": "./.mtgToolCache",
 	"filePattern": ".*\\.txt",
 	"scryfall": {
 		"cacheTimeout": 365,

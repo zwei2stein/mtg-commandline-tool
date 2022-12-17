@@ -1,20 +1,20 @@
 import scryfall
 
-from priceSource import PriceSource
+from price_source.priceSource import PriceSource
 
 
 class ScryfallPriceSource(PriceSource):
 
-    def __init__(self, supportedCurrency, clearCache, cacheTimeout, smartFlush, priority):
+    def __init__(self, base_cache_dir, supportedCurrency, clearCache, cacheTimeout, smartFlush, priority):
+        super().__init__(base_cache_dir, '.scryfallPriceCache' + supportedCurrency)
         self.clearCache = clearCache
         self.cacheTimeout = cacheTimeout
         self.smartFlush = smartFlush
         self.sourceName = 'Scryfall'
         self.supportedCurrency = supportedCurrency
-        self.cacheDir = '.scryfallPriceCache' + self.supportedCurrency
         self.priority = priority
 
-    def fetchCardPrice(self, card, page=0, cheapestPrice=None):
+    def fetch_card_price(self, card, page=0, cheapestPrice=None):
 
         foundCards = scryfall.searchByCard(card)
 
