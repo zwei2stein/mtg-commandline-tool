@@ -1,50 +1,50 @@
 {
-	"defaultCurrency": "eur",
-	"defaultCache": "auto",
-	"collectionDirectory": "./collection",
-	"cacheRootDirectory": "./.mtgToolCache",
-	"filePattern": ".*\\.txt",
-	"scryfall": {
-		"cacheTimeout": 365,
-		"clearCache": "none",
-		"smartFlush": false
-	},
-	"priceSources": {
-		"scryfall": {
-			"cacheTimeout": 90,
-			"smartFlush": true,
-			"priority": 5,
-			"enabled": true
-		},
-		"cernyrytir": {
-			"cacheTimeout": 90,
-			"smartFlush": true,
-			"priority": 2,
-			"enabled": true
-		},
-		"najada": {
-			"cacheTimeout": 90,
-			"smartFlush": true,
-			"priority": 2,
-			"enabled": true
-		},
-		"blacklotus": {
-			"cacheTimeout": 90,
-			"smartFlush": true,
-			"priority": 2,
-			"enabled": true
-		},
-		"tolarie": {
-			"cacheTimeout": 90,
-			"smartFlush": true,
-			"priority": 2,
-			"enabled": true
-		},
-		"mysticshop": {
-			"cacheTimeout": 90,
-			"smartFlush": true,
-			"priority": 2,
-			"enabled": true
-		}
-	}
+  "defaultCurrency": "eur",
+  "defaultCache": "auto",
+  "collectionDirectory": "./collection",
+  "cacheRootDirectory": "./.mtgToolCache",
+  "filePattern": ".*\\.txt",
+  "scryfall": {
+    "cacheTimeout": 365,
+    "clearCache": "none",
+    "smartFlush": false
+  },
+  "priceSources": {
+    "scryfall": {
+      "cacheTimeout": 90,
+      "smartFlush": true,
+      "priority": 5,
+      "enabled": true
+    },
+    "cernyrytir": {
+      "cacheTimeout": 90,
+      "smartFlush": true,
+      "priority": 2,
+      "enabled": true
+    },
+    "najada": {
+      "cacheTimeout": 90,
+      "smartFlush": true,
+      "priority": 2,
+      "enabled": true
+    },
+    "blacklotus": {
+      "cacheTimeout": 90,
+      "smartFlush": true,
+      "priority": 2,
+      "enabled": true
+    },
+    "tolarie": {
+      "cacheTimeout": 90,
+      "smartFlush": true,
+      "priority": 2,
+      "enabled": true
+    },
+    "mysticshop": {
+      "cacheTimeout": 90,
+      "smartFlush": true,
+      "priority": 2,
+      "enabled": true
+    }
+  }
 }

@@ -6,10 +6,11 @@ import sys
 import console
 import mtgCardInCollectionObject
 import sets
+from scryfall import CardRetrievalError
 
 
 def readCardFileFromPath(cardFile, cards, asDeck=False, context={}):
-    with open(cardFile, 'r') as f:
+    with open(cardFile, 'r', encoding = 'utf8') as f:
         return readCardFile(f, cardFile, cards, asDeck, context)
 
 
@@ -37,13 +38,12 @@ def readCardFile(f, cardFile, cards, asDeck, context):
             if (len(splitLine) == 2):
                 count = 0
                 try:
-                    count = int(re.sub("[x]\Z", "", splitLine[0], 1))  # acceptable 1 and 1x
+                    count = int(re.sub("x", "", splitLine[0], 1))  # acceptable 1 and 1x
                 except ValueError:
                     if errorCount == 0:
                         print()
                     errorCount += 1
-                    print("Card list format error " + str(errorCount) + " in file '" + cardFile + "', line " + str(
-                        lineCounter) + ", ignoring '" + line + "'")
+                    print(f"Card list format error {errorCount} in file '{cardFile}', line {lineCounter}, ignoring '{line}'")
                     continue
                 name = splitLine[1]
                 if '#' in name:
@@ -55,22 +55,27 @@ def readCardFile(f, cardFile, cards, asDeck, context):
 
                 setName = None
 
-                match = re.search(" \[([A-Z0-9]{3,5})\]\Z", name)
+                match = re.search(" \\[([A-Z0-9]{3,5})]\Z", name)
                 if (match):
                     setName = match.string[match.start(1):match.end(1)].lower()
 
-                name = re.sub(" \[[A-Za-z0-9]{3,5}\]\Z", "", name, 1)  # strip set tag from end i.e. [AKH]
-                name = re.sub(" \([CURM]\)\Z", "", name, 1)  # strip rarity from end i.e. (R)
+                name = re.sub(" \\[[A-Za-z0-9]{3,5}]\Z", "", name, 1)  # strip set tag from end i.e. [AKH]
+                name = re.sub(" \\([CURM]\)\Z", "", name, 1)  # strip rarity from end i.e. (R)
                 name = re.sub(" - Full Art", "", name, 1)  # strip full card notice
-                name = re.sub(" \([0-9]+\)\Z", "", name, 1)  # strip collector number, etc...
-                name = re.sub(" \([0-9A-Za-z ]+\)\Z", "", name,
+                name = re.sub(" \\([0-9]+\)\Z", "", name, 1)  # strip collector number, etc...
+                name = re.sub(" \\([0-9A-Za-z ]+\)\Z", "", name,
                               1)  # strip showcase marker, artist marker, other markers
                 name = name.strip()
                 # Normalize name from scryfall data.
                 # Multifaced cards that are here normalized to name of first face.
                 # In case there are mixed namings in files (common for pathways)
                 temporaryCard = mtgCardInCollectionObject.CardInCollection(name, count, cardFile)
-                name = temporaryCard.getJsonName()
+                try:
+                    name = temporaryCard.getJsonName()
+                except CardRetrievalError as e:
+                    print()
+                    print(f"Card list scryfall retrieval error {e.errorCode} in file '{cardFile}', line {lineCounter}, ignoring '{line}'")
+                    continue
 
                 sideboardCount = 0
                 if (isSideboard):
@@ -167,7 +172,7 @@ def printCard(file, card, sideboard, diffFormat, prependTextToCardLine=None, col
     if prependTextToCardLine is not None:
         file.write(prependTextToCardLine)
 
-    if (diffFormat):
+    if diffFormat:
         for x in range(count):
             printCardLine(file, 1, card)
     else:
@@ -177,21 +182,21 @@ def printCard(file, card, sideboard, diffFormat, prependTextToCardLine=None, col
 def printCardLine(file, count, card, color=None):
     file.write(str(count))
     file.write(" ")
-    if (color is not None):
+    if color is not None:
         file.write(color)
     file.write(card.getProp('fullName'))
-    if (color is not None):
+    if color is not None:
         file.write(console.CEND)
     file.write(card.getDisplaySuffix())
     file.write('\n')
 
 
 def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern, context):
-    if (os.path.isfile(path)):
-        print("Reading single file '", path, "'")
+    if os.path.isfile(path):
+        print(f"Reading single file '{path}'")
         readCardFileFromPath(path, cards, asDeck=True, context=context)
-    elif (os.path.isdir(path)):
-        print("Reading directory ", path)
+    elif os.path.isdir(path):
+        print(f"Reading directory '{path}'")
 
         lastLength = 0
         count = 1
@@ -201,7 +206,7 @@ def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern, context):
                 cardFile = os.path.join(root, file)
                 match = re.search(cardListfilePattern, cardFile)
                 if (match and (ignoreDecks is None or ignoreDecks not in cardFile.lower())):
-                    statusLine = "Reading file #" + str(count) + " '" + cardFile + "'..."
+                    statusLine = f"Reading file #{count} '{cardFile}'..."
 
                     count += 1
                     currentLength = len(statusLine)
@@ -213,22 +218,22 @@ def readCardDirectory(path, cards, ignoreDecks, cardListfilePattern, context):
                     sys.stdout.flush()
                     readCardFileFromPath(cardFile, cards, asDeck=False, context=context)
                 else:
-                    print("Ignoring file '", cardFile, "'")
-        doneMessage = "Done reading '" + path + "'"
+                    print(f"Ignoring file '{cardFile}'")
+        doneMessage = f"Done reading '{path}'"
         sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\n')
         sys.stdout.flush()
     else:
-        print("'" + path + "' is not a file or directory.")
+        print(f"'{path}' is not a file or directory.")
 
     return cards
 
 
 def readDeckDirectory(path, decks, cardListfilePattern, context):
-    if (os.path.isfile(path)):
-        print("Reading single file '", path, "'")
+    if os.path.isfile(path):
+        print(f"Reading single file '{path}'")
         decks[path] = readCardFileFromPath(path, {}, asDeck=True, context=context)
-    elif (os.path.isdir(path)):
-        print("Reading directory ", path)
+    elif os.path.isdir(path):
+        print(f"Reading directory {path}")
 
         lastLength = 0
         count = 1
@@ -239,7 +244,7 @@ def readDeckDirectory(path, decks, cardListfilePattern, context):
                 match = re.search(cardListfilePattern, cardFile)
                 if (match):
                     if sys.stdin and sys.stdin.isatty():
-                        statusLine = "Reading file #" + str(count) + " '" + cardFile + "'..."
+                        statusLine = f"Reading file #{count} '{cardFile}'..."
 
                         currentLength = len(statusLine)
                         if (currentLength < lastLength):
@@ -251,12 +256,12 @@ def readDeckDirectory(path, decks, cardListfilePattern, context):
 
                     decks[cardFile] = readCardFileFromPath(cardFile, {}, asDeck=True, context=context)
                 else:
-                    print("Ignoring file '", cardFile, "'")
+                    print(f"Ignoring file '{cardFile}'")
 
-        doneMessage = "Done reading '" + path + "'"
+        doneMessage = f"Done reading '{path}'"
         sys.stdout.write('\r' + doneMessage + (lastLength - len(doneMessage)) * " " + '\n')
         sys.stdout.flush()
     else:
-        print("'" + os.path.abspath(path) + "' is not a file or directory.")
+        print(f"'{os.path.abspath(path)}' is not a file or directory.")
 
     return decks

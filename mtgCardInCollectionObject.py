@@ -1,13 +1,15 @@
 import mtgColors
-from price_source import priceSourceHandler
 import scryfall
 import sets
 import util
+from price_source import priceSourceHandler
 
-cardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'fullName', 'count', 'color', 'set', 'type', 'shortType',
+cardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'fullName', 'count', 'color', 'set', 'type',
+             'shortType',
              'rarity', 'age']
 
-globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'fullName','color', 'type', 'shortType', 'rarity',
+globalCardProps = ['price', 'fullPrices', 'cheapestPriceSource', 'cmc', 'name', 'fullName', 'color', 'type',
+                   'shortType', 'rarity',
                    'age']
 
 rarityOrder = {
@@ -201,7 +203,8 @@ class CardInCollection:
 
             elif sort == 'set':
                 if (self.jsonData["set"] != cardInCollection.jsonData["set"]):
-                    return sets.get_set_order(self.jsonData["set"]) > sets.get_set_order(cardInCollection.jsonData["set"])
+                    return sets.get_set_order(self.jsonData["set"]) > sets.get_set_order(
+                        cardInCollection.jsonData["set"])
 
             if (self.getProp(sort) != cardInCollection.getProp(sort)):
                 return self.getProp(sort) > cardInCollection.getProp(sort)

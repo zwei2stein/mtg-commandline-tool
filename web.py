@@ -18,10 +18,10 @@ import listTokens
 import mtgCardInCollectionObject
 import mtgCardTextFileDao
 import mtgColors
-from price_source import priceSourceHandler
 import verifyDeck
-from web_infra.database import DeckDao
 from mtgDeckObject import Deck
+from price_source import priceSourceHandler
+from web_infra.database import DeckDao
 from web_infra.deck_manager import DeckManager
 
 app = Flask(__name__, static_url_path='/')

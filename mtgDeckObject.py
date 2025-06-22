@@ -19,7 +19,8 @@ class Deck:
         return {k: v for (k, v) in self.cards.items() if (v.getProp('mainboard') and not v.getProp('commander'))}
 
     def getByShortType(self, shortType):
-        return {k: v for (k, v) in self.cards.items() if (v.getProp('shortType') == shortType and v.getProp('mainboard') and not v.getProp('commander'))}
+        return {k: v for (k, v) in self.cards.items() if
+                (v.getProp('shortType') == shortType and v.getProp('mainboard') and not v.getProp('commander'))}
 
     def getShortTypes(self):
         shortTypes = set()

@@ -1,4 +1,3 @@
-
 MTG Commandline tool
 ====================
 
@@ -7,9 +6,9 @@ This is tool for handling decklists and card collection.
 ## Key uses:
 ------------
 
- * Maintain refence of available cards, aid for physical storage.
- * Help to build decks from available cards.
- * Querry about additional infomation about decks and cards you own to create detailed reports.
+* Maintain refence of available cards, aid for physical storage.
+* Help to build decks from available cards.
+* Querry about additional infomation about decks and cards you own to create detailed reports.
 
 ## Examples:
 ------------
@@ -52,26 +51,32 @@ This is tool for handling decklists and card collection.
 
 ### Print missing cards for deck, grouped by price sources where each card is cheapest and with printout of all known prices
 
-'$ python ./tool/mtg.py -d ./decklists/professors_pauper/Pauper\ Mono\ Green\ Tron.txt -mc -p fullPrices -c czk -g cheapestPriceSource'
+'$ python ./tool/mtg.py -d ./decklists/professors_pauper/Pauper\ Mono\ Green\ Tron.txt -mc -p fullPrices -c czk -g
+cheapestPriceSource'
 
 ## Setup:
 ---------
 
- * requires 'requests' package
+* requires 'requests' package
 
-First, you need plain text files with your collection and decks. Collection is necesary if you want to use features that will work with it.
+First, you need plain text files with your collection and decks. Collection is necesary if you want to use features that
+will work with it.
 
 You can get that done in several ways:
 
- * If you have precons you can find decklists for them.
+* If you have precons you can find decklists for them.
 
- * You might have decklists for your own decks already
- 
- * You can scan your collection with app like http://app.tcgplayer.com/. This app allows you to share list of scanned cards with another app. Share it with email client and you can mail it to yourself. Share it with dropbox and it will create file.
+* You might have decklists for your own decks already
 
- * You can also just add cards manually. And yes, it is going to take some time. It sucks if you want to use this tool. Sorry.
+* You can scan your collection with app like http://app.tcgplayer.com/. This app allows you to share list of scanned
+  cards with another app. Share it with email client and you can mail it to yourself. Share it with dropbox and it will
+  create file.
 
- * Tip: you can put deck list with minus values to indicate that cards were removed from collection to build a deck or traded away.
+* You can also just add cards manually. And yes, it is going to take some time. It sucks if you want to use this tool.
+  Sorry.
+
+* Tip: you can put deck list with minus values to indicate that cards were removed from collection to build a deck or
+  traded away.
 
 ## File format:
 ---------------
@@ -83,13 +88,16 @@ Most commonly, you want you files to follow this pattern:
 X Card Name
 X Another Card Name # Comment for this card.
 
-Where "X" is how many cards there are and "Card Name" is name of card - this name must match scryfall name, should be capitalized properly and should be its english name. 
+Where "X" is how many cards there are and "Card Name" is name of card - this name must match scryfall name, should be
+capitalized properly and should be its english name.
 
-Line starting with "Sideboard" denotes sideboard separator and every card following that line will be considered part of sideboard.
+Line starting with "Sideboard" denotes sideboard separator and every card following that line will be considered part of
+sideboard.
 
 Lines starting with # are comments.
 
-Other formats (x after card count), (Collector number) after card name and [set] after card name are loosely supported (=ignored).
+Other formats (x after card count), (Collector number) after card name and [set] after card name are loosely supported (
+=ignored).
 
 ### Example of plain collection/deck file:
 
@@ -231,16 +239,16 @@ optional arguments:
 
 ## TODO:
 
- * When checking deck legality, check more than 4-of cards and more than 1-of if in restricted list.
+* When checking deck legality, check more than 4-of cards and more than 1-of if in restricted list.
 
- * Check if commander commander can be commander
+* Check if commander commander can be commander
 
- * When checking deck legality in singleton, fix Persistent Petitioners, Dwarvers, etc...
+* When checking deck legality in singleton, fix Persistent Petitioners, Dwarvers, etc...
 
- * token with "ability"
+* token with "ability"
 
- * ommit cards with zero count from prints
+* ommit cards with zero count from prints
 
- * Store json data in database.
+* Store json data in database.
 
- * make Deck object with accessors (commander, deck, sideboard, statistics, etc ... move utility methods there)
+* make Deck object with accessors (commander, deck, sideboard, statistics, etc ... move utility methods there)
